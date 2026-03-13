@@ -67,6 +67,7 @@ export const showConcepts: ShowConcept[] = [
       'Six contestants are brought in to compete. They did not apply for a climate show. They applied for a $10 million business competition set on one of the most dramatic locations on earth.',
       "The challenges aren't about saving the planet. They're about building something people will actually pay for.",
       'Each episode, the teams pitch, test, and iterate on solutions to the specific problem of that island: a desalination system that a local cooperative can actually maintain, a heat-resilient crop that survives on thirty percent less water, a parametric insurance product that pays out before the damage happens instead of fighting you afterward.',
+      'Between challenges, the investor checks in with each contestant one-on-one. Not a boardroom. A walk through the village, a conversation on the dock. He asks the questions a local would ask: who did you talk to today? What did they tell you that you didn\'t expect? These check-ins are where the real story lives. Some contestants crumble. Others reveal something they\'ve been holding back.',
       'The investor evaluates on one criterion: will this still be working in twenty years without him?',
       "The climate context is never explained to the audience. It emerges through the problems. By episode three, viewers understand why the aquifer matters -- not because anyone lectured them, but because they watched a team's entire business model collapse when the numbers didn't work.",
     ],
