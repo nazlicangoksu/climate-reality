@@ -114,8 +114,8 @@ export const showConcepts: ShowConcept[] = [
     logline:
       'A luxury social experiment on a real island. Twelve strangers, cast for friction, with prize money on the line. Then the storm hits. It was always going to.',
     narrative: [
-      'ACT ONE: A luxury social experiment. Real resort, real location -- the Maldives, a Pacific island that makes the news every hurricane season. Twelve strangers, cast for friction, with prize money on the line. Weekly challenges, alliances forming, couples pairing off, petty drama. Exactly what they applied for.',
-      'ACT TWO: The storm hits. It was always going to. The production team offers a choice: we can move everyone to another island, or you can stay. Some leave. Some stay. Both choices are valid. That tension is the show.',
+      'ACT ONE: A luxury social experiment. Real resort, real location -- the Maldives, a Pacific island that makes the news every hurricane season. Twelve strangers, cast for friction, with prize money on the line. Weekly challenges, alliances forming, couples pairing off, petty drama. New romance blooms. Exactly what they applied for.',
+      'ACT TWO: The storm hits. It was always going to. The production team offers a choice: we can move everyone to another island, or you can stay. Some leave. Some stay. Part of the challenge is being ok with leaving someone behind that you have a love interest in. Both choices are valid. That tension is the show.',
       'THE CRITICAL DESIGN RULE: The community is already responding before the contestants decide anything. They have a plan, a structure, people who know what to do. The contestants who stay are not leading. They are asking where to show up or what to do.',
       'Some show up as pure "muscle" moving debris. Others try to help negotiate aid packages but fail. Some get backlash trying to be the "savior." At least two or three contestants must be from the Global South -- people who recognize the power dynamic immediately and name it. The discomfort that creates within the group is more interesting than any climate lecture.',
     ],
