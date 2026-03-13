@@ -1,6 +1,8 @@
 import { useState, useEffect, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { showConcepts } from '../data/showConcepts';
+import { conceptMedia as staticMedia } from '../data/conceptMedia';
+import { fetchSession, updateSession, fetchConceptMedia } from '../lib/api';
 
 interface ConceptReaction {
   rating: number;
@@ -91,17 +93,24 @@ export default function Concepts() {
   const [reactions, setReactions] = useState<Record<string, ConceptReaction>>({});
   const [showPanel, setShowPanel] = useState(false);
   const [videoInput, setVideoInput] = useState('');
-  const [uploadCategory, setUploadCategory] = useState<'storyboard' | 'mood'>('storyboard');
   const storyboardInputRef = useRef<HTMLInputElement>(null);
   const moodInputRef = useRef<HTMLInputElement>(null);
   const saveTimeout = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   useEffect(() => {
-    fetch(`/api/sessions/${id}`).then(r => r.json()).then(s => {
-      setSession(s);
-      setReactions(s.conceptReactions || {});
-    }).catch(() => navigate('/'));
-    fetch('/api/concept-media').then(r => r.json()).then(setMedia).catch(() => {});
+    if (id) {
+      fetchSession(id).then(s => {
+        if (s) {
+          setSession(s);
+          setReactions(s.conceptReactions || {});
+        } else {
+          setSession({ id: 'presentation', participantName: '', conceptReactions: {} });
+        }
+      });
+    } else {
+      setSession({ id: 'presentation', participantName: '', conceptReactions: {} });
+    }
+    fetchConceptMedia().then(setMedia).catch(() => setMedia(staticMedia));
   }, [id, navigate]);
 
   const concept = showConcepts[activeIndex];
@@ -121,12 +130,8 @@ export default function Concepts() {
     setReactions(updated);
     if (saveTimeout.current) clearTimeout(saveTimeout.current);
     saveTimeout.current = setTimeout(() => {
-      if (!session) return;
-      fetch(`/api/sessions/${id}`, {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ ...session, conceptReactions: updated }),
-      }).then(r => r.json()).then(setSession).catch(() => {});
+      if (!session || !id) return;
+      updateSession(id, { ...session, conceptReactions: updated }).then(setSession).catch(() => {});
     }, 800);
   };
 
@@ -170,7 +175,6 @@ export default function Concepts() {
   if (!session) return null;
 
   const reaction = getReaction(concept.id);
-  const hasVisuals = cm.storyboard.length > 0 || cm.mood.length > 0 || cm.videoUrl;
 
   return (
     <div className="min-h-screen bg-[#0a0a0a] pb-[140px]">

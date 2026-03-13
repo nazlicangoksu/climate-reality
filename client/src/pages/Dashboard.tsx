@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { fetchSessions, createSession } from '../lib/api';
 
 interface Session {
   id: string;
@@ -17,20 +18,13 @@ export default function Dashboard() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    fetch('/api/sessions').then(r => r.json()).then(setSessions).catch(() => {});
+    fetchSessions().then(setSessions).catch(() => {});
   }, []);
 
   const startInterview = async () => {
     if (!form.participantName.trim()) return;
-    const res = await fetch('/api/sessions', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(form),
-    });
-    if (res.ok) {
-      const session = await res.json();
-      navigate(`/interview/${session.id}/notes`);
-    }
+    const session = await createSession(form);
+    navigate(`/interview/${session.id}/notes`);
   };
 
   const resumeInterview = (id: string, ended: boolean) => {
@@ -57,12 +51,20 @@ export default function Dashboard() {
               Interviews
             </h1>
           </div>
-          <button
-            onClick={() => navigate('/synthesis')}
-            className="font-ui text-[10px] tracking-widest uppercase text-stone-400 hover:text-amber-400 transition-colors px-4 py-2 border border-white/10 rounded-full hover:border-amber-500/30"
-          >
-            Synthesis
-          </button>
+          <div className="flex gap-3">
+            <button
+              onClick={() => navigate('/concepts')}
+              className="font-ui text-[10px] tracking-widest uppercase text-stone-400 hover:text-amber-400 transition-colors px-4 py-2 border border-white/10 rounded-full hover:border-amber-500/30"
+            >
+              Concepts
+            </button>
+            <button
+              onClick={() => navigate('/synthesis')}
+              className="font-ui text-[10px] tracking-widest uppercase text-stone-400 hover:text-amber-400 transition-colors px-4 py-2 border border-white/10 rounded-full hover:border-amber-500/30"
+            >
+              Synthesis
+            </button>
+          </div>
         </div>
 
         {/* Start new interview */}

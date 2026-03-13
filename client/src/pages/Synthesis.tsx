@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { showConcepts } from '../data/showConcepts';
+import { fetchSynthesis } from '../lib/api';
 
 interface ConceptSummary {
   conceptId: string;
@@ -45,7 +46,7 @@ export default function Synthesis() {
   const [activeTab, setActiveTab] = useState<'overview' | 'concepts' | 'ideas' | 'notes'>('overview');
 
   useEffect(() => {
-    fetch('/api/synthesis').then(r => r.json()).then(setData).catch(() => {});
+    fetchSynthesis().then(setData).catch(() => {});
   }, []);
 
   if (!data) {
@@ -55,9 +56,6 @@ export default function Synthesis() {
       </div>
     );
   }
-
-  const getConceptName = (id: string) => showConcepts.find(c => c.id === id)?.title || id;
-  const getConceptNumber = (id: string) => showConcepts.find(c => c.id === id)?.number || '';
 
   // Tag frequency across all ideas
   const tagCounts: Record<string, number> = {};

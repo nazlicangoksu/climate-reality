@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
+import { fetchSession, updateSession } from '../lib/api';
 
 interface Session {
   id: string;
@@ -18,22 +19,20 @@ export default function Notes() {
   const saveTimeout = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   useEffect(() => {
-    fetch(`/api/sessions/${id}`).then(r => r.json()).then(s => {
+    if (!id) return;
+    fetchSession(id).then(s => {
+      if (!s) { navigate('/'); return; }
       setSession(s);
       setNotes(s.openingNotes || '');
-    }).catch(() => navigate('/'));
+    });
   }, [id, navigate]);
 
   const autoSave = (value: string) => {
     setNotes(value);
     if (saveTimeout.current) clearTimeout(saveTimeout.current);
     saveTimeout.current = setTimeout(() => {
-      if (!session) return;
-      fetch(`/api/sessions/${id}`, {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ ...session, openingNotes: value }),
-      }).then(r => r.json()).then(setSession).catch(() => {});
+      if (!session || !id) return;
+      updateSession(id, { ...session, openingNotes: value }).then(setSession).catch(() => {});
     }, 800);
   };
 

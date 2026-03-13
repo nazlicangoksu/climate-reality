@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { showConcepts } from '../data/showConcepts';
+import { fetchSession } from '../lib/api';
 
 interface Session {
   id: string;
@@ -22,7 +23,11 @@ export default function Summary() {
   const [session, setSession] = useState<Session | null>(null);
 
   useEffect(() => {
-    fetch(`/api/sessions/${id}`).then(r => r.json()).then(setSession).catch(() => navigate('/'));
+    if (!id) return;
+    fetchSession(id).then(s => {
+      if (!s) { navigate('/'); return; }
+      setSession(s);
+    });
   }, [id, navigate]);
 
   if (!session) return null;

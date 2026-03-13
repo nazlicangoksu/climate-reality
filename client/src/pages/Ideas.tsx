@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
+import { fetchSession, updateSession } from '../lib/api';
 
 interface IdeaCard {
   id: string;
@@ -29,22 +30,20 @@ export default function Ideas() {
   const saveTimeout = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   useEffect(() => {
-    fetch(`/api/sessions/${id}`).then(r => r.json()).then(s => {
+    if (!id) return;
+    fetchSession(id).then(s => {
+      if (!s) { navigate('/'); return; }
       setSession(s);
       setCards(s.ideaCards || []);
-    }).catch(() => navigate('/'));
+    });
   }, [id, navigate]);
 
   const save = (updatedCards: IdeaCard[]) => {
     setCards(updatedCards);
     if (saveTimeout.current) clearTimeout(saveTimeout.current);
     saveTimeout.current = setTimeout(() => {
-      if (!session) return;
-      fetch(`/api/sessions/${id}`, {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ ...session, ideaCards: updatedCards }),
-      }).then(r => r.json()).then(setSession).catch(() => {});
+      if (!session || !id) return;
+      updateSession(id, { ...session, ideaCards: updatedCards }).then(setSession).catch(() => {});
     }, 800);
   };
 

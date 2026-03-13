@@ -17,7 +17,7 @@ function PasswordGate({ children }: { children: React.ReactNode }) {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (input.toLowerCase().trim() === 'this is real') {
+    if (input.toLowerCase().trim() === 'itsreal') {
       sessionStorage.setItem('auth', '1');
       setAuthenticated(true);
     } else {
@@ -62,6 +62,7 @@ function App() {
         <div className="min-h-screen bg-[#0a0a0a]">
           <Routes>
             <Route path="/" element={<Dashboard />} />
+            <Route path="/concepts" element={<Concepts />} />
             <Route path="/interview/:id/notes" element={<Notes />} />
             <Route path="/interview/:id/concepts" element={<Concepts />} />
             <Route path="/interview/:id/ideas" element={<Ideas />} />
