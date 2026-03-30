@@ -42,48 +42,62 @@ export default function Dashboard() {
     <div className="min-h-screen bg-[#0a0a0a] px-6 md:px-12 lg:px-20 py-16">
       <div className="max-w-3xl mx-auto">
         {/* Header */}
-        <div className="flex items-end justify-between mb-16">
-          <div>
-            <p className="font-ui text-[10px] text-amber-500/50 uppercase tracking-[0.3em] mb-3">
-              Climate & Reality TV
-            </p>
-            <h1 className="font-display text-4xl md:text-5xl text-white leading-tight tracking-tight">
-              Interviews
-            </h1>
-          </div>
-          <div className="flex gap-3">
-            <button
-              onClick={() => navigate('/brainstorm')}
-              className="font-ui text-[10px] tracking-widest uppercase text-stone-400 hover:text-amber-400 transition-colors px-4 py-2 border border-white/10 rounded-full hover:border-amber-500/30"
-            >
-              Brainstorm
-            </button>
-            <button
-              onClick={() => navigate('/concepts')}
-              className="font-ui text-[10px] tracking-widest uppercase text-stone-400 hover:text-amber-400 transition-colors px-4 py-2 border border-white/10 rounded-full hover:border-amber-500/30"
-            >
-              Concepts
-            </button>
-            <button
-              onClick={() => navigate('/synthesis')}
-              className="font-ui text-[10px] tracking-widest uppercase text-stone-400 hover:text-amber-400 transition-colors px-4 py-2 border border-white/10 rounded-full hover:border-amber-500/30"
-            >
-              Synthesis
-            </button>
-          </div>
+        <div className="text-center mb-16">
+          <p className="font-ui text-[10px] text-amber-500/50 uppercase tracking-[0.3em] mb-3">
+            Climate & Reality TV
+          </p>
+          <h1 className="font-display text-4xl md:text-5xl text-white leading-tight tracking-tight">
+            Research Hub
+          </h1>
         </div>
 
-        {/* Start new interview */}
-        {!showNew ? (
+        {/* Two main paths */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-5 mb-16">
           <button
             onClick={() => setShowNew(true)}
-            className="w-full bg-white/[0.03] border border-dashed border-white/10 rounded-2xl p-8 text-center hover:border-amber-500/30 hover:bg-white/[0.05] transition-all group mb-12"
+            className="bg-white/[0.03] border border-white/10 rounded-2xl p-8 text-left hover:border-amber-500/30 hover:bg-white/[0.05] transition-all group"
           >
-            <p className="font-display text-xl text-stone-400 group-hover:text-white transition-colors">
-              + Start New Interview
+            <p className="font-ui text-[10px] text-amber-500/50 uppercase tracking-[0.2em] mb-3">1:1</p>
+            <p className="font-display text-2xl text-white mb-2 group-hover:text-amber-50 transition-colors">
+              Interview
+            </p>
+            <p className="font-body text-sm text-stone-500 leading-relaxed">
+              Walk an interviewee through the concepts, capture reactions and ideas.
             </p>
           </button>
-        ) : (
+
+          <button
+            onClick={() => navigate('/brainstorm')}
+            className="bg-white/[0.03] border border-white/10 rounded-2xl p-8 text-left hover:border-amber-500/30 hover:bg-white/[0.05] transition-all group"
+          >
+            <p className="font-ui text-[10px] text-amber-500/50 uppercase tracking-[0.2em] mb-3">Group</p>
+            <p className="font-display text-2xl text-white mb-2 group-hover:text-amber-50 transition-colors">
+              Brainstorm
+            </p>
+            <p className="font-body text-sm text-stone-500 leading-relaxed">
+              Two HMW rounds with sticky notes. Show concepts, ideate, cluster.
+            </p>
+          </button>
+        </div>
+
+        {/* Quick links */}
+        <div className="flex justify-center gap-4 mb-16">
+          <button
+            onClick={() => navigate('/concepts')}
+            className="font-ui text-[10px] tracking-widest uppercase text-stone-500 hover:text-amber-400 transition-colors px-4 py-2 border border-white/[0.06] rounded-full hover:border-amber-500/30"
+          >
+            Concepts
+          </button>
+          <button
+            onClick={() => navigate('/synthesis')}
+            className="font-ui text-[10px] tracking-widest uppercase text-stone-500 hover:text-amber-400 transition-colors px-4 py-2 border border-white/[0.06] rounded-full hover:border-amber-500/30"
+          >
+            Synthesis
+          </button>
+        </div>
+
+        {/* New interview form */}
+        {showNew && (
           <div className="bg-white/[0.03] border border-white/[0.06] rounded-2xl p-6 md:p-8 mb-12">
             <p className="font-display text-xl text-white mb-6">New Interview</p>
             <div className="space-y-4">
@@ -203,12 +217,6 @@ export default function Dashboard() {
                 </button>
               ))}
             </div>
-          </div>
-        )}
-
-        {sessions.length === 0 && !showNew && (
-          <div className="text-center py-20">
-            <p className="font-body text-stone-500 italic">No interviews yet. Start your first one above.</p>
           </div>
         )}
       </div>
