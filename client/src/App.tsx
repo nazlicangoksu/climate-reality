@@ -7,6 +7,7 @@ import Ideas from './pages/Ideas';
 import EndInterview from './pages/EndInterview';
 import Summary from './pages/Summary';
 import Synthesis from './pages/Synthesis';
+import Brainstorm from './pages/Brainstorm';
 
 function PasswordGate({ children }: { children: React.ReactNode }) {
   const [authenticated, setAuthenticated] = useState(
@@ -69,6 +70,7 @@ function App() {
             <Route path="/interview/:id/end" element={<EndInterview />} />
             <Route path="/interview/:id/summary" element={<Summary />} />
             <Route path="/synthesis" element={<Synthesis />} />
+            <Route path="/brainstorm" element={<Brainstorm />} />
           </Routes>
         </div>
       </BrowserRouter>

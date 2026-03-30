@@ -53,6 +53,12 @@ export default function Dashboard() {
           </div>
           <div className="flex gap-3">
             <button
+              onClick={() => navigate('/brainstorm')}
+              className="font-ui text-[10px] tracking-widest uppercase text-stone-400 hover:text-amber-400 transition-colors px-4 py-2 border border-white/10 rounded-full hover:border-amber-500/30"
+            >
+              Brainstorm
+            </button>
+            <button
               onClick={() => navigate('/concepts')}
               className="font-ui text-[10px] tracking-widest uppercase text-stone-400 hover:text-amber-400 transition-colors px-4 py-2 border border-white/10 rounded-full hover:border-amber-500/30"
             >
