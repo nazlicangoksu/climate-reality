@@ -119,7 +119,6 @@ export default function Brainstorm() {
   }, []);
 
   const filteredNotes = notes.filter(n => n.hmwIndex === hmwIndex);
-  const isCanvas = phase === 'canvas0' || phase === 'canvas1';
 
   // Intro screen
   if (phase === 'intro') {
