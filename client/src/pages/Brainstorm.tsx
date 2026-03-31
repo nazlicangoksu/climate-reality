@@ -326,6 +326,12 @@ export default function Brainstorm() {
         >
           Start 10 Minutes
         </button>
+        <button
+          onClick={() => setPhase(idx === 0 ? 'intro' : 'canvas0')}
+          className="mt-4 font-ui text-[10px] text-stone-600 tracking-wider uppercase hover:text-stone-400 transition-colors"
+        >
+          ← Back
+        </button>
       </div>
     );
   }
@@ -344,6 +350,12 @@ export default function Brainstorm() {
           </p>
         </div>
         <div className="flex items-center gap-3 shrink-0 ml-4">
+          <button
+            onClick={() => setPhase(phase === 'canvas0' ? 'hmw0' : 'hmw1')}
+            className="px-3 py-2 border border-white/10 rounded-full font-ui text-[10px] tracking-widest uppercase text-stone-500 hover:text-amber-400 hover:border-amber-500/30 transition-all"
+          >
+            ← Back
+          </button>
           {!useApi && (
             <span className="font-ui text-[9px] text-stone-600 tracking-wider">local only</span>
           )}
