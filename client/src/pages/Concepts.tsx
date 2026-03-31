@@ -181,8 +181,8 @@ export default function Concepts() {
       {/* ── Interviewee-facing presentation ──────────────────────────────── */}
       <div className="px-6 md:px-12 lg:px-20 pt-16 pb-8">
         <div className="max-w-4xl mx-auto">
-          {/* Concept tabs */}
-          <div className="flex gap-2 mb-16 overflow-x-auto pb-2 justify-center">
+          {/* Concept tabs + brainstorm link */}
+          <div className="flex gap-2 mb-16 overflow-x-auto pb-2 justify-center items-center">
             {showConcepts.map((c, i) => (
               <button
                 key={c.id}
@@ -196,6 +196,13 @@ export default function Concepts() {
                 {c.title}
               </button>
             ))}
+            <span className="w-[1px] h-5 bg-white/10 mx-2" />
+            <button
+              onClick={() => navigate('/brainstorm')}
+              className="px-5 py-2 rounded-full text-xs font-ui tracking-wider whitespace-nowrap transition-all bg-white/5 text-amber-400 hover:bg-amber-500/10 border border-amber-500/30"
+            >
+              Brainstorm →
+            </button>
           </div>
 
           {/* Title */}
