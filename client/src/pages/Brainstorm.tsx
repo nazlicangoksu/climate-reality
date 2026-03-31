@@ -17,16 +17,70 @@ const COLORS = [
   'bg-pink-200',
 ];
 
-const INSPIRATIONS = [
-  { show: 'Survivor', angle: 'Alliances, betrayal, and moral dilemmas under resource scarcity. What if the "island" was a real community facing climate collapse?' },
-  { show: 'Love Island', angle: 'Romance as the hook, social dynamics as the engine. Viewers tune in for relationships but absorb the setting.' },
-  { show: 'Shark Tank', angle: 'Pitching ideas to powerful judges. The tension between profit motive and genuine impact.' },
-  { show: 'The Amazing Race', angle: 'Global travel, local challenges, time pressure. Every location tells a climate story without lecturing.' },
-  { show: 'Undercover Boss', angle: 'Hidden identity reveals. What if a fossil fuel exec had to live in a frontline community?' },
-  { show: 'The Circle', angle: 'Social influence and authenticity. Who is real about their climate beliefs vs. performing?' },
-  { show: 'Naked and Afraid', angle: 'Stripped-down survival. No technology, no safety net. Nature as the ultimate antagonist.' },
-  { show: 'The Mole', angle: 'Someone is secretly sabotaging the group. Paranoia meets cooperation. Who is the climate denier in disguise?' },
+// Real climate-adjacent shows and what makes them work
+const REAL_SHOWS = [
+  { show: 'Big Timber (Netflix)', desc: 'Follows a logging family in British Columbia. Viewers get hooked on the family drama and chainsaw accidents, but walk away understanding the economics and ecology of forestry without a single lecture.' },
+  { show: 'Life Below Zero (NatGeo)', desc: 'Survival reality in rural Alaska. The climate is literally the antagonist. Audiences watch for the human grit, but see permafrost thaw and changing seasons firsthand.' },
+  { show: 'Down to Earth with Zac Efron (Netflix)', desc: 'A celebrity travel show exploring sustainable living around the world. Uses star power and adventure to make solar farms and water purification feel exciting.' },
+  { show: 'Race to Survive (USA Network)', desc: 'Teams race through extreme wilderness. Nature is not the backdrop, it is the obstacle. Viewers absorb environmental fragility through visceral competition.' },
+  { show: 'The Island with Bear Grylls (Channel 4)', desc: 'Ordinary people are dropped on an uninhabited island and must survive. Resource scarcity becomes real when you are thirsty. No narration needed.' },
+  { show: 'Alone (History)', desc: '10 survivalists compete in total isolation in the wilderness. The show reveals how dependent humans are on functioning ecosystems. Winner is whoever lasts longest.' },
 ];
+
+// Contextual inspiration per HMW round
+const ROUND_INSPO: Record<number, { label: string; items: string[] }[]> = {
+  0: [
+    {
+      label: 'Shows that shifted beliefs without preaching',
+      items: [
+        'Queer Eye changed attitudes on masculinity through makeovers, not arguments',
+        'Deadliest Catch made Americans care about Alaskan crab fishing through raw human stakes',
+        'Planet Earth made people cry over baby iguanas. No call to action, just beauty.',
+        'Anthony Bourdain took food-skeptics to places they would never go. They came back different.',
+      ],
+    },
+    {
+      label: 'Formats that smuggle in new worldviews',
+      items: [
+        'The Great British Bake Off: kindness and cooperation became the spectacle, not cruelty',
+        'Undercover Boss: CEOs changed policy after living their workers\' lives for a week',
+        'The Mole: trust and suspicion as the engine. What if the "mole" was someone hiding their climate denial?',
+        'Wife Swap: families with opposite lifestyles trade lives. Confrontation without debate.',
+      ],
+    },
+  ],
+  1: [
+    {
+      label: 'Unlikely climate heroes that already exist',
+      items: [
+        'Boyan Slat: 18-year-old dropout who built the Ocean Cleanup. Started with a TEDx talk.',
+        'Isatou Ceesay: "Queen of Recycling" in Gambia, turned plastic waste into income for women',
+        'Jadav Payeng: one man planted an entire forest in India, larger than Central Park, over 40 years',
+        'Greta Thunberg went from a solo school strike to addressing the UN in 12 months',
+        'Wangari Maathai: Kenyan woman who won the Nobel Prize for planting 30 million trees',
+      ],
+    },
+    {
+      label: 'What makes someone a hero on TV',
+      items: [
+        'Vulnerability, not perfection. The best reality TV heroes fail on camera and keep going.',
+        'Shark Tank: entrepreneurs become heroes through the pitch, not the product',
+        'Survivor: the hero is whoever navigates social politics with integrity under pressure',
+        'The Amazing Race: ordinary couples become heroes through grit, not talent',
+        'MasterChef: the single mom who teaches herself to cook becomes more compelling than the trained chef',
+      ],
+    },
+    {
+      label: 'Archetypes that resonate',
+      items: [
+        'The reluctant leader: did not want the spotlight but stepped up when it mattered',
+        'The outsider: underestimated by everyone, proves them wrong through action',
+        'The convert: started on the wrong side, had a genuine change of heart',
+        'The builder: does not talk about change, just builds it with their hands',
+      ],
+    },
+  ],
+};
 
 interface StickyNote {
   id: string;
@@ -52,7 +106,6 @@ function saveLocalNotes(notes: StickyNote[]) {
   localStorage.setItem(STORAGE_KEY, JSON.stringify(notes));
 }
 
-// API helpers - try server first, fall back to localStorage
 async function apiFetchNotes(): Promise<StickyNote[] | null> {
   try {
     const res = await fetch('/api/brainstorm');
@@ -98,6 +151,9 @@ async function apiDeleteNote(id: string): Promise<boolean> {
   }
 }
 
+const pillBtn = 'px-5 py-2 border border-white/10 rounded-full font-ui text-[10px] tracking-widest uppercase text-stone-400 hover:text-amber-400 hover:border-amber-500/30 transition-all';
+const pillBtnActive = 'px-5 py-2 bg-amber-500 text-black rounded-full font-ui text-[10px] tracking-widest uppercase hover:bg-amber-400 transition-colors';
+
 export default function Brainstorm() {
   const navigate = useNavigate();
   const [phase, setPhase] = useState<'intro' | 'hmw0' | 'canvas0' | 'hmw1' | 'canvas1'>('intro');
@@ -113,55 +169,37 @@ export default function Brainstorm() {
   const hmwIndex = phase === 'canvas0' || phase === 'hmw0' ? 0 : 1;
   const isCanvas = phase === 'canvas0' || phase === 'canvas1';
 
-  // Save to localStorage whenever notes change
   useEffect(() => {
     saveLocalNotes(notes);
   }, [notes]);
 
-  // Poll server for updates every 2 seconds when on canvas
   useEffect(() => {
     if (!isCanvas) return;
-
     let active = true;
     const poll = async () => {
       const serverNotes = await apiFetchNotes();
       if (serverNotes !== null && active) {
         setUseApi(true);
         setNotes(prev => {
-          // Merge: server is source of truth, but preserve local position if user is dragging
           const serverMap = new Map(serverNotes.map(n => [n.id, n]));
           const localMap = new Map(prev.map(n => [n.id, n]));
-
-          // Start with server notes
           const merged = serverNotes.map(sn => {
             const local = localMap.get(sn.id);
-            // If user is currently dragging this note, keep local position
-            if (local && dragging === sn.id) {
-              return { ...sn, x: local.x, y: local.y };
-            }
+            if (local && dragging === sn.id) return { ...sn, x: local.x, y: local.y };
             return sn;
           });
-
-          // Add any local-only notes (just created, not yet on server)
           prev.forEach(ln => {
-            if (!serverMap.has(ln.id)) {
-              merged.push(ln);
-            }
+            if (!serverMap.has(ln.id)) merged.push(ln);
           });
-
           return merged;
         });
       } else if (serverNotes === null) {
         setUseApi(false);
       }
     };
-
     poll();
     const interval = setInterval(poll, 2000);
-    return () => {
-      active = false;
-      clearInterval(interval);
-    };
+    return () => { active = false; clearInterval(interval); };
   }, [isCanvas, dragging]);
 
   const addNote = async () => {
@@ -187,7 +225,6 @@ export default function Brainstorm() {
   const updateText = (id: string, text: string) => {
     setNotes(prev => {
       const updated = prev.map(n => (n.id === id ? { ...n, text } : n));
-      // Debounce API update
       if (useApi) {
         if (updateTimer.current) clearTimeout(updateTimer.current);
         updateTimer.current = setTimeout(() => {
@@ -236,7 +273,6 @@ export default function Brainstorm() {
 
   const onPointerUp = useCallback(() => {
     if (dragging) {
-      // Push final position to server
       const note = notes.find(n => n.id === dragging);
       if (note && useApi) apiUpdateNote(note);
     }
@@ -245,7 +281,7 @@ export default function Brainstorm() {
 
   const filteredNotes = notes.filter(n => n.hmwIndex === hmwIndex);
 
-  // Intro screen
+  // ── Intro screen ──
   if (phase === 'intro') {
     return (
       <div className="min-h-screen bg-[#0a0a0a] px-6 py-16 overflow-auto">
@@ -262,51 +298,42 @@ export default function Brainstorm() {
           <p className="font-body text-stone-500 text-center max-w-md text-sm leading-relaxed mb-12">
             First, let's look at the show concepts for context.
           </p>
-          <div className="flex gap-4 mb-16">
-            <button
-              onClick={() => navigate('/concepts')}
-              className="px-8 py-3 border border-white/10 rounded-full font-ui text-[11px] tracking-widest uppercase text-stone-300 hover:text-amber-400 hover:border-amber-500/30 transition-all"
-            >
+          <div className="flex gap-3 mb-16">
+            <button onClick={() => navigate('/concepts')} className={pillBtn}>
               View Concepts
             </button>
-            <button
-              onClick={() => setPhase('hmw0')}
-              className="px-8 py-3 bg-amber-500 text-black rounded-full font-ui text-[11px] tracking-widest uppercase hover:bg-amber-400 transition-colors"
-            >
+            <button onClick={() => setPhase('hmw0')} className={pillBtnActive}>
               Start Brainstorm
             </button>
           </div>
 
-          {/* Inspiration section */}
-          <div className="w-full max-w-2xl">
+          {/* Real climate shows */}
+          <div className="w-full max-w-2xl mb-12">
             <p className="font-ui text-[10px] text-stone-600 uppercase tracking-[0.25em] mb-6 text-center">
-              Analogous inspiration from reality TV
+              Real shows where climate is the quiet engine
             </p>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-              {INSPIRATIONS.map((inspo) => (
+              {REAL_SHOWS.map((s) => (
                 <div
-                  key={inspo.show}
+                  key={s.show}
                   className="bg-white/[0.03] border border-white/[0.06] rounded-xl p-4 hover:border-amber-500/20 transition-colors"
                 >
-                  <p className="font-display text-sm text-amber-400 mb-1">{inspo.show}</p>
-                  <p className="font-body text-xs text-stone-500 leading-relaxed">{inspo.angle}</p>
+                  <p className="font-display text-sm text-amber-400 mb-1.5">{s.show}</p>
+                  <p className="font-body text-xs text-stone-500 leading-relaxed">{s.desc}</p>
                 </div>
               ))}
             </div>
           </div>
 
-          <button
-            onClick={() => navigate('/')}
-            className="mt-12 font-ui text-[10px] text-stone-600 tracking-wider uppercase hover:text-stone-400 transition-colors"
-          >
-            Back to Dashboard
+          <button onClick={() => navigate('/')} className={pillBtn}>
+            ← Back to Dashboard
           </button>
         </div>
       </div>
     );
   }
 
-  // HMW reveal screen
+  // ── HMW reveal screen ──
   if (phase === 'hmw0' || phase === 'hmw1') {
     const idx = phase === 'hmw0' ? 0 : 1;
     return (
@@ -320,23 +347,24 @@ export default function Brainstorm() {
         <h2 className="font-display text-4xl md:text-6xl text-white text-center leading-tight max-w-4xl mb-16">
           {HMW_QUESTIONS[idx]}
         </h2>
-        <button
-          onClick={() => setPhase(idx === 0 ? 'canvas0' : 'canvas1')}
-          className="px-10 py-3 bg-amber-500 text-black rounded-full font-ui text-[11px] tracking-widest uppercase hover:bg-amber-400 transition-colors"
-        >
-          Start 10 Minutes
-        </button>
-        <button
-          onClick={() => setPhase(idx === 0 ? 'intro' : 'canvas0')}
-          className="mt-4 font-ui text-[10px] text-stone-600 tracking-wider uppercase hover:text-stone-400 transition-colors"
-        >
-          ← Back
-        </button>
+        <div className="flex gap-3">
+          <button onClick={() => setPhase(idx === 0 ? 'intro' : 'canvas0')} className={pillBtn}>
+            ← Back
+          </button>
+          <button onClick={() => setPhase(idx === 0 ? 'canvas0' : 'canvas1')} className={pillBtnActive}>
+            Start 10 Minutes
+          </button>
+          <button onClick={() => setPhase(idx === 0 ? 'canvas0' : 'canvas1')} className={pillBtn}>
+            Go to Board →
+          </button>
+        </div>
       </div>
     );
   }
 
-  // Canvas
+  // ── Canvas ──
+  const roundInspo = ROUND_INSPO[hmwIndex] || [];
+
   return (
     <div className="h-screen bg-[#0a0a0a] flex flex-col overflow-hidden">
       {/* Top bar */}
@@ -350,10 +378,7 @@ export default function Brainstorm() {
           </p>
         </div>
         <div className="flex items-center gap-3 shrink-0 ml-4">
-          <button
-            onClick={() => setPhase(phase === 'canvas0' ? 'hmw0' : 'hmw1')}
-            className="px-3 py-2 border border-white/10 rounded-full font-ui text-[10px] tracking-widest uppercase text-stone-500 hover:text-amber-400 hover:border-amber-500/30 transition-all"
-          >
+          <button onClick={() => setPhase(phase === 'canvas0' ? 'hmw0' : 'hmw1')} className={pillBtn}>
             ← Back
           </button>
           {!useApi && (
@@ -370,24 +395,15 @@ export default function Brainstorm() {
           >
             Inspo
           </button>
-          <button
-            onClick={addNote}
-            className="px-4 py-2 bg-amber-500 text-black rounded-full font-ui text-[10px] tracking-widest uppercase hover:bg-amber-400 transition-colors"
-          >
+          <button onClick={addNote} className={pillBtnActive}>
             + Add Note
           </button>
           {phase === 'canvas0' ? (
-            <button
-              onClick={() => setPhase('hmw1')}
-              className="px-4 py-2 border border-white/10 rounded-full font-ui text-[10px] tracking-widest uppercase text-stone-400 hover:text-amber-400 hover:border-amber-500/30 transition-all"
-            >
-              Next Round
+            <button onClick={() => setPhase('hmw1')} className={pillBtn}>
+              Next Round →
             </button>
           ) : (
-            <button
-              onClick={() => navigate('/')}
-              className="px-4 py-2 border border-white/10 rounded-full font-ui text-[10px] tracking-widest uppercase text-stone-400 hover:text-amber-400 hover:border-amber-500/30 transition-all"
-            >
+            <button onClick={() => navigate('/')} className={pillBtn}>
               Done
             </button>
           )}
@@ -397,19 +413,35 @@ export default function Brainstorm() {
       <div className="flex-1 flex overflow-hidden">
         {/* Inspiration sidebar */}
         {showInspo && (
-          <div className="w-72 shrink-0 border-r border-white/[0.06] overflow-y-auto p-4 space-y-3">
-            <p className="font-ui text-[9px] text-stone-600 uppercase tracking-[0.2em] mb-2">
-              Analogous shows
-            </p>
-            {INSPIRATIONS.map((inspo) => (
-              <div
-                key={inspo.show}
-                className="bg-white/[0.03] border border-white/[0.06] rounded-lg p-3"
-              >
-                <p className="font-display text-xs text-amber-400 mb-1">{inspo.show}</p>
-                <p className="font-body text-[11px] text-stone-500 leading-relaxed">{inspo.angle}</p>
+          <div className="w-80 shrink-0 border-r border-white/[0.06] overflow-y-auto p-4 space-y-5">
+            {roundInspo.map((group) => (
+              <div key={group.label}>
+                <p className="font-ui text-[9px] text-amber-500/50 uppercase tracking-[0.2em] mb-2">
+                  {group.label}
+                </p>
+                <div className="space-y-2">
+                  {group.items.map((item, i) => (
+                    <div
+                      key={i}
+                      className="bg-white/[0.03] border border-white/[0.06] rounded-lg px-3 py-2.5"
+                    >
+                      <p className="font-body text-[11px] text-stone-400 leading-relaxed">{item}</p>
+                    </div>
+                  ))}
+                </div>
               </div>
             ))}
+            <div className="pt-2 border-t border-white/[0.06]">
+              <p className="font-ui text-[9px] text-stone-600 uppercase tracking-[0.2em] mb-2">
+                Real climate shows
+              </p>
+              {REAL_SHOWS.slice(0, 3).map((s) => (
+                <div key={s.show} className="bg-white/[0.03] border border-white/[0.06] rounded-lg px-3 py-2.5 mb-2">
+                  <p className="font-display text-[11px] text-amber-400 mb-0.5">{s.show}</p>
+                  <p className="font-body text-[10px] text-stone-500 leading-relaxed">{s.desc}</p>
+                </div>
+              ))}
+            </div>
           </div>
         )}
 
@@ -437,7 +469,6 @@ export default function Brainstorm() {
               style={{ left: note.x, top: note.y, zIndex: dragging === note.id ? 50 : 10 }}
               onPointerDown={(e) => onPointerDown(e, note.id)}
             >
-              {/* Drag handle */}
               <div className="flex items-center justify-between px-2 pt-1.5 pb-0.5">
                 <div className="flex gap-0.5">
                   <span className="w-1 h-1 rounded-full bg-black/20" />
@@ -445,10 +476,7 @@ export default function Brainstorm() {
                   <span className="w-1 h-1 rounded-full bg-black/20" />
                 </div>
                 <button
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    deleteNote(note.id);
-                  }}
+                  onClick={(e) => { e.stopPropagation(); deleteNote(note.id); }}
                   className="text-black/30 hover:text-black/70 text-xs leading-none"
                 >
                   ×
@@ -500,10 +528,7 @@ function Timer() {
       </button>
       {seconds < 10 * 60 && (
         <button
-          onClick={() => {
-            setSeconds(10 * 60);
-            setRunning(false);
-          }}
+          onClick={() => { setSeconds(10 * 60); setRunning(false); }}
           className="font-ui text-[9px] tracking-wider uppercase text-stone-600 hover:text-stone-400 transition-colors"
         >
           Reset
