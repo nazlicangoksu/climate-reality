@@ -21,7 +21,7 @@ const COLORS = [
 const ROUND_INSPO: Record<number, { label: string; items: string[] }[]> = {
   0: [
     {
-      label: 'Reality shows that changed how people think',
+      label: 'Shows that changed minds without trying',
       items: [
         'Queer Eye: five guys do home makeovers, but audiences walked away rethinking masculinity and empathy. No one was "taught" anything.',
         'Undercover Boss: CEOs go undercover as entry-level workers. By the reveal, viewers (and the boss) have genuinely shifted on labor and wages.',
@@ -38,35 +38,54 @@ const ROUND_INSPO: Record<number, { label: string; items: string[] }[]> = {
         'The Great British Bake Off: a competition that accidentally made kindness cool. The tent, the tone, the lack of cruelty did the work.',
       ],
     },
+    {
+      label: 'Shows to watch',
+      items: [
+        'Survivor (CBS): 45 seasons of people forming alliances under scarcity. The original "social experiment" format.',
+        'The Mole (Netflix): one contestant secretly sabotages the group. Paranoia and trust as entertainment.',
+        'Love Island (ITV): romance as the engine, social dynamics as the story. 10M+ viewers per episode in the UK.',
+        'Undercover Boss (CBS): identity reveal format. 40M watched the premiere. People cry every episode.',
+        'The Circle (Netflix): players communicate only through text. Catfishing, authenticity, and influence.',
+      ],
+    },
   ],
   1: [
     {
       label: 'Unlikely climate heroes that already exist',
       items: [
         'Boyan Slat: 18-year-old dropout who built the Ocean Cleanup. Started with a TEDx talk.',
-        'Isatou Ceesay: "Queen of Recycling" in Gambia, turned plastic waste into income for women',
-        'Jadav Payeng: one man planted an entire forest in India, larger than Central Park, over 40 years',
-        'Greta Thunberg went from a solo school strike to addressing the UN in 12 months',
-        'Wangari Maathai: Kenyan woman who won the Nobel Prize for planting 30 million trees',
+        'Isatou Ceesay: "Queen of Recycling" in Gambia, turned plastic waste into income for women.',
+        'Jadav Payeng: one man planted an entire forest in India, larger than Central Park, over 40 years.',
+        'Greta Thunberg: went from a solo school strike to addressing the UN in 12 months.',
+        'Wangari Maathai: Kenyan woman who won the Nobel Prize for planting 30 million trees.',
       ],
     },
     {
       label: 'What makes someone a hero on TV',
       items: [
         'Vulnerability, not perfection. The best reality TV heroes fail on camera and keep going.',
-        'Shark Tank: entrepreneurs become heroes through the pitch, not the product',
-        'Survivor: the hero is whoever navigates social politics with integrity under pressure',
-        'The Amazing Race: ordinary couples become heroes through grit, not talent',
-        'MasterChef: the single mom who teaches herself to cook becomes more compelling than the trained chef',
+        'Shark Tank: entrepreneurs become heroes through the pitch, not the product.',
+        'MasterChef: the single mom who teaches herself to cook becomes more compelling than the trained chef.',
+        'The Amazing Race: ordinary couples become heroes through grit, not talent.',
       ],
     },
     {
-      label: 'Archetypes that resonate',
+      label: 'Hero archetypes',
       items: [
-        'The reluctant leader: did not want the spotlight but stepped up when it mattered',
-        'The outsider: underestimated by everyone, proves them wrong through action',
-        'The convert: started on the wrong side, had a genuine change of heart',
-        'The builder: does not talk about change, just builds it with their hands',
+        'The reluctant leader: did not want the spotlight but stepped up when it mattered.',
+        'The outsider: underestimated by everyone, proves them wrong through action.',
+        'The convert: started on the wrong side, had a genuine change of heart.',
+        'The builder: does not talk about change, just builds it with their hands.',
+      ],
+    },
+    {
+      label: 'Shows that created heroes',
+      items: [
+        'Survivor (CBS): Rupert Boneham became a folk hero. Indiana voted him into politics after the show.',
+        'American Idol (FOX): Kelly Clarkson, Carrie Underwood. Ordinary people audiences watched become stars.',
+        'Queer Eye (Netflix): the Fab Five became cultural icons by being kind on camera.',
+        'The Apprentice (NBC): turned business competition into a hero\'s journey format. 28M viewers at peak.',
+        'MasterChef (FOX): Christine Ha, a blind home cook, won and became a nationally recognized chef.',
       ],
     },
   ],
@@ -297,8 +316,8 @@ export default function Brainstorm() {
             </button>
           </div>
 
-          <button onClick={() => navigate('/')} className={pillBtn}>
-            ← Back to Dashboard
+          <button onClick={() => navigate('/concepts')} className={pillBtn}>
+            ← Back to Concepts
           </button>
         </div>
       </div>
@@ -366,7 +385,7 @@ export default function Brainstorm() {
             + Note
           </button>
           <button
-            onClick={() => phase === 'canvas0' ? setPhase('hmw1') : navigate('/')}
+            onClick={() => phase === 'canvas0' ? setPhase('hmw1') : setPhase('intro')}
             className="px-3 py-1.5 border border-white/10 rounded-full font-ui text-[9px] tracking-widest uppercase text-stone-400 hover:text-amber-400 hover:border-amber-500/30 transition-all"
           >
             {phase === 'canvas0' ? 'Next →' : 'Done'}
