@@ -9,25 +9,43 @@ import Summary from './pages/Summary';
 import Synthesis from './pages/Synthesis';
 import Brainstorm from './pages/Brainstorm';
 
-function PasswordGate({ children }: { children: React.ReactNode }) {
-  const [authenticated, setAuthenticated] = useState(
-    () => sessionStorage.getItem('auth') === '1'
-  );
+type AuthLevel = 'none' | 'brainstorm' | 'admin';
+
+function getAuthLevel(): AuthLevel {
+  return (sessionStorage.getItem('auth-level') as AuthLevel) || 'none';
+}
+
+function PasswordGate({ children, requiredLevel }: { children: React.ReactNode; requiredLevel: AuthLevel }) {
+  const [level, setLevel] = useState<AuthLevel>(getAuthLevel);
   const [input, setInput] = useState('');
   const [error, setError] = useState(false);
 
+  const meetsLevel = (current: AuthLevel, required: AuthLevel) => {
+    const order: AuthLevel[] = ['none', 'brainstorm', 'admin'];
+    return order.indexOf(current) >= order.indexOf(required);
+  };
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (input.toLowerCase().trim() === 'itsreal') {
-      sessionStorage.setItem('auth', '1');
-      setAuthenticated(true);
+    const pw = input.toLowerCase().trim();
+    let newLevel: AuthLevel = 'none';
+    if (pw === 'producer390') {
+      newLevel = 'admin';
+    } else if (pw === 'itsreal') {
+      newLevel = 'brainstorm';
+    }
+
+    if (newLevel !== 'none') {
+      sessionStorage.setItem('auth-level', newLevel);
+      setLevel(newLevel);
+      setInput('');
     } else {
       setError(true);
       setTimeout(() => setError(false), 1500);
     }
   };
 
-  if (authenticated) return <>{children}</>;
+  if (meetsLevel(level, requiredLevel)) return <>{children}</>;
 
   return (
     <div className="min-h-screen bg-[#0a0a0a] flex items-center justify-center px-6">
@@ -58,23 +76,42 @@ function PasswordGate({ children }: { children: React.ReactNode }) {
 
 function App() {
   return (
-    <PasswordGate>
-      <BrowserRouter>
-        <div className="min-h-screen bg-[#0a0a0a]">
-          <Routes>
-            <Route path="/" element={<Dashboard />} />
-            <Route path="/concepts" element={<Concepts />} />
-            <Route path="/interview/:id/notes" element={<Notes />} />
-            <Route path="/interview/:id/concepts" element={<Concepts />} />
-            <Route path="/interview/:id/ideas" element={<Ideas />} />
-            <Route path="/interview/:id/end" element={<EndInterview />} />
-            <Route path="/interview/:id/summary" element={<Summary />} />
-            <Route path="/synthesis" element={<Synthesis />} />
-            <Route path="/brainstorm" element={<Brainstorm />} />
-          </Routes>
-        </div>
-      </BrowserRouter>
-    </PasswordGate>
+    <BrowserRouter>
+      <div className="min-h-screen bg-[#0a0a0a]">
+        <Routes>
+          {/* Brainstorm-level access (password: itsreal) */}
+          <Route path="/brainstorm" element={
+            <PasswordGate requiredLevel="brainstorm"><Brainstorm /></PasswordGate>
+          } />
+          <Route path="/concepts" element={
+            <PasswordGate requiredLevel="brainstorm"><Concepts /></PasswordGate>
+          } />
+
+          {/* Admin-level access (password: producer390) */}
+          <Route path="/" element={
+            <PasswordGate requiredLevel="admin"><Dashboard /></PasswordGate>
+          } />
+          <Route path="/interview/:id/notes" element={
+            <PasswordGate requiredLevel="admin"><Notes /></PasswordGate>
+          } />
+          <Route path="/interview/:id/concepts" element={
+            <PasswordGate requiredLevel="admin"><Concepts /></PasswordGate>
+          } />
+          <Route path="/interview/:id/ideas" element={
+            <PasswordGate requiredLevel="admin"><Ideas /></PasswordGate>
+          } />
+          <Route path="/interview/:id/end" element={
+            <PasswordGate requiredLevel="admin"><EndInterview /></PasswordGate>
+          } />
+          <Route path="/interview/:id/summary" element={
+            <PasswordGate requiredLevel="admin"><Summary /></PasswordGate>
+          } />
+          <Route path="/synthesis" element={
+            <PasswordGate requiredLevel="admin"><Synthesis /></PasswordGate>
+          } />
+        </Routes>
+      </div>
+    </BrowserRouter>
   );
 }
 
