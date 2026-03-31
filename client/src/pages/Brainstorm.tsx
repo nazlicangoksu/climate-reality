@@ -347,17 +347,15 @@ export default function Brainstorm() {
         <h2 className="font-display text-4xl md:text-6xl text-white text-center leading-tight max-w-4xl mb-16">
           {HMW_QUESTIONS[idx]}
         </h2>
-        <div className="flex gap-3">
-          <button onClick={() => setPhase(idx === 0 ? 'intro' : 'canvas0')} className={pillBtn}>
-            ← Back
-          </button>
-          <button onClick={() => setPhase(idx === 0 ? 'canvas0' : 'canvas1')} className={pillBtnActive}>
-            Start 10 Minutes
-          </button>
-          <button onClick={() => setPhase(idx === 0 ? 'canvas0' : 'canvas1')} className={pillBtn}>
-            Go to Board →
-          </button>
-        </div>
+        <button onClick={() => setPhase(idx === 0 ? 'canvas0' : 'canvas1')} className={pillBtnActive}>
+          Open Board
+        </button>
+        <button
+          onClick={() => setPhase(idx === 0 ? 'intro' : 'canvas0')}
+          className="mt-4 font-ui text-[10px] text-stone-600 tracking-wider uppercase hover:text-stone-400 transition-colors"
+        >
+          ← Back
+        </button>
       </div>
     );
   }
@@ -368,26 +366,23 @@ export default function Brainstorm() {
   return (
     <div className="h-screen bg-[#0a0a0a] flex flex-col overflow-hidden">
       {/* Top bar */}
-      <div className="flex items-center justify-between px-6 py-3 border-b border-white/[0.06] shrink-0">
-        <div className="flex items-center gap-4 min-w-0 flex-1">
-          <p className="font-ui text-[10px] text-amber-500/50 uppercase tracking-[0.2em] shrink-0">
-            Round {hmwIndex + 1}/2
-          </p>
-          <p className="font-display text-white text-lg md:text-xl truncate leading-snug">
+      <div className="flex items-center justify-between px-4 py-2.5 border-b border-white/[0.06] shrink-0">
+        <div className="flex items-center gap-3 min-w-0 flex-1">
+          <button
+            onClick={() => setPhase(phase === 'canvas0' ? 'hmw0' : 'hmw1')}
+            className="font-ui text-[10px] text-stone-500 hover:text-amber-400 transition-colors shrink-0"
+          >
+            ←
+          </button>
+          <p className="font-display text-white text-base md:text-lg truncate leading-snug">
             {HMW_QUESTIONS[hmwIndex]}
           </p>
         </div>
-        <div className="flex items-center gap-3 shrink-0 ml-4">
-          <button onClick={() => setPhase(phase === 'canvas0' ? 'hmw0' : 'hmw1')} className={pillBtn}>
-            ← Back
-          </button>
-          {!useApi && (
-            <span className="font-ui text-[9px] text-stone-600 tracking-wider">local only</span>
-          )}
+        <div className="flex items-center gap-2 shrink-0 ml-4">
           <Timer />
           <button
             onClick={() => setShowInspo(!showInspo)}
-            className={`px-3 py-2 border rounded-full font-ui text-[10px] tracking-widest uppercase transition-all ${
+            className={`px-3 py-1.5 border rounded-full font-ui text-[9px] tracking-widest uppercase transition-all ${
               showInspo
                 ? 'border-amber-500/40 text-amber-400'
                 : 'border-white/10 text-stone-500 hover:text-amber-400 hover:border-amber-500/30'
@@ -395,18 +390,15 @@ export default function Brainstorm() {
           >
             Inspo
           </button>
-          <button onClick={addNote} className={pillBtnActive}>
-            + Add Note
+          <button onClick={addNote} className="px-3 py-1.5 bg-amber-500 text-black rounded-full font-ui text-[9px] tracking-widest uppercase hover:bg-amber-400 transition-colors">
+            + Note
           </button>
-          {phase === 'canvas0' ? (
-            <button onClick={() => setPhase('hmw1')} className={pillBtn}>
-              Next Round →
-            </button>
-          ) : (
-            <button onClick={() => navigate('/')} className={pillBtn}>
-              Done
-            </button>
-          )}
+          <button
+            onClick={() => phase === 'canvas0' ? setPhase('hmw1') : navigate('/')}
+            className="px-3 py-1.5 border border-white/10 rounded-full font-ui text-[9px] tracking-widest uppercase text-stone-400 hover:text-amber-400 hover:border-amber-500/30 transition-all"
+          >
+            {phase === 'canvas0' ? 'Next →' : 'Done'}
+          </button>
         </div>
       </div>
 
