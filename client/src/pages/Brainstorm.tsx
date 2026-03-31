@@ -17,16 +17,6 @@ const COLORS = [
   'bg-pink-200',
 ];
 
-// Real climate-adjacent shows and what makes them work
-const REAL_SHOWS = [
-  { show: 'Big Timber (Netflix)', desc: 'Follows a logging family in British Columbia. Viewers get hooked on the family drama and chainsaw accidents, but walk away understanding the economics and ecology of forestry without a single lecture.' },
-  { show: 'Life Below Zero (NatGeo)', desc: 'Survival reality in rural Alaska. The climate is literally the antagonist. Audiences watch for the human grit, but see permafrost thaw and changing seasons firsthand.' },
-  { show: 'Down to Earth with Zac Efron (Netflix)', desc: 'A celebrity travel show exploring sustainable living around the world. Uses star power and adventure to make solar farms and water purification feel exciting.' },
-  { show: 'Race to Survive (USA Network)', desc: 'Teams race through extreme wilderness. Nature is not the backdrop, it is the obstacle. Viewers absorb environmental fragility through visceral competition.' },
-  { show: 'The Island with Bear Grylls (Channel 4)', desc: 'Ordinary people are dropped on an uninhabited island and must survive. Resource scarcity becomes real when you are thirsty. No narration needed.' },
-  { show: 'Alone (History)', desc: '10 survivalists compete in total isolation in the wilderness. The show reveals how dependent humans are on functioning ecosystems. Winner is whoever lasts longest.' },
-];
-
 // Contextual inspiration per HMW round
 const ROUND_INSPO: Record<number, { label: string; items: string[] }[]> = {
   0: [
@@ -307,24 +297,6 @@ export default function Brainstorm() {
             </button>
           </div>
 
-          {/* Real climate shows */}
-          <div className="w-full max-w-2xl mb-12">
-            <p className="font-ui text-[10px] text-stone-600 uppercase tracking-[0.25em] mb-6 text-center">
-              Real shows where climate is the quiet engine
-            </p>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-              {REAL_SHOWS.map((s) => (
-                <div
-                  key={s.show}
-                  className="bg-white/[0.03] border border-white/[0.06] rounded-xl p-4 hover:border-amber-500/20 transition-colors"
-                >
-                  <p className="font-display text-sm text-amber-400 mb-1.5">{s.show}</p>
-                  <p className="font-body text-xs text-stone-500 leading-relaxed">{s.desc}</p>
-                </div>
-              ))}
-            </div>
-          </div>
-
           <button onClick={() => navigate('/')} className={pillBtn}>
             ← Back to Dashboard
           </button>
@@ -423,17 +395,6 @@ export default function Brainstorm() {
                 </div>
               </div>
             ))}
-            <div className="pt-2 border-t border-white/[0.06]">
-              <p className="font-ui text-[9px] text-stone-600 uppercase tracking-[0.2em] mb-2">
-                Real climate shows
-              </p>
-              {REAL_SHOWS.slice(0, 3).map((s) => (
-                <div key={s.show} className="bg-white/[0.03] border border-white/[0.06] rounded-lg px-3 py-2.5 mb-2">
-                  <p className="font-display text-[11px] text-amber-400 mb-0.5">{s.show}</p>
-                  <p className="font-body text-[10px] text-stone-500 leading-relaxed">{s.desc}</p>
-                </div>
-              ))}
-            </div>
           </div>
         )}
 
