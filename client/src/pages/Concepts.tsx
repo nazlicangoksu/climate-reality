@@ -361,21 +361,25 @@ export default function Concepts() {
               >
                 ←
               </button>
-              <button
-                onClick={() => {
-                  if (activeIndex < showConcepts.length - 1) {
+              {activeIndex < showConcepts.length - 1 && (
+                <button
+                  onClick={() => {
                     setActiveIndex(activeIndex + 1);
                     window.scrollTo({ top: 0, behavior: 'smooth' });
-                  } else if (id) {
-                    navigate(`/interview/${id}/ideas`);
-                  } else {
-                    navigate('/brainstorm');
-                  }
-                }}
-                className="px-4 py-1.5 bg-amber-500 text-black font-ui text-[10px] tracking-wider uppercase rounded-full hover:bg-amber-400 transition-colors"
-              >
-                {activeIndex < showConcepts.length - 1 ? 'Next →' : id ? 'Ideas →' : 'Brainstorm →'}
-              </button>
+                  }}
+                  className="px-4 py-1.5 bg-amber-500 text-black font-ui text-[10px] tracking-wider uppercase rounded-full hover:bg-amber-400 transition-colors"
+                >
+                  Next →
+                </button>
+              )}
+              {activeIndex === showConcepts.length - 1 && id && (
+                <button
+                  onClick={() => navigate(`/interview/${id}/ideas`)}
+                  className="px-4 py-1.5 bg-amber-500 text-black font-ui text-[10px] tracking-wider uppercase rounded-full hover:bg-amber-400 transition-colors"
+                >
+                  Ideas →
+                </button>
+              )}
             </div>
           </div>
 
