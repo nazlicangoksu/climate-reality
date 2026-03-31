@@ -353,7 +353,7 @@ export default function Concepts() {
                   if (activeIndex > 0) {
                     setActiveIndex(activeIndex - 1);
                     window.scrollTo({ top: 0, behavior: 'smooth' });
-                  } else {
+                  } else if (id) {
                     navigate(`/interview/${id}/notes`);
                   }
                 }}
@@ -366,13 +366,15 @@ export default function Concepts() {
                   if (activeIndex < showConcepts.length - 1) {
                     setActiveIndex(activeIndex + 1);
                     window.scrollTo({ top: 0, behavior: 'smooth' });
-                  } else {
+                  } else if (id) {
                     navigate(`/interview/${id}/ideas`);
+                  } else {
+                    navigate('/brainstorm');
                   }
                 }}
                 className="px-4 py-1.5 bg-amber-500 text-black font-ui text-[10px] tracking-wider uppercase rounded-full hover:bg-amber-400 transition-colors"
               >
-                {activeIndex < showConcepts.length - 1 ? 'Next →' : 'Ideas →'}
+                {activeIndex < showConcepts.length - 1 ? 'Next →' : id ? 'Ideas →' : 'Brainstorm →'}
               </button>
             </div>
           </div>
