@@ -4,3 +4,4 @@ dist/
 data/sessions/
 *.log
 .vercel
+.env*.local

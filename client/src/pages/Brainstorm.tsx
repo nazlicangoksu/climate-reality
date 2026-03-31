@@ -1,4 +1,4 @@
-import { useState, useRef, useCallback, useEffect } from 'react';
+import { useState, useRef, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 const HMW_QUESTIONS = [
@@ -17,7 +17,6 @@ const COLORS = [
   'bg-pink-200',
 ];
 
-// Contextual inspiration per HMW round
 const ROUND_INSPO: Record<number, { label: string; items: string[] }[]> = {
   0: [
     {
@@ -91,31 +90,37 @@ const ROUND_INSPO: Record<number, { label: string; items: string[] }[]> = {
   ],
 };
 
-interface StickyNote {
-  id: string;
-  text: string;
-  x: number;
-  y: number;
-  color: string;
-  hmwIndex: number;
-}
+const GRID_ROWS = 10;
+const GRID_COLS = 6;
 
-const STORAGE_KEY = 'climate-reality-brainstorm';
-
-function loadLocalNotes(): StickyNote[] {
-  try {
-    const raw = localStorage.getItem(STORAGE_KEY);
-    return raw ? JSON.parse(raw) : [];
-  } catch {
-    return [];
+function buildCellIds(hmwIndex: number): string[] {
+  const ids: string[] = [];
+  for (let r = 0; r < GRID_ROWS; r++) {
+    for (let c = 0; c < GRID_COLS; c++) {
+      ids.push(`hmw${hmwIndex}-r${r}-c${c}`);
+    }
   }
+  return ids;
 }
 
-function saveLocalNotes(notes: StickyNote[]) {
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(notes));
+// Generate a stable user ID per browser session
+function getUserId(): string {
+  let id = sessionStorage.getItem('brainstorm-uid');
+  if (!id) {
+    id = Math.random().toString(36).slice(2, 10);
+    sessionStorage.setItem('brainstorm-uid', id);
+  }
+  return id;
 }
 
-async function apiFetchNotes(): Promise<StickyNote[] | null> {
+// API helpers
+type ServerData = {
+  grid: Record<string, string>;
+  hearts: Record<string, string[]>;
+  presence: Record<string, string[]>;
+};
+
+async function apiFetch(): Promise<ServerData | null> {
   try {
     const res = await fetch('/api/brainstorm');
     if (!res.ok) return null;
@@ -125,38 +130,104 @@ async function apiFetchNotes(): Promise<StickyNote[] | null> {
   }
 }
 
-async function apiSaveNote(note: StickyNote): Promise<boolean> {
+async function apiUpdateCell(id: string, text: string) {
   try {
-    const res = await fetch('/api/brainstorm', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(note),
-    });
-    return res.ok;
-  } catch {
-    return false;
-  }
-}
-
-async function apiUpdateNote(note: StickyNote): Promise<boolean> {
-  try {
-    const res = await fetch('/api/brainstorm', {
+    await fetch('/api/brainstorm?action=cell', {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(note),
+      body: JSON.stringify({ id, text }),
     });
-    return res.ok;
+  } catch {}
+}
+
+async function apiToggleHeart(cellId: string, userName: string) {
+  try {
+    const res = await fetch('/api/brainstorm?action=heart', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ cellId, userName }),
+    });
+    return await res.json();
   } catch {
-    return false;
+    return null;
   }
 }
 
-async function apiDeleteNote(id: string): Promise<boolean> {
+async function apiUpdatePresence(userId: string, name: string, cellId: string | null) {
   try {
-    const res = await fetch(`/api/brainstorm?id=${id}`, { method: 'DELETE' });
-    return res.ok;
+    await fetch('/api/brainstorm?action=presence', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ userId, name, cellId }),
+    });
+  } catch {}
+}
+
+async function apiArchiveAndClear(label: string) {
+  try {
+    await fetch('/api/brainstorm?action=archive', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ label }),
+    });
+  } catch {}
+}
+
+async function apiFetchArchives(): Promise<{ id: string; label: string; timestamp: string; ideaCount: number }[]> {
+  try {
+    const res = await fetch('/api/brainstorm?action=archives');
+    if (!res.ok) return [];
+    return await res.json();
   } catch {
-    return false;
+    return [];
+  }
+}
+
+async function apiRestoreArchive(archiveId: string) {
+  try {
+    await fetch('/api/brainstorm?action=restore', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ archiveId }),
+    });
+  } catch {}
+}
+
+async function apiDeleteArchive(archiveId: string) {
+  try {
+    await fetch(`/api/brainstorm?action=delete-archive&id=${encodeURIComponent(archiveId)}`, {
+      method: 'DELETE',
+    });
+  } catch {}
+}
+
+async function apiGetArchiveData(archiveId: string): Promise<any | null> {
+  try {
+    const res = await fetch(`/api/brainstorm?action=archive-data&id=${encodeURIComponent(archiveId)}`);
+    if (!res.ok) return null;
+    return await res.json();
+  } catch {
+    return null;
+  }
+}
+
+type Cluster = {
+  theme: string;
+  description: string;
+  ideas: { id: string; text: string; hearts: number }[];
+};
+
+async function apiCluster(hmwIndex: number): Promise<{ clusters: Cluster[]; message?: string } | null> {
+  try {
+    const res = await fetch('/api/cluster', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ hmwIndex }),
+    });
+    if (!res.ok) return null;
+    return await res.json();
+  } catch {
+    return null;
   }
 }
 
@@ -166,129 +237,295 @@ const pillBtnActive = 'px-5 py-2 bg-amber-500 text-black rounded-full font-ui te
 export default function Brainstorm() {
   const navigate = useNavigate();
   const [phase, setPhase] = useState<'intro' | 'hmw0' | 'canvas0' | 'hmw1' | 'canvas1'>('intro');
-  const [notes, setNotes] = useState<StickyNote[]>(loadLocalNotes);
-  const [dragging, setDragging] = useState<string | null>(null);
-  const [dragOffset, setDragOffset] = useState({ x: 0, y: 0 });
+  const [grid, setGrid] = useState<Record<string, string>>({});
+  const [hearts, setHearts] = useState<Record<string, string[]>>({});
+  const [presence, setPresence] = useState<Record<string, string[]>>({});
   const [showInspo, setShowInspo] = useState(false);
-  const [useApi, setUseApi] = useState(true);
-  const canvasRef = useRef<HTMLDivElement>(null);
-  const colorIndex = useRef(0);
-  const updateTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const [userName, setUserName] = useState(() => sessionStorage.getItem('brainstorm-name') || '');
+  const [nameSet, setNameSet] = useState(() => !!sessionStorage.getItem('brainstorm-name'));
+  const [showArchivePanel, setShowArchivePanel] = useState(false);
+  const [archiveLabel, setArchiveLabel] = useState('');
+  const [showArchiveConfirm, setShowArchiveConfirm] = useState(false);
+  const [archives, setArchives] = useState<{ id: string; label: string; timestamp: string; ideaCount: number }[]>([]);
+  const [confirmDeleteId, setConfirmDeleteId] = useState<string | null>(null);
+  const [clusters, setClusters] = useState<Cluster[]>([]);
+  const [isAdmin, setIsAdmin] = useState(() => sessionStorage.getItem('brainstorm-admin') === 'true');
+  const [showAdminPrompt, setShowAdminPrompt] = useState(false);
+  const [adminInput, setAdminInput] = useState('');
+  const [adminError, setAdminError] = useState(false);
+  const [showClusters, setShowClusters] = useState(false);
+  const [clustering, setClustering] = useState(false);
+  const editingId = useRef<string | null>(null);
+  const saveTimers = useRef<Record<string, ReturnType<typeof setTimeout>>>({});
+  const prevFilledRef = useRef<Set<string>>(new Set());
+  const [newCells, setNewCells] = useState<Set<string>>(new Set());
+  const userId = useRef(getUserId());
 
   const hmwIndex = phase === 'canvas0' || phase === 'hmw0' ? 0 : 1;
   const isCanvas = phase === 'canvas0' || phase === 'canvas1';
+  const cellIds = buildCellIds(hmwIndex);
 
+  // Load all data on mount
   useEffect(() => {
-    saveLocalNotes(notes);
-  }, [notes]);
+    apiFetch().then(data => {
+      if (data) {
+        setGrid(prev => ({ ...prev, ...data.grid }));
+        setHearts(data.hearts);
+        setPresence(data.presence);
+      }
+    });
+  }, []);
 
+  // Poll server every 2s when on canvas
   useEffect(() => {
     if (!isCanvas) return;
     let active = true;
     const poll = async () => {
-      const serverNotes = await apiFetchNotes();
-      if (serverNotes !== null && active) {
-        setUseApi(true);
-        setNotes(prev => {
-          const serverMap = new Map(serverNotes.map(n => [n.id, n]));
-          const localMap = new Map(prev.map(n => [n.id, n]));
-          const merged = serverNotes.map(sn => {
-            const local = localMap.get(sn.id);
-            if (local && dragging === sn.id) return { ...sn, x: local.x, y: local.y };
-            return sn;
+      const data = await apiFetch();
+      if (data && active) {
+        setGrid(prev => {
+          const merged = { ...prev, ...data.grid };
+          if (editingId.current && prev[editingId.current] !== undefined) {
+            merged[editingId.current] = prev[editingId.current];
+          }
+
+          // Detect new ideas from others for pulse animation
+          const nowFilled = new Set<string>();
+          for (const [k, v] of Object.entries(merged)) {
+            if (v && v.trim()) nowFilled.add(k);
+          }
+          const appearing = new Set<string>();
+          nowFilled.forEach(k => {
+            if (!prevFilledRef.current.has(k)) appearing.add(k);
           });
-          prev.forEach(ln => {
-            if (!serverMap.has(ln.id)) merged.push(ln);
-          });
+          prevFilledRef.current = nowFilled;
+          if (appearing.size > 0) {
+            setNewCells(appearing);
+            setTimeout(() => setNewCells(new Set()), 1500);
+          }
+
           return merged;
         });
-      } else if (serverNotes === null) {
-        setUseApi(false);
+        setHearts(data.hearts);
+        setPresence(data.presence);
       }
     };
     poll();
     const interval = setInterval(poll, 2000);
     return () => { active = false; clearInterval(interval); };
-  }, [isCanvas, dragging]);
+  }, [isCanvas]);
 
-  const addNote = async () => {
-    const color = COLORS[colorIndex.current % COLORS.length];
-    colorIndex.current++;
-    const canvas = canvasRef.current;
-    const cx = canvas ? canvas.clientWidth / 2 : 400;
-    const cy = canvas ? canvas.clientHeight / 2 : 300;
-    const x = cx - 80 + (Math.random() - 0.5) * 300;
-    const y = cy - 60 + (Math.random() - 0.5) * 200;
-    const note: StickyNote = {
-      id: Date.now().toString(36) + Math.random().toString(36).slice(2, 6),
-      text: '',
-      x: Math.max(0, x),
-      y: Math.max(0, y),
-      color,
-      hmwIndex,
+  // Send presence heartbeat every 3s when focused on a cell
+  useEffect(() => {
+    if (!isCanvas || !nameSet) return;
+    const interval = setInterval(() => {
+      apiUpdatePresence(userId.current, userName, editingId.current);
+    }, 3000);
+    return () => clearInterval(interval);
+  }, [isCanvas, nameSet, userName]);
+
+  // Clear presence on unmount
+  useEffect(() => {
+    return () => {
+      if (nameSet) apiUpdatePresence(userId.current, userName, null);
     };
-    setNotes(prev => [...prev, note]);
-    if (useApi) apiSaveNote(note);
-  };
+  }, [nameSet, userName]);
 
-  const updateText = (id: string, text: string) => {
-    setNotes(prev => {
-      const updated = prev.map(n => (n.id === id ? { ...n, text } : n));
-      if (useApi) {
-        if (updateTimer.current) clearTimeout(updateTimer.current);
-        updateTimer.current = setTimeout(() => {
-          const note = updated.find(n => n.id === id);
-          if (note) apiUpdateNote(note);
-        }, 500);
-      }
-      return updated;
-    });
-  };
-
-  const deleteNote = async (id: string) => {
-    setNotes(prev => prev.filter(n => n.id !== id));
-    if (useApi) apiDeleteNote(id);
-  };
-
-  const onPointerDown = useCallback(
-    (e: React.PointerEvent, id: string) => {
-      if ((e.target as HTMLElement).tagName === 'TEXTAREA') return;
-      e.preventDefault();
-      const note = notes.find(n => n.id === id);
-      if (!note) return;
-      const rect = canvasRef.current?.getBoundingClientRect();
-      if (!rect) return;
-      setDragging(id);
-      setDragOffset({
-        x: e.clientX - rect.left - note.x,
-        y: e.clientY - rect.top - note.y,
+  const updateCell = useCallback((id: string, text: string) => {
+    editingId.current = id;
+    setGrid(prev => ({ ...prev, [id]: text }));
+    if (saveTimers.current[id]) clearTimeout(saveTimers.current[id]);
+    saveTimers.current[id] = setTimeout(() => {
+      apiUpdateCell(id, text).then(() => {
+        if (editingId.current === id) editingId.current = null;
       });
-      (e.target as HTMLElement).setPointerCapture(e.pointerId);
-    },
-    [notes]
-  );
+    }, 500);
+  }, []);
 
-  const onPointerMove = useCallback(
-    (e: React.PointerEvent) => {
-      if (!dragging) return;
-      const rect = canvasRef.current?.getBoundingClientRect();
-      if (!rect) return;
-      const x = Math.max(0, e.clientX - rect.left - dragOffset.x);
-      const y = Math.max(0, e.clientY - rect.top - dragOffset.y);
-      setNotes(prev => prev.map(n => (n.id === dragging ? { ...n, x, y } : n)));
-    },
-    [dragging, dragOffset]
-  );
+  const toggleHeart = useCallback((cellId: string) => {
+    if (!nameSet) return;
+    // Optimistic update
+    setHearts(prev => {
+      const current = prev[cellId] || [];
+      const idx = current.indexOf(userName);
+      const updated = idx >= 0
+        ? current.filter(n => n !== userName)
+        : [...current, userName];
+      return { ...prev, [cellId]: updated };
+    });
+    apiToggleHeart(cellId, userName);
+  }, [userName, nameSet]);
 
-  const onPointerUp = useCallback(() => {
-    if (dragging) {
-      const note = notes.find(n => n.id === dragging);
-      if (note && useApi) apiUpdateNote(note);
+  const handleArchiveAndClear = async () => {
+    // Cancel all pending save timers so they don't write stale data back
+    for (const timer of Object.values(saveTimers.current)) {
+      clearTimeout(timer);
     }
-    setDragging(null);
-  }, [dragging, notes, useApi]);
+    saveTimers.current = {};
+    editingId.current = null;
+    prevFilledRef.current = new Set();
 
-  const filteredNotes = notes.filter(n => n.hmwIndex === hmwIndex);
+    const label = archiveLabel.trim() || new Date().toLocaleString();
+    await apiArchiveAndClear(label);
+    setGrid({});
+    setHearts({});
+    setPresence({});
+    setNewCells(new Set());
+    setArchiveLabel('');
+    setShowArchiveConfirm(false);
+    // Refresh archives list
+    const list = await apiFetchArchives();
+    setArchives(list);
+  };
+
+  const handleRestore = async (archiveId: string) => {
+    await apiRestoreArchive(archiveId);
+    const data = await apiFetch();
+    if (data) {
+      setGrid(data.grid);
+      setHearts(data.hearts);
+      setPresence(data.presence);
+    }
+    setShowArchivePanel(false);
+  };
+
+  const loadArchives = async () => {
+    const list = await apiFetchArchives();
+    setArchives(list);
+    setShowArchivePanel(true);
+  };
+
+  const handleDeleteArchive = async (archiveId: string) => {
+    await apiDeleteArchive(archiveId);
+    setArchives(prev => prev.filter(a => a.id !== archiveId));
+    setConfirmDeleteId(null);
+  };
+
+  const exportArchive = async (archiveId: string, label: string) => {
+    const data = await apiGetArchiveData(archiveId);
+    if (!data) return;
+    const exportData = HMW_QUESTIONS.map((question, idx) => {
+      const ids = buildCellIds(idx);
+      const ideas = ids
+        .map(id => {
+          const text = (data.grid[id] || '').trim();
+          if (!text) return null;
+          const cellHearts = data.hearts?.[id] || [];
+          return { text, hearts: cellHearts.length, heartedBy: cellHearts };
+        })
+        .filter(Boolean);
+      return { question, ideas };
+    });
+    const blob = new Blob([JSON.stringify(exportData, null, 2)], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `${label.replace(/[^a-zA-Z0-9]/g, '-')}-export.json`;
+    a.click();
+    URL.revokeObjectURL(url);
+  };
+
+  const exportJSON = () => {
+    const exportData = HMW_QUESTIONS.map((question, idx) => {
+      const ids = buildCellIds(idx);
+      const ideas = ids
+        .map(id => {
+          const text = (grid[id] || '').trim();
+          if (!text) return null;
+          const cellHearts = hearts[id] || [];
+          return { text, hearts: cellHearts.length, heartedBy: cellHearts };
+        })
+        .filter(Boolean);
+      return { question, ideas };
+    });
+    const blob = new Blob([JSON.stringify(exportData, null, 2)], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'brainstorm-export.json';
+    a.click();
+    URL.revokeObjectURL(url);
+  };
+
+  const exportCSV = () => {
+    const rows = [['Round', 'Question', 'Idea', 'Hearts', 'Hearted By']];
+    HMW_QUESTIONS.forEach((question, idx) => {
+      const ids = buildCellIds(idx);
+      ids.forEach(id => {
+        const text = (grid[id] || '').trim();
+        if (!text) return;
+        const cellHearts = hearts[id] || [];
+        rows.push([
+          `Round ${idx + 1}`,
+          question,
+          text,
+          String(cellHearts.length),
+          cellHearts.join('; '),
+        ]);
+      });
+    });
+    const csv = rows.map(r => r.map(c => `"${c.replace(/"/g, '""')}"`).join(',')).join('\n');
+    const blob = new Blob([csv], { type: 'text/csv' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'brainstorm-export.csv';
+    a.click();
+    URL.revokeObjectURL(url);
+  };
+
+  const handleCluster = async () => {
+    setClustering(true);
+    const result = await apiCluster(hmwIndex);
+    if (result && result.clusters) {
+      setClusters(result.clusters);
+      setShowClusters(true);
+    }
+    setClustering(false);
+  };
+
+
+  // ── Name entry gate ──
+  if (!nameSet) {
+    return (
+      <div className="min-h-screen bg-[#0a0a0a] flex items-center justify-center px-6">
+        <form
+          onSubmit={(e) => {
+            e.preventDefault();
+            if (userName.trim()) {
+              const name = userName.trim();
+              setUserName(name);
+              sessionStorage.setItem('brainstorm-name', name);
+              setNameSet(true);
+            }
+          }}
+          className="text-center max-w-sm w-full"
+        >
+          <p className="font-ui text-[10px] text-amber-500/50 uppercase tracking-[0.3em] mb-8">
+            Climate & Reality TV
+          </p>
+          <h2 className="font-display text-3xl text-white mb-6">What's your name?</h2>
+          <p className="font-body text-stone-500 text-sm mb-8">
+            So others can see who's typing and whose hearts are whose.
+          </p>
+          <input
+            type="text"
+            value={userName}
+            onChange={(e) => setUserName(e.target.value)}
+            placeholder="Your first name"
+            autoFocus
+            className="w-full bg-transparent border-b border-white/10 text-white text-center font-body text-lg py-3 outline-none focus:border-amber-500/40 transition-colors placeholder:text-stone-700"
+          />
+          <button
+            type="submit"
+            className="mt-6 font-ui text-[10px] text-stone-500 tracking-wider uppercase hover:text-amber-400 transition-colors"
+          >
+            Enter
+          </button>
+        </form>
+      </div>
+    );
+  }
 
   // ── Intro screen ──
   if (phase === 'intro') {
@@ -302,7 +539,7 @@ export default function Brainstorm() {
             Brainstorm
           </h1>
           <p className="font-body text-stone-400 text-center max-w-lg text-lg leading-relaxed mb-4">
-            We'll explore two "How Might We" questions. For each one, you'll have 10 minutes of heads-down ideation. Write as many ideas as you can on sticky notes, then we'll share back and cluster them together.
+            We'll explore two "How Might We" questions. For each one, you'll have 10 minutes of heads-down ideation. Type your ideas into the grid, then we'll share back and discuss.
           </p>
           <p className="font-body text-stone-500 text-center max-w-md text-sm leading-relaxed mb-12">
             First, let's look at the show concepts for context.
@@ -315,7 +552,6 @@ export default function Brainstorm() {
               Start Brainstorm
             </button>
           </div>
-
           <button onClick={() => navigate('/concepts')} className={pillBtn}>
             ← Back to Concepts
           </button>
@@ -351,8 +587,9 @@ export default function Brainstorm() {
     );
   }
 
-  // ── Canvas ──
+  // ── Grid Canvas ──
   const roundInspo = ROUND_INSPO[hmwIndex] || [];
+  const filledCount = cellIds.filter(id => (grid[id] || '').trim().length > 0).length;
 
   return (
     <div className="h-screen bg-[#0a0a0a] flex flex-col overflow-hidden">
@@ -370,6 +607,9 @@ export default function Brainstorm() {
           </p>
         </div>
         <div className="flex items-center gap-2 shrink-0 ml-4">
+          <span className="font-ui text-[9px] text-stone-500 tracking-wider">
+            {filledCount} ideas
+          </span>
           <Timer />
           <button
             onClick={() => setShowInspo(!showInspo)}
@@ -381,20 +621,229 @@ export default function Brainstorm() {
           >
             Inspo
           </button>
-          <button onClick={addNote} className="px-3 py-1.5 bg-amber-500 text-black rounded-full font-ui text-[9px] tracking-widest uppercase hover:bg-amber-400 transition-colors">
-            + Note
+          <button
+            onClick={exportJSON}
+            className="px-3 py-1.5 border border-white/10 rounded-full font-ui text-[9px] tracking-widest uppercase text-stone-400 hover:text-amber-400 hover:border-amber-500/30 transition-all"
+          >
+            JSON
+          </button>
+          <button
+            onClick={exportCSV}
+            className="px-3 py-1.5 border border-white/10 rounded-full font-ui text-[9px] tracking-widest uppercase text-stone-400 hover:text-amber-400 hover:border-amber-500/30 transition-all"
+          >
+            CSV
+          </button>
+          <button
+            onClick={handleCluster}
+            disabled={clustering}
+            className={`px-3 py-1.5 border rounded-full font-ui text-[9px] tracking-widest uppercase transition-all ${
+              clustering
+                ? 'border-amber-500/40 text-amber-400 animate-pulse cursor-wait'
+                : showClusters
+                  ? 'border-amber-500/40 text-amber-400'
+                  : 'border-white/10 text-stone-400 hover:text-amber-400 hover:border-amber-500/30'
+            }`}
+          >
+            {clustering ? 'Clustering...' : 'Cluster'}
           </button>
           <button
             onClick={() => phase === 'canvas0' ? setPhase('hmw1') : setPhase('intro')}
             className="px-3 py-1.5 border border-white/10 rounded-full font-ui text-[9px] tracking-widest uppercase text-stone-400 hover:text-amber-400 hover:border-amber-500/30 transition-all"
           >
-            {phase === 'canvas0' ? 'Next →' : 'Done'}
+            {phase === 'canvas0' ? 'Next Round' : 'Done'}
           </button>
+          {isAdmin ? (
+            <>
+              <button
+                onClick={loadArchives}
+                className="px-3 py-1.5 border border-white/10 rounded-full font-ui text-[9px] tracking-widest uppercase text-stone-400 hover:text-amber-400 hover:border-amber-500/30 transition-all"
+              >
+                Archives
+              </button>
+              <div className="relative">
+                <button
+                  onClick={() => setShowArchiveConfirm(!showArchiveConfirm)}
+                  className="px-3 py-1.5 border border-amber-500/20 rounded-full font-ui text-[9px] tracking-widest uppercase text-amber-400/50 hover:text-amber-400 hover:border-amber-500/40 transition-all"
+                >
+                  Archive & Reset
+                </button>
+                {showArchiveConfirm && (
+                  <div className="absolute right-0 top-full mt-2 bg-[#1a1a1a] border border-white/10 rounded-lg p-3 z-50 w-56">
+                    <p className="font-body text-[11px] text-stone-400 mb-3">Save current board to archives and start fresh.</p>
+                    <input
+                      type="text"
+                      value={archiveLabel}
+                      onChange={(e) => setArchiveLabel(e.target.value)}
+                      placeholder="Session name (optional)"
+                      className="w-full bg-transparent border-b border-white/10 text-white text-xs font-body py-1.5 mb-3 outline-none focus:border-amber-500/40 placeholder:text-stone-600"
+                    />
+                    <div className="flex gap-2">
+                      <button
+                        onClick={handleArchiveAndClear}
+                        className="px-3 py-1 bg-amber-500 text-black rounded font-ui text-[9px] tracking-wider uppercase hover:bg-amber-400 transition-colors"
+                      >
+                        Archive
+                      </button>
+                      <button
+                        onClick={() => setShowArchiveConfirm(false)}
+                        className="px-3 py-1 border border-white/10 text-stone-400 rounded font-ui text-[9px] tracking-wider uppercase hover:text-white transition-colors"
+                      >
+                        Cancel
+                      </button>
+                    </div>
+                  </div>
+                )}
+              </div>
+            </>
+          ) : (
+            <div className="relative">
+              <button
+                onClick={() => setShowAdminPrompt(!showAdminPrompt)}
+                className="px-3 py-1.5 border border-white/[0.06] rounded-full font-ui text-[9px] tracking-widest uppercase text-stone-600 hover:text-stone-400 transition-all"
+              >
+                Admin
+              </button>
+              {showAdminPrompt && (
+                <div className="absolute right-0 top-full mt-2 bg-[#1a1a1a] border border-white/10 rounded-lg p-3 z-50 w-48">
+                  <input
+                    type="password"
+                    value={adminInput}
+                    onChange={(e) => setAdminInput(e.target.value)}
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter') {
+                        if (adminInput.toLowerCase().trim() === 'producer390') {
+                          sessionStorage.setItem('brainstorm-admin', 'true');
+                          setIsAdmin(true);
+                          setShowAdminPrompt(false);
+                          setAdminInput('');
+                        } else {
+                          setAdminError(true);
+                          setTimeout(() => setAdminError(false), 1500);
+                        }
+                      }
+                    }}
+                    placeholder="Admin password"
+                    autoFocus
+                    className={`w-full bg-transparent border-b ${adminError ? 'border-red-500/50' : 'border-white/10'} text-white text-xs font-body py-1.5 outline-none focus:border-amber-500/40 placeholder:text-stone-600`}
+                  />
+                </div>
+              )}
+            </div>
+          )}
         </div>
       </div>
 
       <div className="flex-1 flex overflow-hidden">
         {/* Inspiration sidebar */}
+        {/* Clusters panel */}
+        {showClusters && clusters.length > 0 && (
+          <div className="w-96 shrink-0 border-r border-white/[0.06] overflow-y-auto p-4">
+            <div className="flex items-center justify-between mb-4">
+              <p className="font-ui text-[10px] text-amber-500/50 uppercase tracking-[0.2em]">
+                Idea Clusters
+              </p>
+              <button
+                onClick={() => setShowClusters(false)}
+                className="font-ui text-[10px] text-stone-500 hover:text-white transition-colors"
+              >
+                Close
+              </button>
+            </div>
+            <div className="space-y-4">
+              {clusters.map((cluster, i) => (
+                <div key={i} className="bg-white/[0.03] border border-white/[0.06] rounded-lg px-4 py-3">
+                  <div className="flex items-center gap-2 mb-1">
+                    <span className="text-amber-400 font-display text-lg">{i + 1}</span>
+                    <h3 className="font-display text-white text-sm">{cluster.theme}</h3>
+                  </div>
+                  <p className="font-body text-[11px] text-stone-400 leading-relaxed mb-3">
+                    {cluster.description}
+                  </p>
+                  <div className="space-y-1.5">
+                    {cluster.ideas.map((idea) => (
+                      <div key={idea.id} className="flex items-start gap-2">
+                        <span className="text-[10px] text-stone-600 mt-0.5 shrink-0">
+                          {idea.hearts > 0 ? `${'❤️'.repeat(Math.min(idea.hearts, 3))}` : '·'}
+                        </span>
+                        <p className="font-body text-[11px] text-stone-300 leading-relaxed">{idea.text}</p>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* Archives panel */}
+        {showArchivePanel && (
+          <div className="w-80 shrink-0 border-r border-white/[0.06] overflow-y-auto p-4">
+            <div className="flex items-center justify-between mb-4">
+              <p className="font-ui text-[10px] text-amber-500/50 uppercase tracking-[0.2em]">
+                Archives
+              </p>
+              <button
+                onClick={() => setShowArchivePanel(false)}
+                className="font-ui text-[10px] text-stone-500 hover:text-white transition-colors"
+              >
+                Close
+              </button>
+            </div>
+            {archives.length === 0 ? (
+              <p className="font-body text-[11px] text-stone-600">No archived sessions yet.</p>
+            ) : (
+              <div className="space-y-2">
+                {archives.map(a => (
+                  <div key={a.id} className="bg-white/[0.03] border border-white/[0.06] rounded-lg px-3 py-2.5">
+                    <p className="font-body text-sm text-white mb-1">{a.label}</p>
+                    <p className="font-ui text-[9px] text-stone-500 mb-2">
+                      {new Date(a.timestamp).toLocaleDateString('en-US', { month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' })}
+                      {' \u00B7 '}{a.ideaCount} ideas
+                    </p>
+                    <div className="flex gap-3">
+                      <button
+                        onClick={() => handleRestore(a.id)}
+                        className="font-ui text-[9px] text-amber-400/70 hover:text-amber-400 tracking-wider uppercase transition-colors"
+                      >
+                        Restore
+                      </button>
+                      <button
+                        onClick={() => exportArchive(a.id, a.label)}
+                        className="font-ui text-[9px] text-stone-500 hover:text-amber-400 tracking-wider uppercase transition-colors"
+                      >
+                        Export
+                      </button>
+                      {confirmDeleteId === a.id ? (
+                        <span className="flex gap-2">
+                          <button
+                            onClick={() => handleDeleteArchive(a.id)}
+                            className="font-ui text-[9px] text-red-400 tracking-wider uppercase"
+                          >
+                            Confirm
+                          </button>
+                          <button
+                            onClick={() => setConfirmDeleteId(null)}
+                            className="font-ui text-[9px] text-stone-600 tracking-wider uppercase hover:text-stone-400 transition-colors"
+                          >
+                            Cancel
+                          </button>
+                        </span>
+                      ) : (
+                        <button
+                          onClick={() => setConfirmDeleteId(a.id)}
+                          className="font-ui text-[9px] text-stone-600 hover:text-red-400 tracking-wider uppercase transition-colors"
+                        >
+                          Delete
+                        </button>
+                      )}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        )}
+
         {showInspo && (
           <div className="w-80 shrink-0 border-r border-white/[0.06] overflow-y-auto p-4 space-y-5">
             {roundInspo.map((group) => (
@@ -417,60 +866,89 @@ export default function Brainstorm() {
           </div>
         )}
 
-        {/* Canvas area */}
-        <div
-          ref={canvasRef}
-          className="flex-1 relative overflow-auto cursor-crosshair"
-          onPointerMove={onPointerMove}
-          onPointerUp={onPointerUp}
-          onDoubleClick={(e) => {
-            if (e.target === canvasRef.current) addNote();
-          }}
-        >
-          {filteredNotes.length === 0 && (
-            <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-              <p className="font-body text-stone-600 text-lg italic">
-                Click "+ Add Note" or double-click anywhere to start
-              </p>
-            </div>
-          )}
-          {filteredNotes.map(note => (
-            <div
-              key={note.id}
-              className={`absolute w-44 ${note.color} rounded-md shadow-lg cursor-grab active:cursor-grabbing select-none`}
-              style={{ left: note.x, top: note.y, zIndex: dragging === note.id ? 50 : 10 }}
-              onPointerDown={(e) => onPointerDown(e, note.id)}
-            >
-              <div className="flex items-center justify-between px-2 pt-1.5 pb-0.5">
-                <div className="flex gap-0.5">
-                  <span className="w-1 h-1 rounded-full bg-black/20" />
-                  <span className="w-1 h-1 rounded-full bg-black/20" />
-                  <span className="w-1 h-1 rounded-full bg-black/20" />
-                </div>
-                <button
-                  onClick={(e) => { e.stopPropagation(); deleteNote(note.id); }}
-                  className="text-black/30 hover:text-black/70 text-xs leading-none"
-                >
-                  ×
-                </button>
-              </div>
-              <div className="relative px-2.5 pb-2.5 pt-1 min-h-[80px]">
+        {/* Grid */}
+        <div className="flex-1 overflow-auto p-4">
+          <div
+            className="grid gap-3"
+            style={{
+              gridTemplateColumns: `repeat(${GRID_COLS}, minmax(0, 1fr))`,
+              gridAutoRows: '140px',
+            }}
+          >
+            {cellIds.map((id, i) => {
+              const color = COLORS[i % COLORS.length];
+              const text = grid[id] || '';
+              const cellHearts = hearts[id] || [];
+              const hearted = cellHearts.includes(userName);
+              const cellPresence = (presence[id] || []).filter(n => n !== userName);
+              const isNew = newCells.has(id);
+              const hasText = text.trim().length > 0;
+
+              return (
                 <div
-                  aria-hidden
-                  className="invisible whitespace-pre-wrap break-words text-sm font-body leading-relaxed pr-[1px]"
+                  key={id}
+                  id={`cell-${id}`}
+                  className={`${color} rounded-lg shadow-md flex flex-col overflow-hidden relative transition-all duration-300 ${
+                    isNew ? 'ring-2 ring-amber-400 scale-[1.02]' : ''
+                  }`}
                 >
-                  {note.text || 'Type your idea...'}{'\n'}
+                  {/* Presence indicators */}
+                  {cellPresence.length > 0 && (
+                    <div className="absolute top-1 right-1 flex gap-0.5 z-10">
+                      {cellPresence.map(name => (
+                        <span
+                          key={name}
+                          className="bg-black/20 text-black/60 text-[8px] font-ui px-1.5 py-0.5 rounded-full"
+                        >
+                          {name}
+                        </span>
+                      ))}
+                    </div>
+                  )}
+
+                  {/* Textarea */}
+                  <textarea
+                    value={text}
+                    onChange={(e) => updateCell(id, e.target.value)}
+                    onFocus={() => {
+                      editingId.current = id;
+                      apiUpdatePresence(userId.current, userName, id);
+                    }}
+                    onBlur={() => {
+                      if (editingId.current === id) editingId.current = null;
+                      apiUpdatePresence(userId.current, userName, null);
+                    }}
+                    placeholder="Type your idea..."
+                    className="flex-1 w-full bg-transparent text-black/80 text-sm font-body resize-none px-3 pt-2.5 pb-1 outline-none placeholder:text-black/20 leading-relaxed"
+                  />
+
+                  {/* Heart button */}
+                  {hasText && (
+                    <div className="flex items-center justify-between px-3 pb-2">
+                      <button
+                        onClick={() => toggleHeart(id)}
+                        className={`flex items-center gap-1 text-xs transition-all ${
+                          hearted
+                            ? 'text-red-500 scale-110'
+                            : 'text-black/25 hover:text-red-400'
+                        }`}
+                      >
+                        <span>{hearted ? '\u2764\uFE0F' : '\u2661'}</span>
+                        {cellHearts.length > 0 && (
+                          <span className="text-[10px] font-ui">{cellHearts.length}</span>
+                        )}
+                      </button>
+                      {cellHearts.length > 0 && (
+                        <span className="text-[8px] text-black/30 font-ui truncate max-w-[80px]">
+                          {cellHearts.join(', ')}
+                        </span>
+                      )}
+                    </div>
+                  )}
                 </div>
-                <textarea
-                  value={note.text}
-                  onChange={(e) => updateText(note.id, e.target.value)}
-                  placeholder="Type your idea..."
-                  className="absolute inset-0 w-full h-full bg-transparent text-black/80 text-sm font-body resize-none px-2.5 pb-2.5 pt-1 outline-none placeholder:text-black/30 leading-relaxed"
-                  onPointerDown={(e) => e.stopPropagation()}
-                />
-              </div>
-            </div>
-          ))}
+              );
+            })}
+          </div>
         </div>
       </div>
     </div>
