@@ -2,7 +2,7 @@ import { useState, useRef, useCallback, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 const HMW_QUESTIONS = [
-  'How might we design a show format that turns climate skeptics into climate advocates, without saying a word about climate?',
+  'How might we design a show that turns climate skeptics into climate advocates, without saying a word about climate?',
   'How might we design a reality TV show that creates new climate heroes?',
 ];
 
@@ -31,21 +31,21 @@ const REAL_SHOWS = [
 const ROUND_INSPO: Record<number, { label: string; items: string[] }[]> = {
   0: [
     {
-      label: 'Shows that shifted beliefs without preaching',
+      label: 'Reality shows that changed how people think',
       items: [
-        'Queer Eye changed attitudes on masculinity through makeovers, not arguments',
-        'Deadliest Catch made Americans care about Alaskan crab fishing through raw human stakes',
-        'Planet Earth made people cry over baby iguanas. No call to action, just beauty.',
-        'Anthony Bourdain took food-skeptics to places they would never go. They came back different.',
+        'Queer Eye: five guys do home makeovers, but audiences walked away rethinking masculinity and empathy. No one was "taught" anything.',
+        'Undercover Boss: CEOs go undercover as entry-level workers. By the reveal, viewers (and the boss) have genuinely shifted on labor and wages.',
+        'Wife Swap: two families with opposite lifestyles trade lives for two weeks. No narrator tells you who is right. Viewers decide.',
+        'Gogglebox: people watching TV, reacting. That is the whole show. It quietly normalized diverse British households for millions.',
       ],
     },
     {
-      label: 'Formats that smuggle in new worldviews',
+      label: 'Formats where the setting does the persuading',
       items: [
-        'The Great British Bake Off: kindness and cooperation became the spectacle, not cruelty',
-        'Undercover Boss: CEOs changed policy after living their workers\' lives for a week',
-        'The Mole: trust and suspicion as the engine. What if the "mole" was someone hiding their climate denial?',
-        'Wife Swap: families with opposite lifestyles trade lives. Confrontation without debate.',
+        'Survivor: contestants start by exploiting resources, then learn cooperation is the only way to last. The island teaches the lesson.',
+        'The Amazing Race: teams race through 30+ countries. Viewers absorb cultures and landscapes without a single geography lecture.',
+        'Naked and Afraid: strip away everything modern. Two strangers must cooperate with nature or fail. No script needed.',
+        'The Great British Bake Off: a competition that accidentally made kindness cool. The tent, the tone, the lack of cruelty did the work.',
       ],
     },
   ],
