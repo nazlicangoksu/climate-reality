@@ -437,7 +437,7 @@ export default function Brainstorm() {
           {filteredNotes.map(note => (
             <div
               key={note.id}
-              className={`absolute w-44 min-h-[120px] ${note.color} rounded-md shadow-lg cursor-grab active:cursor-grabbing select-none flex flex-col`}
+              className={`absolute w-44 ${note.color} rounded-md shadow-lg cursor-grab active:cursor-grabbing select-none`}
               style={{ left: note.x, top: note.y, zIndex: dragging === note.id ? 50 : 10 }}
               onPointerDown={(e) => onPointerDown(e, note.id)}
             >
@@ -454,13 +454,21 @@ export default function Brainstorm() {
                   ×
                 </button>
               </div>
-              <textarea
-                value={note.text}
-                onChange={(e) => updateText(note.id, e.target.value)}
-                placeholder="Type your idea..."
-                className="flex-1 bg-transparent text-black/80 text-sm font-body resize-none px-2.5 pb-2.5 pt-1 outline-none placeholder:text-black/30 leading-relaxed"
-                onPointerDown={(e) => e.stopPropagation()}
-              />
+              <div className="relative px-2.5 pb-2.5 pt-1 min-h-[80px]">
+                <div
+                  aria-hidden
+                  className="invisible whitespace-pre-wrap break-words text-sm font-body leading-relaxed pr-[1px]"
+                >
+                  {note.text || 'Type your idea...'}{'\n'}
+                </div>
+                <textarea
+                  value={note.text}
+                  onChange={(e) => updateText(note.id, e.target.value)}
+                  placeholder="Type your idea..."
+                  className="absolute inset-0 w-full h-full bg-transparent text-black/80 text-sm font-body resize-none px-2.5 pb-2.5 pt-1 outline-none placeholder:text-black/30 leading-relaxed"
+                  onPointerDown={(e) => e.stopPropagation()}
+                />
+              </div>
             </div>
           ))}
         </div>
