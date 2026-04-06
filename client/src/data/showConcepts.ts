@@ -57,160 +57,114 @@ export const designPrinciples: DesignPrinciple[] = [
 
 export const showConcepts: ShowConcept[] = [
   {
-    id: 'save-my-island',
+    id: 'is-this-a-good-business',
     number: '001',
     title: 'Is This a Good Business?',
-    tagline: 'Ten million dollars. One real problem killing a real place. Six strangers. One of them wins.',
+    tagline: 'Ten million dollars. One island. Find the business nobody else can see.',
     logline:
-      'A legendary islander investor puts up $10 million to back one idea that solves the biggest problem facing his home island. Not a concept. A place. The money is real. The problem is real.',
+      'Ten entrepreneurs are chosen to go on an island with no pitch, no plan, and no idea what they are looking for. A local investor puts up $10 million for whoever builds the best business. The only rule: it has to come from the island and help the island.',
     narrative: [
-      'Six contestants are brought in to compete. They did not apply for a climate show. They applied for a $10 million business competition set on one of the most dramatic locations on earth.',
-      "The challenges aren't about saving the planet. They're about building something people will actually pay for.",
-      'Each episode, the teams pitch, test, and iterate on solutions to the specific problem of that island: a desalination system that a local cooperative can actually maintain, a heat-resilient crop that survives on thirty percent less water, a parametric insurance product that pays out before the damage happens instead of fighting you afterward.',
-      'Between challenges, the investor checks in with each contestant one-on-one. Not a boardroom. A walk through the village, a conversation on the dock. He asks the questions a local would ask: who did you talk to today? What did they tell you that you didn\'t expect? These check-ins are where the real story lives. Some contestants crumble. Others reveal something they\'ve been holding back.',
-      'The investor evaluates on one criterion: will this still be working in twenty years without him?',
-      "The climate context is never explained to the audience. It emerges through the problems. By episode three, viewers understand why the aquifer matters -- not because anyone lectured them, but because they watched a team's entire business model collapse when the numbers didn't work.",
+      'No pitch decks. No business plans. Ten entrepreneurs show up and are told: find a problem worth solving. Talk to people. Walk around. Your idea has to come from here.',
+      'The investor grew up on this island. He knows what the water table looked like thirty years ago. He has one criterion: will this still work in twenty years without him?',
+      'A contestant talks to fishermen. The catch dropped forty percent in a decade. She builds an aquaculture business. Another notices the wells running dry and designs a desalination system a local co-op can maintain. Someone else sees the same houses flooding every storm season and creates parametric insurance that pays out before the damage hits.',
+      'The entrepreneurs who impose solutions from the outside fail. The ones who listen to the community build businesses that work. Nobody says "climate." The island says it for them.',
     ],
     castExamples: [
       {
-        label: 'Oil field engineer, West Texas',
-        description: 'Knows more about water scarcity than most scientists. Underestimated by everyone.',
+        label: 'Rosa, oil field engineer, West Texas',
+        description: 'Knows more about water scarcity than most scientists. Everything she knows about extraction turns out to be expertise in conservation. Underestimated by everyone until episode four.',
       },
       {
-        label: 'Wall Street risk analyst',
-        description: 'Prices climate risk for a living. Does not consider herself an environmentalist.',
+        label: 'James, Wall Street risk analyst',
+        description: 'Prices catastrophic risk for hedge funds. Not an environmentalist. Arrives with a fintech pitch. By episode three he is building parametric insurance for fishing villages because the math is better.',
       },
       {
-        label: 'Grain farmer, Midwest. 4th generation',
-        description: "Watched 30% of her topsoil disappear. Furious in ways that don't map to any political category.",
+        label: 'Diana, grain farmer, Midwest, 4th generation',
+        description: 'Watched thirty percent of her topsoil disappear. The investor asks: "Who told you the soil was broken?" She says: "Nobody had to tell me. I watched it happen."',
       },
     ],
     mechanics: [
       {
-        title: 'The Investor',
-        body: "He isn't a tech bro or a billionaire with a foundation. He's someone who grew up here, who knows what the water table looked like thirty years ago, who has cousins who still fish these waters.",
+        title: 'The island is the pitch',
+        body: 'No one arrives with an idea. The island is the brief. The contestants who talk to locals find opportunities everywhere. The ones who sit in their rooms thinking get nothing.',
       },
       {
-        title: 'The On-Ramp',
-        body: 'Each episode surfaces one real problem from a real place. The contestants are trying to find problems to solve and people to collaborate with to build businesses. Some take a "savior" approach and fail. Others build really good connections but no ideas.',
+        title: 'The investor walks, not talks',
+        body: 'No boardroom. No panel. Walks through the village, conversations on the dock, dinners with families. He asks: who did you talk to today? What surprised you? The contestants who only talk to each other lose.',
       },
       {
-        title: 'The Signal',
-        body: 'Viewers tune in for personalities and prize money. They absorb the reality of climate challenges that an island faces, from sargassum overload to extreme heat.',
+        title: 'Competency porn',
+        body: 'The show makes it cool to understand how an aquifer works, why parametric insurance beats traditional, how a desalination membrane functions. Chef\'s Table for climate solutions. The audience feels smarter, not lectured.',
       },
     ],
     closingQuote:
-      "By episode three, viewers understand aquifer depletion -- not because anyone lectured them, but because they watched a team's entire business model collapse when the numbers didn't work.",
+      'The best business on the island is the one the island needed all along.',
     discussionQuestions: [
       'Who is the right investor figure? What does getting that casting wrong look like?',
       'If you had a magic wand and could change one thing about this show, what would it be?',
-      'What other shows can be designed on islands affected by climate without saying climate?',
+      'What happens when a contestant builds something the community actually wants versus what they think the community needs?',
     ],
   },
   {
-    id: 'the-paradise',
+    id: 'the-calendar',
     number: '002',
-    title: 'The Paradise',
-    tagline: 'Twelve strangers. One paradise. Then the storm comes. And you have a choice.',
+    title: 'The Calendar',
+    tagline: '',
     logline:
-      'A luxury social experiment on a real island. Twelve strangers, cast for friction, with prize money on the line. Then the storm hits. It was always going to.',
+      'Twelve American firefighters are chosen to compete. They go on a remote island to compete for one million dollars, find love, and secure a calendar shoot. Twelve local women who know every secret the island holds are the other contestants. They get to choose their partner. Each episode is a calendar month. The audience decides who stays and who leaves.',
     narrative: [
-      'ACT ONE: A luxury social experiment. Real resort, real location -- the Maldives, a Pacific island that makes the news every hurricane season. Twelve strangers, cast for friction, with prize money on the line. Weekly challenges, alliances forming, couples pairing off, petty drama. New romance blooms. Exactly what they applied for.',
-      'ACT TWO: The storm hits. It was always going to. The production team offers a choice: we can move everyone to another island, or you can stay. Some leave. Some stay. Part of the challenge is being ok with leaving someone behind that you have a love interest in. Both choices are valid. That tension is the show.',
-      'THE CRITICAL DESIGN RULE: The community is already responding before the contestants decide anything. They have a plan, a structure, people who know what to do. The contestants who stay are not leading. They are asking where to show up or what to do.',
-      'Some show up as pure "muscle" moving debris. Others try to help negotiate aid packages but fail. Some get backlash trying to be the "savior." At least two or three contestants must be from the Global South -- people who recognize the power dynamic immediately and name it. The discomfort that creates within the group is more interesting than any climate lecture.',
+      'Opens with a classic firefighter calendar shoot. Twelve guys, shirtless, posed. Then they meet the island. And twelve women who know everything about it.',
+      'There are twelve episodes, one for each month of the year. Each month has a challenge connected to something that actually happened on the island during that month. June had a hurricane: build a storm-resistant house. August had a drought: drill a well. January had flooding: build a seawall.',
+      'The women know what challenge is coming. The firefighters do not.',
+      'Every night, the women choose their partner. Was it attraction or strategy? The firefighters never know. That tension runs the entire season.',
+      'The audience runs a prediction market between episodes. Highest prediction: safe no matter what. Lowest: gone. Both go home together.',
+      'Win the challenge, win the calendar shoot for that month. By the finale, the calendar tells the whole story. It gets published for real.',
     ],
     castExamples: [
       {
-        label: 'The Influencer',
-        description: '8M followers, mostly travel. Built her brand on places like this. Stays, documents everything, and the community asks her to stop filming twice.',
+        label: 'Marcus, captain, LA County Fire',
+        description: 'Fifteen years running wildfire ops. Used to being in charge. Here, a twenty-three-year-old fisherwoman knows more than he does about everything that matters.',
       },
       {
-        label: 'Appalachian Kentucky',
-        description: "Skeptical of everyone. Leaves -- and the show doesn't frame this as cowardice.",
+        label: 'Eli, the probie, rural Georgia',
+        description: 'Youngest on the show. Six months in. Listens to his partner from day one. Becomes the dark horse because the audience sees him learning while the veterans perform.',
       },
       {
-        label: 'Contestant from a flood-prone community',
-        description: 'Becomes the de facto translator between the group and the community -- not because she was assigned to, but because she just starts doing it.',
+        label: 'Jake, structural rescue, Chicago',
+        description: 'Can breach a wall in thirty seconds. Realizes by episode three the woman who chose him picked him for his hands, not his muscles. She needs a builder. He has never built anything that was not on fire.',
       },
       {
-        label: 'The dive instructor (local cast)',
-        description: 'Has watched this reef for 30 years. Not a plot device. Probably the most formidable person there.',
+        label: 'Leilani, the fisherwoman',
+        description: 'Watched this coastline change for thirty years. Picks her firefighter carefully. Not the strongest. The one who asked a question on day one.',
       },
       {
-        label: 'The nonprofit founder',
-        description: "Runs a clean water org. Has been to twelve countries on 'impact trips.' Genuinely believes she's different from the influencer. The community sees them as the same person.",
+        label: 'Sera, daughter of the village elder',
+        description: 'Oral history of every storm, drought, and flood for three generations. The most valuable partner in the game. She picks the one nobody expected.',
       },
       {
-        label: 'The tech guy with a climate fund',
-        description: 'Raised $40M for climate solutions from his living room. Has never been in a storm. Stays, and immediately starts treating the situation like a pitch deck. The local dive instructor ignores him entirely.',
+        label: 'Maia, the young engineer',
+        description: 'Twenty-four. Civil engineering degree. Came back to the island instead of taking a job in the capital. Sees the firefighters as raw material.',
       },
     ],
     mechanics: [
       {
-        title: 'Not a savior show',
-        body: "The contestants staying doesn't fix the seawall that failed because the government diverted the funding. The show is honest that twelve strangers for two weeks doesn't fix any of that.",
+        title: 'Information asymmetry',
+        body: 'The women know what is coming. The firefighters do not. The audience can figure it out from clues between episodes. Viewers are aligned with the women, rooting for their knowledge. That alignment is the conversion mechanic.',
       },
       {
-        title: 'The real villain',
-        body: "Not the storm. The insurance company that won't pay out. The international aid that arrives three weeks late. The contestants staying is a small human story inside a much larger structural failure.",
+        title: 'Prediction market',
+        body: 'Audience bets between episodes. Highest prediction: safe. Lowest: gone. To bet well, viewers research what happens on this island each month. They learn climate patterns to win a game.',
       },
       {
-        title: 'The Global North / South tension',
-        body: 'Characters from the island become even bigger cast than the original cast. They push back. Things fail.',
+        title: 'The calendar',
+        body: 'Episode one: glossy posed shots. By the finale: candid, muddy, vulnerable, honest. The contrast tells the entire story without a word. Published for real.',
       },
     ],
-    closingQuote: 'Who gets to decide what happens next to a place the whole world helped break?',
+    closingQuote: 'The firefighters came to be heroes. The women already were.',
     discussionQuestions: [
-      'How do we make the stay/leave choice feel real and not manufactured?',
+      'What is the right island? What makes a location work for twelve months of distinct challenges?',
       'If you had a magic wand and could change one thing about this show, what would it be?',
-      'What other show ideas can be developed around sudden climate disasters?',
-    ],
-  },
-  {
-    id: 'the-race',
-    number: '003',
-    title: 'The Race',
-    tagline: 'The celebrity is not the host. They are a contestant. And they are probably going to lose.',
-    logline:
-      'Six pairs. Six locations chosen because something real is happening there. The celebrity\'s job is to convince their partner to care about climate. The partner\'s job is to win.',
-    narrative: [
-      'Six pairs. Six locations chosen because something real is happening there -- the Colorado River delta, the Louisiana coast, the Australian outback in fire season. The prize is $500,000 to the winning pair.',
-      "But every pair, win or lose, directs $100,000 to a local organization in the last place they raced through. The celebrity doesn't choose where the money goes. Their partner does. Whatever they've learned together, their partner gets to decide what it's worth.",
-    ],
-    castExamples: [
-      {
-        label: 'The true believer + the skeptic',
-        description: 'Celebrity environmentalist meets retired oil roughneck. Both have watched the same thing disappear. Different vocabulary.',
-      },
-      {
-        label: 'The performer + the pragmatist',
-        description: "Activist celebrity paired with a farmer who's been adapting to weather chaos for a decade without calling it anything.",
-      },
-      {
-        label: 'The scientist-adjacent + the operator',
-        description: 'The one who has done the reading meets the contractor who builds in flood zones.',
-      },
-    ],
-    mechanics: [
-      {
-        title: 'The reach mechanism',
-        body: "Fans of the celebrity show up. They meet the partner. They watch someone they trusted get humbled. No lecture required. That's the conversion mechanism -- and it works because it's never announced as one.",
-      },
-      {
-        title: 'The competence flip',
-        body: "The NASCAR driver's understanding of airflow matters in a wind corridor challenge. The linebacker reading a defense maps onto supply chain logistics. The celebrity's twenty years of research is useful in three legs and wrong in two others.",
-      },
-      {
-        title: 'The prize structure',
-        body: "The $100,000 the partner directs isn't a charity moment tacked on at the end. It's what the whole race was building toward. The celebrity, who came in thinking they knew more, watches their partner make a decision they couldn't have made in episode one.",
-      },
-    ],
-    closingQuote: "One person is trying to win a race. The other is trying to change a mind. Neither knows which one they are.",
-    discussionQuestions: [
-      'What would make the "convincing" more difficult and sticky to watch?',
-      'If you had a magic wand and could change one thing about this show, what would it be?',
-      'What other show ideas can be developed by leveraging celebrities and creating new climate heroes?',
+      'How do you design a prediction market that drives engagement without becoming exploitative?',
     ],
   },
 ];

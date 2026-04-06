@@ -43,47 +43,6 @@ function VideoEmbed({ url }: { url: string }) {
   );
 }
 
-// ── Moodboard Grid ──────────────────────────────────────────────────────────
-// Clean 2-row grid, all black & white, conveying vibe not the thing
-
-function MoodboardCollage({ storyboard, mood }: { storyboard: string[]; mood: string[] }) {
-  const allImages = [...storyboard, ...mood];
-  if (allImages.length === 0) return null;
-
-  // Images that need bottom-anchoring (subject/title at bottom of photo)
-  const bottomAnchored = ['TAR36poster', 'billy-kCJcbl2Go30'];
-  const getPosition = (src: string) =>
-    bottomAnchored.some(id => src.includes(id)) ? 'object-bottom' : 'object-center';
-
-  // Fill 2 rows: top row gets ceil(n/2), bottom gets the rest
-  const topCount = Math.ceil(allImages.length / 2);
-  const topRow = allImages.slice(0, topCount);
-  const bottomRow = allImages.slice(topCount);
-
-  return (
-    <div className="space-y-1.5 grayscale opacity-90">
-      <div className="grid gap-1.5" style={{ gridTemplateColumns: `repeat(${topRow.length}, 1fr)` }}>
-        {topRow.map((src, i) => (
-          <div key={i} className="overflow-hidden rounded-lg border border-white/[0.06]" style={{ height: '200px' }}>
-            <img src={src} alt="" className={`w-full h-full object-cover ${getPosition(src)}`} />
-          </div>
-        ))}
-      </div>
-      {bottomRow.length > 0 && (
-        <div className="grid gap-1.5" style={{ gridTemplateColumns: `repeat(${bottomRow.length}, 1fr)` }}>
-          {bottomRow.map((src, i) => (
-            <div key={i} className="overflow-hidden rounded-lg border border-white/[0.06]" style={{ height: '200px' }}>
-              <img src={src} alt="" className={`w-full h-full object-cover ${getPosition(src)}`} />
-            </div>
-          ))}
-        </div>
-      )}
-    </div>
-  );
-}
-
-// ── Main Page ────────────────────────────────────────────────────────────────
-
 export default function Concepts() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
@@ -93,6 +52,7 @@ export default function Concepts() {
   const [reactions, setReactions] = useState<Record<string, ConceptReaction>>({});
   const [showPanel, setShowPanel] = useState(false);
   const [videoInput, setVideoInput] = useState('');
+  const [expandedSection, setExpandedSection] = useState<string | null>(null);
   const storyboardInputRef = useRef<HTMLInputElement>(null);
   const moodInputRef = useRef<HTMLInputElement>(null);
   const saveTimeout = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -119,6 +79,7 @@ export default function Concepts() {
   useEffect(() => {
     setVideoInput(cm.videoUrl || '');
     setShowPanel(false);
+    setExpandedSection(null);
   }, [activeIndex]);
 
   const getReaction = (conceptId: string): ConceptReaction => {
@@ -175,14 +136,28 @@ export default function Concepts() {
   if (!session) return null;
 
   const reaction = getReaction(concept.id);
+  const allImages = [...(cm.storyboard || []), ...(cm.mood || [])];
 
   return (
-    <div className="min-h-screen bg-[#0a0a0a] pb-[140px]">
-      {/* ── Interviewee-facing presentation ──────────────────────────────── */}
-      <div className="px-6 md:px-12 lg:px-20 pt-16 pb-8">
-        <div className="max-w-4xl mx-auto">
-          {/* Concept tabs + brainstorm link */}
-          <div className="flex gap-2 mb-16 overflow-x-auto pb-2 justify-center items-center">
+    <div className="min-h-screen bg-[#0a0a0a] pb-[80px]">
+      {/* ── Hero: full-bleed image + title overlay ── */}
+      <div className="relative h-[70vh] min-h-[500px] overflow-hidden">
+        {/* Background image mosaic */}
+        {allImages.length > 0 && (
+          <div className="absolute inset-0 grid grid-cols-3 gap-0">
+            {allImages.slice(0, 3).map((src, i) => (
+              <div key={i} className="overflow-hidden">
+                <img src={src} alt="" className="w-full h-full object-cover" />
+              </div>
+            ))}
+          </div>
+        )}
+        {/* Dark overlay */}
+        <div className="absolute inset-0 bg-gradient-to-t from-[#0a0a0a] via-[#0a0a0a]/70 to-[#0a0a0a]/40" />
+
+        {/* Concept tabs at top */}
+        <div className="absolute top-0 left-0 right-0 z-10 px-6 pt-6">
+          <div className="flex gap-2 justify-center items-center">
             {showConcepts.map((c, i) => (
               <button
                 key={c.id}
@@ -190,122 +165,169 @@ export default function Concepts() {
                 className={`px-5 py-2 rounded-full text-xs font-ui tracking-wider whitespace-nowrap transition-all ${
                   i === activeIndex
                     ? 'bg-amber-500 text-black font-semibold'
-                    : 'bg-white/5 text-stone-400 hover:bg-white/10 hover:text-white border border-white/10'
+                    : 'bg-black/40 backdrop-blur-sm text-white/70 hover:text-white border border-white/20'
                 }`}
               >
                 {c.title}
               </button>
             ))}
-            <span className="w-[1px] h-5 bg-white/10 mx-2" />
+            <span className="w-[1px] h-5 bg-white/20 mx-2" />
             <button
               onClick={() => navigate('/brainstorm')}
-              className="px-5 py-2 rounded-full text-xs font-ui tracking-wider whitespace-nowrap transition-all bg-white/5 text-amber-400 hover:bg-amber-500/10 border border-amber-500/30"
+              className="px-5 py-2 rounded-full text-xs font-ui tracking-wider whitespace-nowrap transition-all bg-black/40 backdrop-blur-sm text-amber-400 hover:bg-amber-500/20 border border-amber-500/30"
             >
-              Brainstorm →
+              Brainstorm
             </button>
           </div>
+        </div>
 
-          {/* Title */}
-          <div className="text-center mb-12">
-            <span className="font-ui text-[11px] text-amber-500/50 tracking-widest">{concept.number}</span>
-            <h2 className="font-display text-[48px] md:text-[64px] lg:text-[72px] text-white leading-[1.02] tracking-tight mt-4 mb-6">
+        {/* Title content */}
+        <div className="absolute bottom-0 left-0 right-0 px-6 md:px-12 lg:px-20 pb-12">
+          <div className="max-w-4xl mx-auto">
+            <span className="font-ui text-[11px] text-amber-500/70 tracking-widest">{concept.number}</span>
+            <h1 className="font-display text-[56px] md:text-[72px] lg:text-[88px] text-white leading-[0.95] tracking-tight mt-2">
               {concept.title}
-            </h2>
-            <p className="font-body text-lg md:text-xl text-stone-400 italic max-w-xl mx-auto">
-              {concept.tagline}
-            </p>
-          </div>
-
-          {/* Divider */}
-          <div className="w-12 h-[1px] bg-amber-500/30 mx-auto mb-16" />
-
-          {/* Video embed if exists */}
-          {cm.videoUrl && (
-            <div className="max-w-4xl mx-auto mb-16">
-              <VideoEmbed url={cm.videoUrl} />
-            </div>
-          )}
-
-          {/* ── Editorial layout: logline as pull quote ────────────────── */}
-          <div className="max-w-2xl mx-auto mb-20">
-            <p className="font-display text-[22px] md:text-[28px] text-stone-200 leading-[1.5] tracking-tight">
-              {concept.logline}
-            </p>
-          </div>
-
-          {/* Narrative paragraphs with generous spacing */}
-          <div className="max-w-2xl mx-auto space-y-8 mb-20">
-            {concept.narrative.map((para, i) => {
-              const labelMatch = para.match(/^(ACT ONE|ACT TWO|ACT THREE|THE CRITICAL DESIGN RULE):\s*/i);
-              if (labelMatch) {
-                return (
-                  <p key={i} className="font-body text-[16px] text-stone-400 leading-[2]">
-                    <span className="font-ui text-amber-400 font-semibold tracking-wider uppercase text-[13px]">{labelMatch[1]}:</span>{' '}
-                    {para.slice(labelMatch[0].length)}
-                  </p>
-                );
-              }
-              return <p key={i} className="font-body text-[16px] text-stone-400 leading-[2]">{para}</p>;
-            })}
-          </div>
-
-          {/* Cast -- horizontal cards */}
-          <div className="max-w-3xl mx-auto mb-20">
-            <p className="font-ui text-[10px] tracking-[0.25em] uppercase text-stone-600 mb-6">
-              Who's in it
-            </p>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
-              {concept.castExamples.map((cast, i) => (
-                <div key={i} className="border-t border-white/[0.08] pt-4">
-                  <p className="font-ui text-[13px] text-white font-medium mb-1.5">{cast.label}</p>
-                  <p className="font-body text-[13px] text-stone-500 leading-relaxed">{cast.description}</p>
-                </div>
-              ))}
-            </div>
-          </div>
-
-          {/* Mechanics -- cleaner editorial style */}
-          <div className="max-w-2xl mx-auto mb-20">
-            <p className="font-ui text-[10px] tracking-[0.25em] uppercase text-stone-600 mb-6">
-              How it works
-            </p>
-            <div className="space-y-8">
-              {concept.mechanics.map((mech, i) => (
-                <div key={i}>
-                  <p className="font-ui text-[13px] text-amber-400/60 tracking-wider uppercase mb-2">{mech.title}</p>
-                  <p className="font-body text-[15px] text-stone-400 leading-[2]">{mech.body}</p>
-                </div>
-              ))}
-            </div>
-          </div>
-
-          {/* ── "It might feel like this..." + Moodboard ──────────────── */}
-          {(cm.storyboard.length > 0 || cm.mood.length > 0) && (
-            <div className="max-w-4xl mx-auto mb-20">
-              <p className="font-display text-[18px] md:text-[22px] text-stone-500 italic tracking-tight mb-8 text-center">
-                It might feel like this...
-              </p>
-              <MoodboardCollage storyboard={cm.storyboard || []} mood={cm.mood || []} />
-            </div>
-          )}
-
-          {/* Closing quote */}
-          <div className="max-w-2xl mx-auto mb-16 text-center">
-            <div className="w-8 h-[1px] bg-white/10 mx-auto mb-10" />
-            <p className="font-display text-xl md:text-2xl text-stone-300 leading-snug tracking-tight italic">
-              "{concept.closingQuote}"
-            </p>
+            </h1>
+            {concept.tagline && (
+              <p className="font-body text-xl text-stone-300 mt-4 max-w-lg">{concept.tagline}</p>
+            )}
           </div>
         </div>
       </div>
 
-      {/* ── Interviewer Panel (sticky bottom) ─────────────────────────── */}
+      {/* ── Body ── */}
+      <div className="px-6 md:px-12 lg:px-20 pt-12">
+        <div className="max-w-4xl mx-auto">
+
+          {/* Video embed if exists */}
+          {cm.videoUrl && (
+            <div className="mb-12">
+              <VideoEmbed url={cm.videoUrl} />
+            </div>
+          )}
+
+          {/* Logline as big pull quote */}
+          <p className="font-display text-[24px] md:text-[32px] text-white leading-[1.4] tracking-tight mb-12">
+            {concept.logline}
+          </p>
+
+          {/* Format: "Love Island meets Survivor" style quick reference */}
+          <div className="flex gap-3 mb-12">
+            {concept.mechanics.map((mech, i) => (
+              <button
+                key={i}
+                onClick={() => setExpandedSection(expandedSection === mech.title ? null : mech.title)}
+                className={`px-4 py-2 rounded-full text-xs font-ui tracking-wider transition-all ${
+                  expandedSection === mech.title
+                    ? 'bg-amber-500 text-black'
+                    : 'bg-white/5 text-stone-400 hover:bg-white/10 hover:text-white border border-white/10'
+                }`}
+              >
+                {mech.title}
+              </button>
+            ))}
+          </div>
+
+          {/* Expanded mechanic */}
+          {expandedSection && (
+            <div className="mb-12 bg-white/[0.03] border border-white/[0.06] rounded-xl px-6 py-5">
+              <p className="font-body text-[15px] text-stone-300 leading-[1.9]">
+                {concept.mechanics.find(m => m.title === expandedSection)?.body}
+              </p>
+            </div>
+          )}
+
+          {/* The story - collapsible */}
+          <div className="mb-12">
+            <button
+              onClick={() => setExpandedSection(expandedSection === 'story' ? null : 'story')}
+              className="flex items-center gap-3 group"
+            >
+              <span className="font-ui text-[10px] tracking-[0.25em] uppercase text-stone-500 group-hover:text-amber-400 transition-colors">
+                The story
+              </span>
+              <span className="text-stone-600 text-xs">{expandedSection === 'story' ? '−' : '+'}</span>
+            </button>
+            {expandedSection === 'story' && (
+              <div className="mt-6 space-y-6 max-w-2xl">
+                {concept.narrative.map((para, i) => {
+                  const labelMatch = para.match(/^(ACT ONE|ACT TWO|ACT THREE|THE CRITICAL DESIGN RULE):\s*/i);
+                  if (labelMatch) {
+                    return (
+                      <p key={i} className="font-body text-[15px] text-stone-400 leading-[1.9]">
+                        <span className="font-ui text-amber-400 font-semibold tracking-wider uppercase text-[12px]">{labelMatch[1]}:</span>{' '}
+                        {para.slice(labelMatch[0].length)}
+                      </p>
+                    );
+                  }
+                  return <p key={i} className="font-body text-[15px] text-stone-400 leading-[1.9]">{para}</p>;
+                })}
+              </div>
+            )}
+          </div>
+
+          {/* Cast - horizontal scroll cards */}
+          <div className="mb-12">
+            <p className="font-ui text-[10px] tracking-[0.25em] uppercase text-stone-500 mb-4">
+              Who's in it
+            </p>
+            <div className="flex gap-3 overflow-x-auto pb-2 -mx-6 px-6 snap-x">
+              {concept.castExamples.map((cast, i) => (
+                <div
+                  key={i}
+                  className="shrink-0 w-[280px] bg-white/[0.03] border border-white/[0.06] rounded-xl px-5 py-4 snap-start"
+                >
+                  <p className="font-ui text-[13px] text-white font-medium mb-2">{cast.label}</p>
+                  <p className="font-body text-[12px] text-stone-500 leading-relaxed">{cast.description}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Bottom images grid */}
+          {allImages.length > 3 && (
+            <div className="mb-12">
+              <div className="grid gap-2" style={{ gridTemplateColumns: `repeat(${Math.min(allImages.length - 3, 3)}, 1fr)` }}>
+                {allImages.slice(3).map((src, i) => (
+                  <div key={i} className="h-[200px] rounded-xl overflow-hidden border border-white/[0.06]">
+                    <img src={src} alt="" className="w-full h-full object-cover" />
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* Closing quote */}
+          <div className="mb-12 py-8 border-t border-white/[0.06]">
+            <p className="font-display text-xl md:text-2xl text-stone-300 leading-snug tracking-tight italic max-w-2xl">
+              "{concept.closingQuote}"
+            </p>
+          </div>
+
+          {/* Discussion questions - compact */}
+          <div className="mb-12">
+            <p className="font-ui text-[10px] tracking-[0.25em] uppercase text-stone-500 mb-3">
+              Discussion
+            </p>
+            <div className="flex flex-wrap gap-2">
+              {concept.discussionQuestions.map((q, i) => (
+                <span
+                  key={i}
+                  className="px-4 py-2 bg-white/[0.03] border border-white/[0.06] rounded-full font-body text-[12px] text-stone-400"
+                >
+                  {q}
+                </span>
+              ))}
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* ── Bottom bar ── */}
       <div className="fixed bottom-0 left-0 right-0 z-30 bg-[#111]/95 border-t border-white/[0.08] backdrop-blur-md">
         <div className="max-w-4xl mx-auto px-6 md:px-12">
-          {/* Collapsed bar */}
           <div className="flex items-center justify-between py-3">
             <div className="flex items-center gap-3">
-              {/* Quick rating */}
               <div className="flex gap-1">
                 {[1, 2, 3, 4, 5].map(n => (
                   <button
@@ -332,7 +354,7 @@ export default function Concepts() {
                     : 'bg-white/5 text-stone-500 border border-white/10 hover:text-stone-300'
                 }`}
               >
-                {reaction.wouldWatch ? '✓ Watch' : 'Watch?'}
+                {reaction.wouldWatch ? '\u2713 Watch' : 'Watch?'}
               </button>
 
               <button
@@ -343,7 +365,7 @@ export default function Concepts() {
                     : 'bg-white/5 text-stone-500 border border-white/10 hover:text-stone-300'
                 }`}
               >
-                {showPanel ? '▾ Panel' : '▸ Notes & Media'}
+                {showPanel ? '\u25BE Panel' : '\u25B8 Notes'}
               </button>
             </div>
 
@@ -359,7 +381,7 @@ export default function Concepts() {
                 }}
                 className="font-ui text-[10px] text-stone-500 tracking-wider uppercase hover:text-white transition-colors px-2"
               >
-                ←
+                \u2190
               </button>
               {activeIndex < showConcepts.length - 1 && (
                 <button
@@ -369,7 +391,7 @@ export default function Concepts() {
                   }}
                   className="px-4 py-1.5 bg-amber-500 text-black font-ui text-[10px] tracking-wider uppercase rounded-full hover:bg-amber-400 transition-colors"
                 >
-                  Next →
+                  Next \u2192
                 </button>
               )}
               {activeIndex === showConcepts.length - 1 && id && (
@@ -377,7 +399,7 @@ export default function Concepts() {
                   onClick={() => navigate(`/interview/${id}/ideas`)}
                   className="px-4 py-1.5 bg-amber-500 text-black font-ui text-[10px] tracking-wider uppercase rounded-full hover:bg-amber-400 transition-colors"
                 >
-                  Ideas →
+                  Ideas \u2192
                 </button>
               )}
             </div>
@@ -386,7 +408,6 @@ export default function Concepts() {
           {/* Expanded panel */}
           {showPanel && (
             <div className="pb-5 pt-2 border-t border-white/[0.06] max-h-[50vh] overflow-y-auto space-y-4">
-              {/* Reaction notes */}
               <div>
                 <p className="font-ui text-[10px] text-stone-500 tracking-wider uppercase mb-1.5">Reaction notes</p>
                 <textarea
@@ -397,9 +418,7 @@ export default function Concepts() {
                 />
               </div>
 
-              {/* Two-column: video + images */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                {/* Video */}
                 <div>
                   <p className="font-ui text-[10px] text-stone-500 tracking-wider uppercase mb-1.5">Video</p>
                   <div className="flex gap-2">
@@ -417,91 +436,52 @@ export default function Concepts() {
                     </button>
                   </div>
                 </div>
-
-                {/* Discussion prompts */}
-                <div>
-                  <p className="font-ui text-[10px] text-stone-500 tracking-wider uppercase mb-1.5">Ask them</p>
-                  {concept.discussionQuestions.map((q, i) => (
-                    <p key={i} className="font-body text-[11px] text-stone-500 leading-relaxed">· {q}</p>
-                  ))}
-                </div>
-              </div>
-
-              {/* Image uploads by category */}
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                {/* Storyboard images */}
-                <div>
-                  <p className="font-ui text-[10px] text-stone-500 tracking-wider uppercase mb-1.5">
-                    Storyboard <span className="text-stone-600">(reference shots, similar shows)</span>
-                  </p>
-                  <div className="flex flex-wrap gap-1.5 items-center">
-                    {(cm.storyboard || []).map((img, i) => (
-                      <div key={i} className="relative group w-16 h-16 rounded-lg overflow-hidden border border-white/10">
-                        <img src={img} alt="" className="w-full h-full object-cover" />
-                        <button
-                          onClick={() => deleteImage(img)}
-                          className="absolute inset-0 bg-black/70 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center"
-                        >
-                          <span className="text-red-400 text-[10px]">✕</span>
-                        </button>
-                      </div>
-                    ))}
-                    <button
-                      onClick={() => storyboardInputRef.current?.click()}
-                      className="w-16 h-16 rounded-lg border border-dashed border-white/10 flex items-center justify-center text-stone-600 hover:border-amber-500/30 hover:text-amber-400 transition-all text-lg"
-                    >
-                      +
-                    </button>
-                    <input
-                      ref={storyboardInputRef}
-                      type="file"
-                      accept="image/*"
-                      multiple
-                      className="hidden"
-                      onChange={(e) => {
-                        const files = Array.from(e.target.files || []);
-                        files.forEach(f => uploadImage(f, 'storyboard'));
-                        e.target.value = '';
-                      }}
-                    />
+                <div className="grid grid-cols-2 gap-2">
+                  <div>
+                    <p className="font-ui text-[10px] text-stone-500 tracking-wider uppercase mb-1.5">Storyboard</p>
+                    <div className="flex flex-wrap gap-1">
+                      {(cm.storyboard || []).map((img, i) => (
+                        <div key={i} className="relative group w-12 h-12 rounded overflow-hidden border border-white/10">
+                          <img src={img} alt="" className="w-full h-full object-cover" />
+                          <button
+                            onClick={() => deleteImage(img)}
+                            className="absolute inset-0 bg-black/70 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center"
+                          >
+                            <span className="text-red-400 text-[10px]">\u2715</span>
+                          </button>
+                        </div>
+                      ))}
+                      <button
+                        onClick={() => storyboardInputRef.current?.click()}
+                        className="w-12 h-12 rounded border border-dashed border-white/10 flex items-center justify-center text-stone-600 hover:border-amber-500/30 hover:text-amber-400 transition-all"
+                      >+</button>
+                      <input ref={storyboardInputRef} type="file" accept="image/*" multiple className="hidden"
+                        onChange={(e) => { Array.from(e.target.files || []).forEach(f => uploadImage(f, 'storyboard')); e.target.value = ''; }}
+                      />
+                    </div>
                   </div>
-                </div>
-
-                {/* Mood / texture images */}
-                <div>
-                  <p className="font-ui text-[10px] text-stone-500 tracking-wider uppercase mb-1.5">
-                    Mood & Texture <span className="text-stone-600">(vibes, colors, feeling)</span>
-                  </p>
-                  <div className="flex flex-wrap gap-1.5 items-center">
-                    {(cm.mood || []).map((img, i) => (
-                      <div key={i} className="relative group w-16 h-16 rounded-lg overflow-hidden border border-white/10">
-                        <img src={img} alt="" className="w-full h-full object-cover" />
-                        <button
-                          onClick={() => deleteImage(img)}
-                          className="absolute inset-0 bg-black/70 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center"
-                        >
-                          <span className="text-red-400 text-[10px]">✕</span>
-                        </button>
-                      </div>
-                    ))}
-                    <button
-                      onClick={() => moodInputRef.current?.click()}
-                      className="w-16 h-16 rounded-lg border border-dashed border-white/10 flex items-center justify-center text-stone-600 hover:border-amber-500/30 hover:text-amber-400 transition-all text-lg"
-                    >
-                      +
-                    </button>
-                    <input
-                      ref={moodInputRef}
-                      type="file"
-                      accept="image/*"
-                      multiple
-                      className="hidden"
-                      onChange={(e) => {
-                        const files = Array.from(e.target.files || []);
-                        files.forEach(f => uploadImage(f, 'mood'));
-                        e.target.value = '';
-                      }}
-                    />
+                  <div>
+                    <p className="font-ui text-[10px] text-stone-500 tracking-wider uppercase mb-1.5">Mood</p>
+                    <div className="flex flex-wrap gap-1">
+                      {(cm.mood || []).map((img, i) => (
+                        <div key={i} className="relative group w-12 h-12 rounded overflow-hidden border border-white/10">
+                          <img src={img} alt="" className="w-full h-full object-cover" />
+                          <button
+                            onClick={() => deleteImage(img)}
+                            className="absolute inset-0 bg-black/70 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center"
+                          >
+                            <span className="text-red-400 text-[10px]">\u2715</span>
+                          </button>
+                        </div>
+                      ))}
+                      <button
+                        onClick={() => moodInputRef.current?.click()}
+                        className="w-12 h-12 rounded border border-dashed border-white/10 flex items-center justify-center text-stone-600 hover:border-amber-500/30 hover:text-amber-400 transition-all"
+                      >+</button>
+                      <input ref={moodInputRef} type="file" accept="image/*" multiple className="hidden"
+                        onChange={(e) => { Array.from(e.target.files || []).forEach(f => uploadImage(f, 'mood')); e.target.value = ''; }}
+                      />
+                    </div>
                   </div>
                 </div>
               </div>

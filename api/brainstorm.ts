@@ -1,5 +1,6 @@
 import { Redis } from '@upstash/redis';
 import type { VercelRequest, VercelResponse } from '@vercel/node';
+import { collectIdeas, clusterIdeas } from './_cluster-utils';
 
 const redis = new Redis({
   url: process.env.KV_REST_API_URL!,
@@ -133,11 +134,29 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         }
       }
 
+      // Auto-cluster both HMW rounds
+      const gridData = (grid || {}) as Record<string, string>;
+      let allClusters: Record<string, any[]> = {};
+      try {
+        const [clusters0, clusters1] = await Promise.all([
+          collectIdeas(gridData, parsedHearts, 0).length >= 2
+            ? clusterIdeas(collectIdeas(gridData, parsedHearts, 0), 0)
+            : Promise.resolve([]),
+          collectIdeas(gridData, parsedHearts, 1).length >= 2
+            ? clusterIdeas(collectIdeas(gridData, parsedHearts, 1), 1)
+            : Promise.resolve([]),
+        ]);
+        allClusters = { hmw0: clusters0, hmw1: clusters1 };
+      } catch (err) {
+        console.error('Auto-clustering failed, archiving without clusters:', err);
+      }
+
       const archive = {
         label: label || new Date().toLocaleString(),
         timestamp: new Date().toISOString(),
-        grid: grid || {},
+        grid: gridData,
         hearts: parsedHearts,
+        clusters: allClusters,
       };
 
       const archiveId = `archive:${Date.now()}`;
