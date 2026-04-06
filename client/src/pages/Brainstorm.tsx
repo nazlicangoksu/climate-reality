@@ -77,6 +77,7 @@ const STEPS = [
     { id: `feedback-${c.id}`, label: `C/C: ${c.title}` },
   ]),
   { id: 'worksheet', label: 'Design Your Show' },
+  { id: 'submissions', label: 'All Submissions' },
 ];
 
 export default function Brainstorm() {
@@ -100,6 +101,7 @@ export default function Brainstorm() {
   const saveTimers = useRef<Record<string, ReturnType<typeof setTimeout>>>({});
   const prevFilledRef = useRef<Set<string>>(new Set());
   const [newCells, setNewCells] = useState<Set<string>>(new Set());
+  const [savedCells, setSavedCells] = useState<Set<string>>(new Set());
   const userId = useRef(getUserId());
 
   const currentStep = STEPS[step];
@@ -145,10 +147,15 @@ export default function Brainstorm() {
 
   const updateCell = useCallback((id: string, text: string) => {
     editingId.current = id;
+    setSavedCells(prev => { const next = new Set(prev); next.delete(id); return next; });
     setGrid(prev => ({ ...prev, [id]: text }));
     if (saveTimers.current[id]) clearTimeout(saveTimers.current[id]);
     saveTimers.current[id] = setTimeout(() => {
-      apiUpdateCell(id, text).then(() => { if (editingId.current === id) editingId.current = null; });
+      apiUpdateCell(id, text).then(() => {
+        if (editingId.current === id) editingId.current = null;
+        setSavedCells(prev => new Set(prev).add(id));
+        setTimeout(() => setSavedCells(prev => { const next = new Set(prev); next.delete(id); return next; }), 2000);
+      });
     }, 500);
   }, []);
 
@@ -560,9 +567,13 @@ export default function Brainstorm() {
             <div className="max-w-2xl mx-auto space-y-6">
               {WORKSHEET_FIELDS.map((field) => {
                 const cellId = `${wsPrefix}-${field.id}`;
+                const isSaved = savedCells.has(cellId);
                 return (
                   <div key={field.id}>
-                    <label className="font-ui text-[11px] text-amber-400/60 tracking-wider uppercase block mb-2">{field.label}</label>
+                    <div className="flex items-center justify-between mb-2">
+                      <label className="font-ui text-[11px] text-amber-400/60 tracking-wider uppercase">{field.label}</label>
+                      {isSaved && <span className="font-ui text-[9px] text-green-400/70 tracking-wider">Saved ✓</span>}
+                    </div>
                     <textarea value={grid[cellId] || ''} onChange={(e) => updateCell(cellId, e.target.value)}
                       onFocus={() => { editingId.current = cellId; }}
                       onBlur={() => { if (editingId.current === cellId) editingId.current = null; }}
@@ -572,6 +583,86 @@ export default function Brainstorm() {
                 );
               })}
             </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // ── Step: All Submissions ──
+  if (currentStep.id === 'submissions') {
+    // Parse all worksheets from grid
+    const worksheets: Record<string, Record<string, string>> = {};
+    for (const [key, val] of Object.entries(grid)) {
+      if (!key.startsWith('ws-') || !val?.trim()) continue;
+      const parts = key.split('-');
+      const wsUser = parts[1];
+      const fieldId = parts.slice(2).join('-');
+      if (!worksheets[wsUser]) worksheets[wsUser] = {};
+      worksheets[wsUser][fieldId] = val;
+    }
+    const submissions = Object.entries(worksheets).filter(([, fields]) => fields.title?.trim());
+
+    return (
+      <div className="h-screen bg-[#0a0a0a] flex flex-col overflow-hidden">
+        {topBar}
+        <div className="px-6 py-4 border-b border-white/[0.06]">
+          <h2 className="font-display text-2xl text-white">All Show Concepts</h2>
+          <p className="font-body text-sm text-stone-500 mt-1">{submissions.length} submitted</p>
+        </div>
+        <div className="flex-1 flex overflow-hidden">
+          {clustersPanel}
+          {archivePanel}
+          <div className="flex-1 overflow-auto p-6">
+            {submissions.length === 0 ? (
+              <p className="font-body text-stone-600 text-center mt-12">No show concepts submitted yet.</p>
+            ) : (
+              <div className="max-w-4xl mx-auto space-y-8">
+                {submissions.map(([wsUser, fields], i) => (
+                  <div key={wsUser} className="bg-white/[0.03] border border-white/[0.06] rounded-2xl overflow-hidden">
+                    {/* Header */}
+                    <div className="px-6 py-5 border-b border-white/[0.06]">
+                      <div className="flex items-center gap-3">
+                        <span className="font-display text-3xl text-amber-400">{i + 1}</span>
+                        <div>
+                          <h3 className="font-display text-2xl text-white">{fields.title}</h3>
+                          {fields.logline && (
+                            <p className="font-body text-sm text-stone-400 mt-1 leading-relaxed">{fields.logline}</p>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+                    {/* Fields */}
+                    <div className="px-6 py-4 grid grid-cols-1 md:grid-cols-2 gap-4">
+                      {WORKSHEET_FIELDS.filter(f => f.id !== 'title' && f.id !== 'logline' && fields[f.id]?.trim()).map(f => (
+                        <div key={f.id} className={f.id === 'climate' || f.id === 'cast' ? 'md:col-span-2' : ''}>
+                          <p className="font-ui text-[9px] text-amber-400/40 tracking-wider uppercase mb-1">{f.label}</p>
+                          <p className="font-body text-[13px] text-stone-300 leading-relaxed whitespace-pre-wrap">{fields[f.id]}</p>
+                        </div>
+                      ))}
+                    </div>
+                    {/* Hearts */}
+                    {(() => {
+                      const titleCellId = `ws-${wsUser}-title`;
+                      const cellHearts = hearts[titleCellId] || [];
+                      const hearted = cellHearts.includes(userName);
+                      return (
+                        <div className="px-6 py-3 border-t border-white/[0.06] flex items-center gap-3">
+                          <button onClick={() => toggleHeart(titleCellId)}
+                            className={`flex items-center gap-1.5 text-sm transition-all ${hearted ? 'text-red-500' : 'text-stone-600 hover:text-red-400'}`}>
+                            <span>{hearted ? '❤️' : '♡'}</span>
+                            {cellHearts.length > 0 && <span className="font-ui text-[11px]">{cellHearts.length}</span>}
+                          </button>
+                          {cellHearts.length > 0 && (
+                            <span className="font-ui text-[10px] text-stone-600">{cellHearts.join(', ')}</span>
+                          )}
+                        </div>
+                      );
+                    })()}
+                  </div>
+                ))}
+              </div>
+            )}
           </div>
         </div>
       </div>
