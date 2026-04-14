@@ -162,14 +162,14 @@ export const showConcepts: ShowConcept[] = [
     id: 'the-calendar',
     number: '003',
     title: 'The Calendar',
-    tagline: 'Six hot firefighters. One island. The women who live there know everything. They know nothing.',
+    tagline: 'Six hot firefighters. Six local women. Twelve months. One island.',
     logline:
-      'Six American firefighters go to a remote island to compete for a calendar shoot and one million dollars. Six local women are the other half of the cast. The women choose their partner every week. The twist: whatever you forage, catch, or find on this island is what you get. The island is running out of everything. Nobody tells them why.',
+      'Six American firefighters go to a remote island to compete for a calendar shoot and one million dollars. Six local women are the other half of the cast. The women choose their partner every week. Each episode is a calendar month. Each month has a challenge based on something that actually happened on the island that month. The women know what\'s coming. The firefighters don\'t.',
     narrative: [
-      'Six firefighters show up for a calendar shoot. Six women who grew up on this island are waiting for them. The women choose their partners. The firefighters think it\'s a dating show. It is. But the women aren\'t just picking for looks.',
-      'Every challenge is a date. But the date is real life on this island. You want dinner? Go catch it. The catch is small. You want fresh water? Go find it. The well is running low. You want the calendar shot? Build something that actually matters here.',
-      'The women know this island is changing. They\'ve watched it happen their whole lives. They don\'t explain it. They just steer their partners toward the things that need doing. The firefighters who listen do well. The ones who perform fail.',
-      'New people can arrive. Nobody is safe. The island decides what you eat, where you sleep, and whether your date goes well or falls apart.',
+      'Six firefighters show up for a calendar shoot. Six women who grew up on this island are waiting for them. The women choose their partners.',
+      'Each episode is a calendar month. June had a hurricane: build a storm-resistant house. August had a drought: find water. January had flooding: build a seawall. The challenges are real things that happened here. The women know what\'s coming each month. The firefighters don\'t.',
+      'The women aren\'t just picking for looks. They\'re picking for who can help them survive what\'s coming next month. The firefighters never know if it\'s attraction or strategy. That tension runs the entire season.',
+      'Win the challenge, win the calendar shoot for that month. The calendar starts glossy and ends real. It gets published for real. New people can arrive. Nobody is safe.',
     ],
     castExamples: [
       {
@@ -187,8 +187,8 @@ export const showConcepts: ShowConcept[] = [
         body: 'Every week the women pick their partner. Was it attraction or strategy? The firefighters never know.',
       },
       {
-        title: 'The island is the producer',
-        body: 'Whatever you forage is what you eat. Whatever you catch is your date. The island is running out of everything and nobody explains why. The audience figures it out before the contestants do.',
+        title: 'The calendar',
+        body: 'Each month is an episode. Each challenge is based on something real that happened on this island. Win the challenge, win the shoot. The calendar starts glossy and ends muddy, real, honest. It gets published.',
       },
     ],
     closingQuote: 'The firefighters came to be heroes. The women already were.',
