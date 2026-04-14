@@ -146,8 +146,8 @@ export default function Concepts() {
         {allImages.length > 0 && (
           <div className="absolute inset-0 grid grid-cols-3 gap-0">
             {allImages.slice(0, 3).map((src, i) => (
-              <div key={i} className="overflow-hidden bg-black">
-                <img src={src} alt="" className={`w-full h-full ${i === 0 ? 'object-contain' : 'object-cover'}`} />
+              <div key={i} className="overflow-hidden">
+                <img src={src} alt="" className="w-full h-full object-cover object-top" />
               </div>
             ))}
           </div>
