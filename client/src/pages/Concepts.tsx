@@ -147,7 +147,7 @@ export default function Concepts() {
           <div className="absolute inset-0 grid grid-cols-3 gap-0">
             {allImages.slice(0, 3).map((src, i) => (
               <div key={i} className="overflow-hidden flex items-center justify-center bg-black">
-                <img src={src} alt="" className="w-full h-full object-contain" />
+                <img src={src} alt="" className="w-full h-full object-contain object-center" />
               </div>
             ))}
           </div>
