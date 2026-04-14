@@ -162,16 +162,14 @@ export const showConcepts: ShowConcept[] = [
     id: 'the-calendar',
     number: '003',
     title: 'The Calendar',
-    tagline: '',
+    tagline: 'Twelve firefighters. Twelve months. One island that knows more than they do.',
     logline:
-      'Twelve American firefighters are chosen to compete. They go on a remote island to compete for one million dollars, find love, and secure a calendar shoot. Twelve local women who know every secret the island holds are the other contestants. They get to choose their partner. Each episode is a calendar month. The audience decides who stays and who leaves.',
+      'Twelve American firefighters go to a remote island to compete for a calendar shoot and one million dollars. Each episode is a month of the year. Each month has a challenge based on something that actually happened on the island that month. The women who live there get to choose their partners. They know what\'s coming. The firefighters don\'t.',
     narrative: [
-      'Opens with a classic firefighter calendar shoot. Twelve guys, shirtless, posed. Then they meet the island. And twelve women who know everything about it.',
-      'There are twelve episodes, one for each month of the year. Each month has a challenge connected to something that actually happened on the island during that month. June had a hurricane: build a storm-resistant house. August had a drought: drill a well. January had flooding: build a seawall.',
-      'The women know what challenge is coming. The firefighters do not.',
-      'Every night, the women choose their partner. Was it attraction or strategy? The firefighters never know. That tension runs the entire season.',
-      'The audience runs a prediction market between episodes. Highest prediction: safe no matter what. Lowest: gone. Both go home together.',
-      'Win the challenge, win the calendar shoot for that month. By the finale, the calendar tells the whole story. It gets published for real.',
+      'Opens with a classic firefighter calendar shoot. Twelve guys, shirtless, posed. Then they meet the island.',
+      'Each episode is a calendar month. June had a hurricane: build a storm-resistant house. August had a drought: find water. January had flooding: build a seawall. The challenges are real things that happened here. The women who live on the island know what challenge is coming each month. The firefighters don\'t.',
+      'Every night, the women choose their partner. The firefighters never know if it\'s attraction or strategy. That tension runs the entire season.',
+      'Win the challenge, win the calendar shoot for that month. By the finale, the calendar tells the whole story of the island. Episode one: glossy posed shots. By the end: candid, muddy, real. It gets published for real.',
     ],
     castExamples: [
       {
@@ -183,41 +181,25 @@ export const showConcepts: ShowConcept[] = [
         description: 'Youngest on the show. Six months in. Listens to his partner from day one. Becomes the dark horse because the audience sees him learning while the veterans perform.',
       },
       {
-        label: 'Jake, structural rescue, Chicago',
-        description: 'Can breach a wall in thirty seconds. Realizes by episode three the woman who chose him picked him for his hands, not his muscles. She needs a builder. He has never built anything that was not on fire.',
-      },
-      {
         label: 'Leilani, the fisherwoman',
         description: 'Watched this coastline change for thirty years. Picks her firefighter carefully. Not the strongest. The one who asked a question on day one.',
-      },
-      {
-        label: 'Sera, daughter of the village elder',
-        description: 'Oral history of every storm, drought, and flood for three generations. The most valuable partner in the game. She picks the one nobody expected.',
-      },
-      {
-        label: 'Maia, the young engineer',
-        description: 'Twenty-four. Civil engineering degree. Came back to the island instead of taking a job in the capital. Sees the firefighters as raw material.',
       },
     ],
     mechanics: [
       {
-        title: 'Information asymmetry',
-        body: 'The women know what is coming. The firefighters do not. The audience can figure it out from clues between episodes. Viewers are aligned with the women, rooting for their knowledge. That alignment is the conversion mechanic.',
-      },
-      {
-        title: 'Prediction market',
-        body: 'Audience bets between episodes. Highest prediction: safe. Lowest: gone. To bet well, viewers research what happens on this island each month. They learn climate patterns to win a game.',
+        title: 'The women choose',
+        body: 'Every night the women pick their partner. Was it attraction or strategy? The firefighters never know. The audience is aligned with the women, rooting for their knowledge.',
       },
       {
         title: 'The calendar',
-        body: 'Episode one: glossy posed shots. By the finale: candid, muddy, vulnerable, honest. The contrast tells the entire story without a word. Published for real.',
+        body: 'Win the challenge, win the shoot. The calendar starts glossy and ends real. It gets published. The contrast tells the story without a word.',
       },
     ],
     closingQuote: 'The firefighters came to be heroes. The women already were.',
     discussionQuestions: [
       'What is the right island? What makes a location work for twelve months of distinct challenges?',
       'If you had a magic wand and could change one thing about this show, what would it be?',
-      'How do you design a prediction market that drives engagement without becoming exploitative?',
+      'What happens when a firefighter listens to his partner versus when he doesn\'t?',
     ],
   },
 ];
