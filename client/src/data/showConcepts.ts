@@ -162,23 +162,19 @@ export const showConcepts: ShowConcept[] = [
     id: 'the-calendar',
     number: '003',
     title: 'The Calendar',
-    tagline: 'Twelve firefighters. Twelve months. One island that knows more than they do.',
+    tagline: 'Six hot firefighters. One island. The women who live there know everything. They know nothing.',
     logline:
-      'Twelve American firefighters go to a remote island to compete for a calendar shoot and one million dollars. Each episode is a month of the year. Each month has a challenge based on something that actually happened on the island that month. The women who live there get to choose their partners. They know what\'s coming. The firefighters don\'t.',
+      'Six American firefighters go to a remote island to compete for a calendar shoot and one million dollars. Six local women are the other half of the cast. The women choose their partner every week. The twist: whatever you forage, catch, or find on this island is what you get. The island is running out of everything. Nobody tells them why.',
     narrative: [
-      'Opens with a classic firefighter calendar shoot. Twelve guys, shirtless, posed. Then they meet the island.',
-      'Each episode is a calendar month. June had a hurricane: build a storm-resistant house. August had a drought: find water. January had flooding: build a seawall. The challenges are real things that happened here. The women who live on the island know what challenge is coming each month. The firefighters don\'t.',
-      'Every night, the women choose their partner. The firefighters never know if it\'s attraction or strategy. That tension runs the entire season.',
-      'Win the challenge, win the calendar shoot for that month. By the finale, the calendar tells the whole story of the island. Episode one: glossy posed shots. By the end: candid, muddy, real. It gets published for real.',
+      'Six firefighters show up for a calendar shoot. Six women who grew up on this island are waiting for them. The women choose their partners. The firefighters think it\'s a dating show. It is. But the women aren\'t just picking for looks.',
+      'Every challenge is a date. But the date is real life on this island. You want dinner? Go catch it. The catch is small. You want fresh water? Go find it. The well is running low. You want the calendar shot? Build something that actually matters here.',
+      'The women know this island is changing. They\'ve watched it happen their whole lives. They don\'t explain it. They just steer their partners toward the things that need doing. The firefighters who listen do well. The ones who perform fail.',
+      'New people can arrive. Nobody is safe. The island decides what you eat, where you sleep, and whether your date goes well or falls apart.',
     ],
     castExamples: [
       {
-        label: 'Marcus, captain, LA County Fire',
+        label: 'Marcus, LA County Fire captain',
         description: 'Fifteen years running wildfire ops. Used to being in charge. Here, a twenty-three-year-old fisherwoman knows more than he does about everything that matters.',
-      },
-      {
-        label: 'Eli, the probie, rural Georgia',
-        description: 'Youngest on the show. Six months in. Listens to his partner from day one. Becomes the dark horse because the audience sees him learning while the veterans perform.',
       },
       {
         label: 'Leilani, the fisherwoman',
@@ -188,18 +184,18 @@ export const showConcepts: ShowConcept[] = [
     mechanics: [
       {
         title: 'The women choose',
-        body: 'Every night the women pick their partner. Was it attraction or strategy? The firefighters never know. The audience is aligned with the women, rooting for their knowledge.',
+        body: 'Every week the women pick their partner. Was it attraction or strategy? The firefighters never know.',
       },
       {
-        title: 'The calendar',
-        body: 'Win the challenge, win the shoot. The calendar starts glossy and ends real. It gets published. The contrast tells the story without a word.',
+        title: 'The island is the producer',
+        body: 'Whatever you forage is what you eat. Whatever you catch is your date. The island is running out of everything and nobody explains why. The audience figures it out before the contestants do.',
       },
     ],
     closingQuote: 'The firefighters came to be heroes. The women already were.',
     discussionQuestions: [
-      'What is the right island? What makes a location work for twelve months of distinct challenges?',
+      'What is the right island?',
       'If you had a magic wand and could change one thing about this show, what would it be?',
-      'What happens when a firefighter listens to his partner versus when he doesn\'t?',
+      'How trashy can this get before it stops working?',
     ],
   },
 ];
