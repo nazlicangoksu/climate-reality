@@ -12,6 +12,15 @@ export const conceptMedia: Record<string, { storyboard: string[]; mood: string[]
     ],
     videoUrl: ""
   },
+  "the-last-thing": {
+    storyboard: [
+      "/images/concepts/0x0.webp",
+      "/images/concepts/images.jpg",
+      "/images/concepts/maxresdefault.jpg"
+    ],
+    mood: [],
+    videoUrl: ""
+  },
   "the-calendar": {
     storyboard: [
       "/images/concepts/Caden-USA-Australian-Firefighters-Hero-Calendar-2024-8-1.webp",

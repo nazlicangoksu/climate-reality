@@ -106,8 +106,61 @@ export const showConcepts: ShowConcept[] = [
     ],
   },
   {
-    id: 'the-calendar',
+    id: 'the-last-thing',
     number: '002',
+    title: 'The Last Thing',
+    tagline: 'The last thing you learn about someone used to be the first thing.',
+    logline:
+      'When you meet someone, the first thing you ask is what they do. And the people you date almost always share your politics. You don\'t even think about it. You just end up with people who see the world the way you do. Here, that\'s the last thing.',
+    narrative: [
+      'Twelve singles move into a house. They date. They flirt. They do challenges. They form love triangles. They break hearts. All the usual mess.',
+      'Two rules: you cannot talk about politics, and you cannot talk about what you do for a living. You can talk about your family, your childhood, your dreams, your fears, what makes you laugh, what keeps you up at night. Everything that actually makes someone fall in love. Just not the two things that would make them judge you before they got the chance.',
+      'When a couple commits, they sit down together. One last thing. "I\'m a Republican. I work on an oil rig." "I don\'t vote. I\'m a fishing guide." "I\'m a Democrat. I work for the EPA." "I voted for Trump twice. I\'m a rancher." "I\'ve never voted. I install solar panels." "I\'m a Democrat. I\'m a conservation biologist." Whatever it is, it all comes out at once.',
+      'Then they go live in each other\'s worlds. His hometown. Her hometown. His friends. Her family. His Sunday morning. Her Tuesday night. That\'s where the show actually starts.',
+    ],
+    castExamples: [
+      {
+        label: 'The Ducks Unlimited member',
+        description: 'Spent twenty years restoring wetlands but would never call himself a climate activist. Paired with the conservation biologist who\'d never set foot in a hunting lodge. He takes her to the marsh at dawn and she realizes he knows more about that ecosystem than anyone in her office. She takes him to a conference and he realizes half the room is talking about the same land he\'s been protecting his whole life.',
+      },
+      {
+        label: 'The rancher',
+        description: 'Manages water because she has to. Paired with the guy who campaigns for water rights from an office she\'d never visit.',
+      },
+      {
+        label: 'The firefighter',
+        description: 'Been fighting longer seasons every year. Paired with the woman who\'s never seen a wildfire but has strong opinions about them.',
+      },
+      {
+        label: 'The cop and the public defender',
+        description: 'Not every couple is about climate. Some are about justice, immigration, guns. Every couple is two people who care deeply about the same thing from completely different worlds.',
+      },
+    ],
+    mechanics: [
+      {
+        title: 'The two rules',
+        body: 'No politics. No jobs. These are the first two things you normally learn about someone. Here, they\'re the last. Everything in between is just two people figuring out if they actually like each other.',
+      },
+      {
+        title: 'The reveal',
+        body: 'When a couple commits, they sit down and say one last thing. Politics and job, all at once. No moderator. No debate stage. Just two people who are already falling for each other, hearing the thing they were never allowed to ask.',
+      },
+      {
+        title: 'Living in each other\'s worlds',
+        body: 'After the reveal, each couple goes and lives in each other\'s actual lives. His week, her week. The drama is all post-reveal. Moving in together. Meeting families. Going to each other\'s workplaces. Nobody explains anything. They just live each other\'s lives.',
+      },
+    ],
+    closingQuote:
+      'The last thing you learn about someone used to be the first thing. When you flip the order, everything feels different.',
+    discussionQuestions: [
+      'How do you cast regular people whose lives tell the climate story without them being "climate people"?',
+      'If you had a magic wand and could change one thing about this show, what would it be?',
+      'What happens at the altar when someone says no? What does that moment tell the audience?',
+    ],
+  },
+  {
+    id: 'the-calendar',
+    number: '003',
     title: 'The Calendar',
     tagline: '',
     logline:
