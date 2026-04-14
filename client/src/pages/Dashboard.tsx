@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { fetchSessions, createSession } from '../lib/api';
+import { fetchSessions, createSession, deleteSession } from '../lib/api';
 
 interface Session {
   id: string;
@@ -33,6 +33,12 @@ export default function Dashboard() {
     } else {
       navigate(`/interview/${id}/notes`);
     }
+  };
+
+  const handleDelete = async (id: string, name: string) => {
+    if (!confirm(`Delete interview with ${name}?`)) return;
+    await deleteSession(id);
+    setSessions(sessions.filter(s => s.id !== id));
   };
 
   const completed = sessions.filter(s => s.endTime);
@@ -166,26 +172,34 @@ export default function Dashboard() {
             <p className="font-ui text-[10px] text-amber-500/50 tracking-[0.25em] uppercase mb-4">In Progress</p>
             <div className="space-y-3">
               {inProgress.map(s => (
-                <button
-                  key={s.id}
-                  onClick={() => resumeInterview(s.id, false)}
-                  className="w-full text-left bg-white/[0.03] border border-amber-500/20 rounded-xl p-5 hover:bg-white/[0.06] transition-all group"
-                >
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <p className="font-ui text-sm text-white">{s.participantName}</p>
-                      <p className="font-ui text-[11px] text-stone-500 mt-0.5">
-                        {s.participantRole}{s.organization ? ` · ${s.organization}` : ''}
-                      </p>
+                <div key={s.id} className="flex items-center gap-2">
+                  <button
+                    onClick={() => resumeInterview(s.id, false)}
+                    className="flex-1 text-left bg-white/[0.03] border border-amber-500/20 rounded-xl p-5 hover:bg-white/[0.06] transition-all group"
+                  >
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <p className="font-ui text-sm text-white">{s.participantName}</p>
+                        <p className="font-ui text-[11px] text-stone-500 mt-0.5">
+                          {s.participantRole}{s.organization ? ` · ${s.organization}` : ''}
+                        </p>
+                      </div>
+                      <div className="flex items-center gap-3">
+                        <span className="w-2 h-2 rounded-full bg-amber-500 animate-pulse" />
+                        <span className="font-ui text-[10px] text-amber-400/70 tracking-wider uppercase group-hover:text-amber-400">
+                          Resume
+                        </span>
+                      </div>
                     </div>
-                    <div className="flex items-center gap-3">
-                      <span className="w-2 h-2 rounded-full bg-amber-500 animate-pulse" />
-                      <span className="font-ui text-[10px] text-amber-400/70 tracking-wider uppercase group-hover:text-amber-400">
-                        Resume
-                      </span>
-                    </div>
-                  </div>
-                </button>
+                  </button>
+                  <button
+                    onClick={() => handleDelete(s.id, s.participantName)}
+                    className="shrink-0 w-9 h-9 rounded-lg border border-white/[0.06] text-stone-600 hover:text-red-400 hover:border-red-500/30 transition-all flex items-center justify-center"
+                    title="Delete"
+                  >
+                    ✕
+                  </button>
+                </div>
               ))}
             </div>
           </div>
@@ -199,22 +213,30 @@ export default function Dashboard() {
             </p>
             <div className="space-y-2">
               {completed.map(s => (
-                <button
-                  key={s.id}
-                  onClick={() => resumeInterview(s.id, true)}
-                  className="w-full text-left bg-white/[0.02] border border-white/[0.06] rounded-xl p-5 hover:bg-white/[0.04] transition-all"
-                >
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <p className="font-ui text-sm text-stone-300">{s.participantName}</p>
-                      <p className="font-ui text-[11px] text-stone-500 mt-0.5">
-                        {s.participantRole}{s.organization ? ` · ${s.organization}` : ''} ·{' '}
-                        {new Date(s.startTime).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
-                      </p>
+                <div key={s.id} className="flex items-center gap-2">
+                  <button
+                    onClick={() => resumeInterview(s.id, true)}
+                    className="flex-1 text-left bg-white/[0.02] border border-white/[0.06] rounded-xl p-5 hover:bg-white/[0.04] transition-all"
+                  >
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <p className="font-ui text-sm text-stone-300">{s.participantName}</p>
+                        <p className="font-ui text-[11px] text-stone-500 mt-0.5">
+                          {s.participantRole}{s.organization ? ` · ${s.organization}` : ''} ·{' '}
+                          {new Date(s.startTime).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
+                        </p>
+                      </div>
+                      <span className="font-ui text-[10px] text-stone-500 tracking-wider uppercase">View</span>
                     </div>
-                    <span className="font-ui text-[10px] text-stone-500 tracking-wider uppercase">View</span>
-                  </div>
-                </button>
+                  </button>
+                  <button
+                    onClick={() => handleDelete(s.id, s.participantName)}
+                    className="shrink-0 w-9 h-9 rounded-lg border border-white/[0.06] text-stone-600 hover:text-red-400 hover:border-red-500/30 transition-all flex items-center justify-center"
+                    title="Delete"
+                  >
+                    ✕
+                  </button>
+                </div>
               ))}
             </div>
           </div>
