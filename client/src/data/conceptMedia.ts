@@ -12,7 +12,7 @@ export const conceptMedia: Record<string, { storyboard: string[]; mood: string[]
     ],
     videoUrl: ""
   },
-  "the-last-thing": {
+  "one-last-thing": {
     storyboard: [
       "/images/concepts/0x0.webp",
       "/images/concepts/images.jpg",

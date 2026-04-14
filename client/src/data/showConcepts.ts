@@ -106,9 +106,9 @@ export const showConcepts: ShowConcept[] = [
     ],
   },
   {
-    id: 'the-last-thing',
+    id: 'one-last-thing',
     number: '002',
-    title: 'The Last Thing',
+    title: 'One Last Thing',
     tagline: 'The last thing you learn about someone used to be the first thing.',
     logline:
       'When you meet someone, the first thing you ask is what they do. And the people you date almost always share your politics. You don\'t even think about it. You just end up with people who see the world the way you do. Here, that\'s the last thing.',
