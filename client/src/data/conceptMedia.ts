@@ -14,9 +14,9 @@ export const conceptMedia: Record<string, { storyboard: string[]; mood: string[]
   },
   "the-last-thing": {
     storyboard: [
-      "/images/concepts/0x0.webp",
+      "/images/concepts/maxresdefault.jpg",
       "/images/concepts/images.jpg",
-      "/images/concepts/maxresdefault.jpg"
+      "/images/concepts/0x0.webp"
     ],
     mood: [],
     videoUrl: ""
