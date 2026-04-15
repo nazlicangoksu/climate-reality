@@ -115,12 +115,12 @@ export const showConcepts: ShowConcept[] = [
     title: 'One Last Thing',
     tagline: 'The last thing you learn about someone used to be the first thing.',
     logline:
-      'When you meet someone, the first thing you ask is what they do. And the people you date almost always share your politics. You don\'t even think about it. You just end up with people who see the world the way you do. Here, that\'s the last thing.',
+      'When you meet someone, the first thing you ask is what they do. And the people you date almost always share your politics. You don\'t even think about it. You just gravitate toward people who see the world the way you do. Here, that\'s forbidden.',
     narrative: [
-      'Twelve singles move into a house. They date. They flirt. They do challenges. They form love triangles. They break hearts. All the usual mess.',
-      'Two rules: you cannot talk about politics, and you cannot talk about what you do for a living. You can talk about your family, your childhood, your dreams, your fears, what makes you laugh, what keeps you up at night. Everything that actually makes someone fall in love. Just not the two things that would make them judge you before they got the chance.',
-      'When a couple commits, they sit down together. One last thing. "I\'m a Republican. I work on an oil rig." "I don\'t vote. I\'m a fishing guide." "I\'m a Democrat. I work for the EPA." "I voted for Trump twice. I\'m a rancher." "I\'ve never voted. I install solar panels." "I\'m a Democrat. I\'m a conservation biologist." Whatever it is, it all comes out at once.',
-      'Then they go live in each other\'s worlds. His hometown. Her hometown. His friends. Her family. His Sunday morning. Her Tuesday night. That\'s where the show actually starts.',
+      'Twelve singles move into a house. They flirt over breakfast. They steal kisses during challenges. They form messy love triangles. They shatter hearts. All the beautiful chaos of falling in love.',
+      'Two sacred rules: no politics, no job talk. You can share your childhood scars, your 3 a.m. fears, the song that makes you cry, the story behind your tattoo. Everything that actually makes someone fall head-over-heels. Just not the two things that would make them swipe left before they got the chance.',
+      'When a couple commits, they sit down together for the reveal. "I\'m a Republican. I work on an oil rig." "I don\'t vote. I\'m a fishing guide." "I\'m a Democrat. I work for the EPA." "I voted for Trump twice. I\'m a rancher." "I\'ve never voted. I install solar panels." "I\'m a Democrat. I\'m a conservation biologist." The masks come off all at once.',
+      'Then they dive into each other\'s worlds. This is where the real show starts. His small town diner. Her city apartment. His hunting buddies. Her book club. His Sunday service. Her protest march. That\'s the moment where they know if their love will survive. The show ends at the altar, even after everything\u2014do you say yes?',
     ],
     castExamples: [
       {
