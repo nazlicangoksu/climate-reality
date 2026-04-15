@@ -93,6 +93,10 @@ export const showConcepts: ShowConcept[] = [
         body: 'No boardroom. No panel. Walks through the village, conversations on the dock, dinners with families. He asks: who did you talk to today? What surprised you? The contestants who only talk to each other lose.',
       },
       {
+        title: 'The jury',
+        body: 'A rotating panel of people who\'ve actually built businesses in places like this. Emerging economy operators, island-born entrepreneurs, people who know what works when supply chains are thin, infrastructure is fragile, and the weather is the biggest variable. They pressure-test every idea. Can you source this locally? What happens when the port closes for a week? Who runs this after you leave? The jury doesn\'t judge ambition. They judge whether the idea survives reality.',
+      },
+      {
         title: 'Competency porn',
         body: 'The show makes it cool to understand how an aquifer works, why parametric insurance beats traditional, how a desalination membrane functions. Chef\'s Table for climate solutions. The audience feels smarter, not lectured.',
       },
