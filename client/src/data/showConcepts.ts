@@ -64,9 +64,10 @@ export const showConcepts: ShowConcept[] = [
     logline:
       'Ten entrepreneurs compete on an island with empty pockets and no PowerPoints. A local investor will invest $1 million for the entrepreneur that builds the best business. The catch? It has to sprout from the island\'s soil and serve the island\'s soul.',
     narrative: [
-      'No elevator pitches. No hockey stick projections. The entrepreneurs need to find a problem that keeps islanders up at night. They need to listen with their whole body and walk until their shoes know every rock.',
+      'Before the entrepreneurs arrive, the camera sets up the island. What the locals are proud of. What keeps them up at night. The problems are real and they fall into categories: food, water, housing, education, infrastructure. The audience knows what needs fixing before the contestants even land.',
+      'No elevator pitches. No hockey stick projections. Each entrepreneur is paired with a local business or community group. Their job is to listen, walk, and find the problem their partner lives with every day. Two contestants might end up solving the same problem from different angles, competing head to head.',
       'The investor has salt in his veins and thirty years of watching this place change. His litmus test cuts through the noise: will this business still be around in twenty years?',
-      'One contestant camps with fishermen. Their nets come up half-empty\u2014forty percent lighter than a decade ago. She starts an aquaculture farm that turns seawater into supper. Another watches wells gasp for breath and engineers a desalination plant that the local co-op can keep running with duct tape and determination. A third spots the same houses drowning every hurricane season and crafts parametric insurance that drops cash before the first shingle flies.',
+      'One contestant camps with fishermen. Their nets come up half-empty. She starts an aquaculture farm that turns seawater into supper. Another watches wells gasp for breath and engineers a desalination plant that the local co-op can keep running with duct tape and determination. A third spots the same houses drowning every hurricane season and crafts parametric insurance that drops cash before the first shingle flies.',
       'The entrepreneurs who parachute in with Silicon Valley solutions crash and burn. The ones who sit on porches and share coffee build businesses with roots. Nobody says "climate change." The island whispers its secrets instead.',
     ],
     castExamples: [
@@ -86,15 +87,15 @@ export const showConcepts: ShowConcept[] = [
     mechanics: [
       {
         title: 'The island is the pitch',
-        body: 'No one arrives with an idea. The island is the brief. The contestants who talk to locals find opportunities everywhere. The ones who sit in their rooms thinking get nothing.',
+        body: 'No one arrives with an idea. The island is the brief. Each contestant is paired with a local business or group. The ones who listen find opportunities everywhere. The ones who try to impose solutions from the outside get nowhere.',
       },
       {
-        title: 'The investor walks, not talks',
-        body: 'No boardroom. No panel. Walks through the village, conversations on the dock, dinners with families. He asks: who did you talk to today? What surprised you? The contestants who only talk to each other lose.',
+        title: 'Locals choose',
+        body: 'The locals interview the contestants and decide who they want to work with. They can tell who just wants to win and who actually cares. If the community doesn\'t pick you, you\'re on your own.',
       },
       {
-        title: 'The jury',
-        body: 'A rotating panel of people who\'ve actually built businesses in places like this. Emerging economy operators, island-born entrepreneurs, people who know what works when supply chains are thin, infrastructure is fragile, and the weather is the biggest variable. They pressure-test every idea. Can you source this locally? What happens when the port closes for a week? Who runs this after you leave? The jury doesn\'t judge ambition. They judge whether the idea survives reality.',
+        title: 'The jury as sponsors',
+        body: 'The jury isn\'t a panel of judges. They\'re investors. People who\'ve built businesses in emerging economies, island-born entrepreneurs, people who know what works when supply chains are thin and the weather is the biggest variable. When a contestant figures something out, a jury member can sponsor them with resources, materials, or funding. The question isn\'t just "is this creative?" It\'s "would you put your own money in?" The show is aspirational, not punitive. You earn the right to grow.',
       },
       {
         title: 'Competency porn',
@@ -106,7 +107,7 @@ export const showConcepts: ShowConcept[] = [
     discussionQuestions: [
       'Who is the right investor figure? What does getting that casting wrong look like?',
       'If you had a magic wand and could change one thing about this show, what would it be?',
-      'What happens when a contestant builds something the community actually wants versus what they think the community needs?',
+      'How do you set up the island\'s story before the contestants arrive?',
     ],
   },
   {
