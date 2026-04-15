@@ -64,7 +64,6 @@ export const showConcepts: ShowConcept[] = [
     logline:
       'Ten entrepreneurs compete on an island with empty pockets and no PowerPoints. A local investor will invest $1 million for the entrepreneur that builds the best business. The catch? It has to sprout from the island\'s soil and serve the island\'s soul.',
     narrative: [
-      'Ten entrepreneurs compete on an island with empty pockets and no PowerPoints. A local investor will invest $1 million for the entrepreneur that builds the best business. The catch? It has to sprout from the island\'s soil and serve the island\'s soul.',
       'No elevator pitches. No hockey stick projections. The entrepreneurs need to find a problem that keeps islanders up at night. They need to listen with their whole body and walk until their shoes know every rock.',
       'The investor has salt in his veins and thirty years of watching this place change. His litmus test cuts through the noise: will this business still be around in twenty years?',
       'One contestant camps with fishermen. Their nets come up half-empty\u2014forty percent lighter than a decade ago. She starts an aquaculture farm that turns seawater into supper. Another watches wells gasp for breath and engineers a desalination plant that the local co-op can keep running with duct tape and determination. A third spots the same houses drowning every hurricane season and crafts parametric insurance that drops cash before the first shingle flies.',
