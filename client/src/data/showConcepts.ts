@@ -64,10 +64,11 @@ export const showConcepts: ShowConcept[] = [
     logline:
       'Ten entrepreneurs are chosen to go on an island with no pitch, no plan, and no idea what they are looking for. A local investor puts up $1 million for whoever builds the best business. The only rule: it has to come from the island and help the island.',
     narrative: [
-      'No pitch decks. No business plans. Ten entrepreneurs show up and are told: find a problem worth solving. Talk to people. Walk around. Your idea has to come from here.',
-      'The investor grew up on this island. He knows what the water table looked like thirty years ago. He has one criterion: will this still work in twenty years without him?',
-      'A contestant talks to fishermen. The catch dropped forty percent in a decade. She builds an aquaculture business. Another notices the wells running dry and designs a desalination system a local co-op can maintain. Someone else sees the same houses flooding every storm season and creates parametric insurance that pays out before the damage hits.',
-      'The entrepreneurs who impose solutions from the outside fail. The ones who listen to the community build businesses that work. Nobody says "climate." The island says it for them.',
+      'Ten entrepreneurs land on an island with empty pockets and no PowerPoints. A local investor will put up $1 million if they can build the best business. The catch: it has to come from the island and serve the island.',
+      'No elevator pitches. No hockey stick projections. Ten strangers get one instruction: find a problem that keeps people up at night. Listen. Walk until you know every road. Your idea lives here somewhere.',
+      'The investor grew up on this island. He has salt in his veins and thirty years of watching this place change. His only test: will this thing still work in twenty years without him?',
+      'One contestant sits with fishermen. Their catch is forty percent lighter than a decade ago. She designs an aquaculture operation that turns seawater into a livelihood. Another watches wells run dry and builds a desalination system the local co-op can maintain on its own. A third spots the same houses flooding every storm season and creates parametric insurance that pays out before the first shingle flies.',
+      'The entrepreneurs who show up with outside solutions wash out. The ones who sit on porches and share coffee build businesses with roots. Nobody says "climate." The island tells its own story.',
     ],
     castExamples: [
       {
