@@ -21,16 +21,4 @@ export const conceptMedia: Record<string, { storyboard: string[]; mood: string[]
     mood: [],
     videoUrl: ""
   },
-  "the-calendar": {
-    storyboard: [
-      "/images/concepts/Caden-USA-Australian-Firefighters-Hero-Calendar-2024-8-1.webp",
-      "/images/concepts/afar.brightspotcdn.jpg",
-      "/images/concepts/calendar-screenshot.png"
-    ],
-    mood: [
-      "/images/concepts/conor-brown-TWxNr5ZpxJM-unsplash.jpg",
-      "/images/concepts/pktv-00097920-000273426.jpg"
-    ],
-    videoUrl: ""
-  }
 };
