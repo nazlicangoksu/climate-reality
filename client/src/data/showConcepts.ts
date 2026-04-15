@@ -64,11 +64,11 @@ export const showConcepts: ShowConcept[] = [
     logline:
       'Ten entrepreneurs are chosen to go on an island with no pitch, no plan, and no idea what they are looking for. A local investor puts up $1 million for whoever builds the best business. The only rule: it has to come from the island and help the island.',
     narrative: [
-      'Ten entrepreneurs land on an island with empty pockets and no PowerPoints. A local investor will put up $1 million if they can build the best business. The catch: it has to come from the island and serve the island.',
-      'No elevator pitches. No hockey stick projections. Ten strangers get one instruction: find a problem that keeps people up at night. Listen. Walk until you know every road. Your idea lives here somewhere.',
-      'The investor grew up on this island. He has salt in his veins and thirty years of watching this place change. His only test: will this thing still work in twenty years without him?',
-      'One contestant sits with fishermen. Their catch is forty percent lighter than a decade ago. She designs an aquaculture operation that turns seawater into a livelihood. Another watches wells run dry and builds a desalination system the local co-op can maintain on its own. A third spots the same houses flooding every storm season and creates parametric insurance that pays out before the first shingle flies.',
-      'The entrepreneurs who show up with outside solutions wash out. The ones who sit on porches and share coffee build businesses with roots. Nobody says "climate." The island tells its own story.',
+      'Ten entrepreneurs are chosen to be on an island with empty pockets and no PowerPoints. A local investor will invest $1 million if they are successful: build the best business. The catch? It has to sprout from the island\'s soil and serve the island\'s soul.',
+      'No elevator pitches. No hockey stick projections. Ten strangers land and get their marching orders: find a problem that keeps people awake at night. Listen with your whole body. Walk until your shoes know every rock. Your big idea lives here somewhere\u2014dig it up.',
+      'The investor has salt in his veins and thirty years of watching this place change. His litmus test cuts through the noise: will this thing purr along in twenty years when he\'s feeding fish from below?',
+      'One contestant camps with fishermen. Their nets come up half-empty\u2014forty percent lighter than a decade ago. She births an aquaculture farm that turns seawater into supper. Another watches wells gasp for breath and engineers a desalination plant that the local co-op can nurse back to health with duct tape and determination. A third spots the same houses drowning every hurricane season and crafts parametric insurance that drops cash before the first shingle flies.',
+      'The entrepreneurs who parachute in with Silicon Valley solutions crash and burn. The ones who sit on porches and share coffee build businesses with roots. Nobody utters "climate change." The island whispers its secrets instead.',
     ],
     castExamples: [
       {
