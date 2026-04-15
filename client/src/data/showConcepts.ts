@@ -62,7 +62,7 @@ export const showConcepts: ShowConcept[] = [
     title: 'Is This a Good Business?',
     tagline: 'One million dollars. One island. Find the business nobody else can see.',
     logline:
-      'Ten entrepreneurs are chosen to go on an island with no pitch, no plan, and no idea what they are looking for. A local investor puts up $1 million for whoever builds the best business. The only rule: it has to come from the island and help the island.',
+      'Ten entrepreneurs compete on an island with empty pockets and no PowerPoints. A local investor will invest $1 million for the entrepreneur that builds the best business. The catch? It has to sprout from the island\'s soil and serve the island\'s soul.',
     narrative: [
       'Ten entrepreneurs compete on an island with empty pockets and no PowerPoints. A local investor will invest $1 million for the entrepreneur that builds the best business. The catch? It has to sprout from the island\'s soil and serve the island\'s soul.',
       'No elevator pitches. No hockey stick projections. The entrepreneurs need to find a problem that keeps islanders up at night. They need to listen with their whole body and walk until their shoes know every rock.',
