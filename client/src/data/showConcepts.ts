@@ -62,13 +62,11 @@ export const showConcepts: ShowConcept[] = [
     title: 'Is This a Good Business?',
     tagline: 'One million dollars. One island. Find the business nobody else can see.',
     logline:
-      'Ten entrepreneurs compete on an island with empty pockets and no PowerPoints. A local investor will invest $1 million for the entrepreneur that builds the best business. The catch? It has to sprout from the island\'s soil and serve the island\'s soul.',
+      'Ten entrepreneurs land with empty pockets and no PowerPoints. A local investor will invest $1 million for the entrepreneur that builds the best business. The catch? It has to sprout from the island\'s soil and serve the island\'s soul.',
     narrative: [
-      'Before the entrepreneurs arrive, the camera sets up the island. What the locals are proud of. What keeps them up at night. The problems are real and they fall into categories: food, water, housing, education, infrastructure. The audience knows what needs fixing before the contestants even land.',
-      'No elevator pitches. No hockey stick projections. Each entrepreneur is paired with a local business or community group. Their job is to listen, walk, and find the problem their partner lives with every day. Two contestants might end up solving the same problem from different angles, competing head to head.',
-      'The investor has salt in his veins and thirty years of watching this place change. His litmus test cuts through the noise: will this business still be around in twenty years?',
-      'One contestant camps with fishermen. Their nets come up half-empty. She starts an aquaculture farm that turns seawater into supper. Another watches wells gasp for breath and engineers a desalination plant that the local co-op can keep running with duct tape and determination. A third spots the same houses drowning every hurricane season and crafts parametric insurance that drops cash before the first shingle flies.',
-      'The entrepreneurs who parachute in with Silicon Valley solutions crash and burn. The ones who sit on porches and share coffee build businesses with roots. Nobody says "climate change." The island whispers its secrets instead.',
+      'The shows lead investor has salt in his veins and thirty years of watching this place change. His litmus test cuts through the noise: will this business still be around in twenty years?',
+      'Before the entrepreneurs arrive, the camera spends time with the island. What the locals are proud of. What keeps them up at night. The problems fall into real categories: food, water, housing, education, infrastructure. The audience knows what needs fixing before the first contestant steps off the boat.',
+      'One contestant camps with fishermen. Their nets come up half-empty. She starts an aquaculture farm that turns seawater into supper. Another watches wells gasp for breath and engineers a desalination plant that the local co-op can keep running with duct tape and determination. Two contestants end up tackling the same problem from different angles, competing head to head. The entrepreneurs who parachute in with Silicon Valley solutions crash and burn. The ones who sit on porches and share coffee build businesses with roots. Nobody says "climate change." The island whispers its secrets instead.',
     ],
     castExamples: [
       {
@@ -90,12 +88,12 @@ export const showConcepts: ShowConcept[] = [
         body: 'No one arrives with an idea. The island is the brief. Each contestant is paired with a local business or group. The ones who listen find opportunities everywhere. The ones who try to impose solutions from the outside get nowhere.',
       },
       {
-        title: 'Locals choose',
-        body: 'The locals interview the contestants and decide who they want to work with. They can tell who just wants to win and who actually cares. If the community doesn\'t pick you, you\'re on your own.',
+        title: 'Local buy-in is key',
+        body: 'The locals are key players because without their buy-in the business doesn\'t have customers. The contestants need to build rapport, uncover needs and build trust.',
       },
       {
         title: 'The jury as sponsors',
-        body: 'The jury isn\'t a panel of judges. They\'re investors. People who\'ve built businesses in emerging economies, island-born entrepreneurs, people who know what works when supply chains are thin and the weather is the biggest variable. When a contestant figures something out, a jury member can sponsor them with resources, materials, or funding. The question isn\'t just "is this creative?" It\'s "would you put your own money in?" The show is aspirational, not punitive. You earn the right to grow.',
+        body: 'The jury isn\'t a panel of judges. They\'re investors. People who\'ve built businesses in emerging economies, island-born entrepreneurs who know what works when supply chains are thin and the weather is the biggest variable. When a contestant figures something out, a jury member can sponsor them with resources, materials, or funding. The question isn\'t "is this creative?" It\'s "would you put your own money in?" The show is aspirational, not punitive. You earn the right to grow.',
       },
       {
         title: 'Competency porn',
