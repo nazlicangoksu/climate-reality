@@ -211,59 +211,39 @@ export default function Concepts() {
             {concept.logline}
           </p>
 
-          {/* Format: "Love Island meets Survivor" style quick reference */}
-          <div className="flex gap-3 mb-12">
-            {concept.mechanics.map((mech, i) => (
-              <button
-                key={i}
-                onClick={() => setExpandedSection(expandedSection === mech.title ? null : mech.title)}
-                className={`px-4 py-2 rounded-full text-xs font-ui tracking-wider transition-all ${
-                  expandedSection === mech.title
-                    ? 'bg-amber-500 text-black'
-                    : 'bg-white/5 text-stone-400 hover:bg-white/10 hover:text-white border border-white/10'
-                }`}
-              >
-                {mech.title}
-              </button>
+          {/* The story - always visible */}
+          <div className="mb-12 space-y-6 max-w-2xl">
+            {concept.narrative.map((para, i) => (
+              <p key={i} className="font-body text-[15px] text-stone-400 leading-[1.9]">{para}</p>
             ))}
           </div>
 
-          {/* Expanded mechanic */}
-          {expandedSection && (
-            <div className="mb-12 bg-white/[0.03] border border-white/[0.06] rounded-xl px-6 py-5">
-              <p className="font-body text-[15px] text-stone-300 leading-[1.9]">
-                {concept.mechanics.find(m => m.title === expandedSection)?.body}
-              </p>
-            </div>
-          )}
-
-          {/* The story - collapsible */}
+          {/* Mechanics - expandable deep dives */}
           <div className="mb-12">
-            <button
-              onClick={() => setExpandedSection(expandedSection === 'story' ? null : 'story')}
-              className="flex items-center gap-3 group"
-            >
-              <span className="font-ui text-[10px] tracking-[0.25em] uppercase text-stone-500 group-hover:text-amber-400 transition-colors">
-                The story
-              </span>
-              <span className="text-stone-600 text-xs">{expandedSection === 'story' ? '−' : '+'}</span>
-            </button>
-            {expandedSection === 'story' && (
-              <div className="mt-6 space-y-6 max-w-2xl">
-                {concept.narrative.map((para, i) => {
-                  const labelMatch = para.match(/^(ACT ONE|ACT TWO|ACT THREE|THE CRITICAL DESIGN RULE):\s*/i);
-                  if (labelMatch) {
-                    return (
-                      <p key={i} className="font-body text-[15px] text-stone-400 leading-[1.9]">
-                        <span className="font-ui text-amber-400 font-semibold tracking-wider uppercase text-[12px]">{labelMatch[1]}:</span>{' '}
-                        {para.slice(labelMatch[0].length)}
-                      </p>
-                    );
-                  }
-                  return <p key={i} className="font-body text-[15px] text-stone-400 leading-[1.9]">{para}</p>;
-                })}
-              </div>
-            )}
+            <p className="font-ui text-[10px] tracking-[0.25em] uppercase text-stone-500 mb-4">
+              How it works
+            </p>
+            <div className="space-y-2">
+              {concept.mechanics.map((mech, i) => (
+                <div key={i}>
+                  <button
+                    onClick={() => setExpandedSection(expandedSection === mech.title ? null : mech.title)}
+                    className={`w-full text-left px-5 py-3 rounded-xl text-sm font-ui tracking-wider transition-all ${
+                      expandedSection === mech.title
+                        ? 'bg-amber-500/10 text-amber-400 border border-amber-500/20'
+                        : 'bg-white/[0.03] text-stone-400 hover:bg-white/[0.06] hover:text-white border border-white/[0.06]'
+                    }`}
+                  >
+                    {mech.title}
+                  </button>
+                  {expandedSection === mech.title && (
+                    <div className="px-5 py-4 mt-1 bg-white/[0.02] border border-white/[0.04] rounded-xl">
+                      <p className="font-body text-[14px] text-stone-400 leading-[1.9]">{mech.body}</p>
+                    </div>
+                  )}
+                </div>
+              ))}
+            </div>
           </div>
 
           {/* Cast - horizontal scroll cards */}
@@ -284,18 +264,6 @@ export default function Concepts() {
             </div>
           </div>
 
-          {/* Bottom images grid */}
-          {allImages.length > 3 && (
-            <div className="mb-12">
-              <div className="grid gap-2" style={{ gridTemplateColumns: `repeat(${Math.min(allImages.length - 3, 3)}, 1fr)` }}>
-                {allImages.slice(3).map((src, i) => (
-                  <div key={i} className="h-[200px] rounded-xl overflow-hidden border border-white/[0.06]">
-                    <img src={src} alt="" className="w-full h-full object-cover" />
-                  </div>
-                ))}
-              </div>
-            </div>
-          )}
 
           {/* Closing quote */}
           <div className="mb-12 py-8 border-t border-white/[0.06]">
