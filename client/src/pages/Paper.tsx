@@ -195,75 +195,6 @@ const TabBar: React.FC<{ tab: Tab; setTab: (t: Tab) => void }> = ({ tab, setTab 
   </div>
 );
 
-// ─── Cinematic cold open ──────────────────────
-function ColdOpen({ onComplete }: { onComplete: () => void }) {
-  const [phase, setPhase] = useState(0);
-  const [hide, setHide] = useState(false);
-
-  useEffect(() => {
-    const t1 = setTimeout(() => setPhase(1), 600);
-    const t2 = setTimeout(() => setPhase(2), 3200);
-    const t3 = setTimeout(() => setPhase(3), 6200);
-    const t4 = setTimeout(() => { setHide(true); onComplete(); }, 7400);
-    return () => { clearTimeout(t1); clearTimeout(t2); clearTimeout(t3); clearTimeout(t4); };
-  }, [onComplete]);
-
-  function skip() { setHide(true); onComplete(); }
-  if (hide) return null;
-
-  return (
-    <div style={{
-      position: 'fixed', inset: 0, background: '#0d0d0d', zIndex: 9999,
-      display: 'flex', alignItems: 'center', justifyContent: 'center',
-      padding: '0 32px',
-      opacity: phase === 3 ? 0 : 1, transition: 'opacity 1.2s',
-      pointerEvents: phase === 3 ? 'none' : 'auto',
-    }}>
-      <div style={{ maxWidth: 920 }}>
-        <p style={{
-          fontFamily: "'Archivo', system-ui, sans-serif",
-          fontWeight: 900,
-          fontSize: 'clamp(36px, 6vw, 64px)',
-          lineHeight: 1.05,
-          letterSpacing: '-0.02em',
-          color: CREAM,
-          margin: 0,
-          opacity: phase >= 1 ? 1 : 0,
-          transform: phase >= 1 ? 'translateY(0)' : 'translateY(8px)',
-          transition: 'opacity 1.4s, transform 1.4s',
-        }}>
-          The climate movement has a storytelling problem.
-        </p>
-        <p style={{
-          fontFamily: "'Fraunces', Georgia, serif",
-          fontStyle: 'italic',
-          fontWeight: 600,
-          fontSize: 'clamp(32px, 5.4vw, 60px)',
-          lineHeight: 1.05,
-          color: PINK,
-          marginTop: 28,
-          marginBottom: 0,
-          opacity: phase >= 2 ? 1 : 0,
-          transform: phase >= 2 ? 'translateY(0)' : 'translateY(8px)',
-          transition: 'opacity 1.4s, transform 1.4s',
-        }}>
-          Reality TV could fix it.
-        </p>
-      </div>
-      <button
-        onClick={skip}
-        style={{
-          position: 'absolute', bottom: 28, right: 28,
-          background: 'transparent', border: '1px solid rgba(244,239,230,0.25)',
-          color: 'rgba(244,239,230,0.7)', padding: '8px 14px', borderRadius: 999,
-          fontFamily: "'Archivo', system-ui, sans-serif", fontSize: 11,
-          letterSpacing: '0.18em', textTransform: 'uppercase', cursor: 'pointer',
-        }}
-      >Skip →</button>
-    </div>
-  );
-}
-
 // ─── CROSSFIRE quiz ──────────────────────
 type Household = 'lansing' | 'permian' | 'cheyenne' | 'tulsa' | 'houma' | 'morgantown' | 'phoenix';
 
@@ -500,6 +431,7 @@ function OneLastThingWall() {
   const [prompt] = useState(() => OLT_PROMPTS[Math.floor(Math.random() * OLT_PROMPTS.length)]);
   const [text, setText] = useState('');
   const [submissions, setSubmissions] = useState<Submission[]>([]);
+  const [yourTs, setYourTs] = useState<number | null>(null);
   const [submitted, setSubmitted] = useState(false);
   const [loading, setLoading] = useState(true);
 
@@ -513,15 +445,22 @@ function OneLastThingWall() {
   async function submit() {
     const v = text.trim();
     if (!v || v.length > 280) return;
+    const ts = Date.now();
     try {
       await fetch('/api/one-last-thing', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ text: v }),
       });
-      setSubmissions(prev => [{ text: v, ts: Date.now() }, ...prev]);
+      setSubmissions(prev => [{ text: v, ts }, ...prev]);
+      setYourTs(ts);
       setText('');
       setSubmitted(true);
+      // Scroll the wall into view shortly after the DOM updates
+      setTimeout(() => {
+        const el = document.getElementById('olt-wall');
+        if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }, 80);
     } catch {
       // fail silently
     }
@@ -538,7 +477,7 @@ function OneLastThingWall() {
         marginTop: 0, marginBottom: 8,
       }}>Your one last thing.</h4>
       <p style={{ marginTop: 0, fontSize: 14, color: MUTED }}>
-        Imagine the villa. No politics. No professions. Anonymous, all of it.
+        Imagine the villa. No politics. No professions. Type your truth — it lands on the wall below, anonymized.
       </p>
 
       <p style={{
@@ -576,42 +515,65 @@ function OneLastThingWall() {
                 fontFamily: "'Archivo', system-ui, sans-serif", fontWeight: 800,
                 fontSize: 11, letterSpacing: '0.18em', textTransform: 'uppercase',
               }}
-            >Reveal anonymously →</button>
+            >Add to the wall →</button>
           </div>
         </>
       ) : (
         <div style={{
           padding: '14px 18px', background: PINK, color: INK, borderRadius: 4,
           fontFamily: "'Archivo', system-ui, sans-serif", fontSize: 13, fontWeight: 600,
+          display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 16, flexWrap: 'wrap',
         }}>
-          Yours is on the wall. Read the others below.
+          <span>Your truth is on the wall. ↓ It's the highlighted one below.</span>
         </div>
       )}
 
-      {(loading || submissions.length > 0) && (
-        <div style={{ marginTop: 32, paddingTop: 24, borderTop: `1px solid ${RULE}` }}>
-          <p style={{
-            fontFamily: "'Archivo', system-ui, sans-serif", fontSize: 11,
-            letterSpacing: '0.18em', textTransform: 'uppercase', color: MUTED, margin: '0 0 12px',
-          }}>
-            {loading ? 'Loading the wall …' : `${submissions.length} truth${submissions.length === 1 ? '' : 's'} on the wall`}
+      <div id="olt-wall" style={{ marginTop: 32, paddingTop: 24, borderTop: `1px solid ${RULE}` }}>
+        <p style={{
+          fontFamily: "'Archivo', system-ui, sans-serif", fontSize: 11,
+          letterSpacing: '0.18em', textTransform: 'uppercase', color: MUTED, margin: '0 0 12px',
+        }}>
+          {loading ? 'Loading the wall …' : `The wall — ${submissions.length} truth${submissions.length === 1 ? '' : 's'}`}
+        </p>
+        {!loading && submissions.length === 0 && (
+          <p style={{ fontSize: 14, color: MUTED, fontStyle: 'italic' }}>
+            No truths on the wall yet. Yours could be the first.
           </p>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 10, maxHeight: 360, overflowY: 'auto' }}>
-            {submissions.map((s, i) => (
+        )}
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 10, maxHeight: 420, overflowY: 'auto', paddingRight: 6 }}>
+          {submissions.map((s, i) => {
+            const isYours = s.ts === yourTs;
+            return (
               <div
-                key={i}
+                key={`${s.ts}-${i}`}
                 style={{
-                  padding: '12px 14px', background: CREAM,
-                  border: `1px solid ${RULE}`, borderRadius: 4,
-                  fontFamily: "'Fraunces', Georgia, serif", fontSize: 15, lineHeight: 1.4,
+                  padding: '14px 16px',
+                  background: isYours ? PINK : CREAM,
+                  color: isYours ? INK : INK,
+                  border: `1px solid ${isYours ? INK : RULE}`,
+                  borderRadius: 4,
+                  fontFamily: "'Fraunces', Georgia, serif",
+                  fontSize: 16, lineHeight: 1.45,
+                  fontStyle: 'italic',
+                  fontWeight: isYours ? 600 : 400,
+                  position: 'relative',
+                  boxShadow: isYours ? `0 0 0 3px rgba(255,44,180,0.25)` : 'none',
                 }}
               >
+                {isYours && (
+                  <span style={{
+                    position: 'absolute', top: -10, left: 12, background: INK, color: CREAM,
+                    fontFamily: "'Archivo', system-ui, sans-serif", fontSize: 9,
+                    letterSpacing: '0.2em', textTransform: 'uppercase', fontWeight: 800,
+                    padding: '3px 8px', borderRadius: 999, fontStyle: 'normal',
+                  }}>Yours</span>
+                )}
                 "{s.text}"
               </div>
-            ))}
-          </div>
+            );
+          })}
         </div>
-      )}
+      </div>
     </div>
   );
 }
@@ -619,15 +581,6 @@ function OneLastThingWall() {
 // ─── Page ──────────────────────
 export default function Paper() {
   const [tab, setTab] = useState<Tab>('paper');
-  const [coldOpenDone, setColdOpenDone] = useState(() => {
-    if (typeof window === 'undefined') return true;
-    return !!sessionStorage.getItem('cold-open-seen');
-  });
-
-  function completeColdOpen() {
-    try { sessionStorage.setItem('cold-open-seen', '1'); } catch {}
-    setColdOpenDone(true);
-  }
 
   useEffect(() => {
     document.title = 'The climate movement has a storytelling problem — GEN 390';
@@ -670,8 +623,6 @@ export default function Paper() {
         }
         .download:hover { opacity: 0.85; }
       `}</style>
-
-      {!coldOpenDone && <ColdOpen onComplete={completeColdOpen} />}
 
       <div className="paper-root">
         <div className="paper-page">

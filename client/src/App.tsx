@@ -81,9 +81,10 @@ function App() {
     <BrowserRouter>
       <div className="min-h-screen bg-[#0a0a0a]">
         <Routes>
-          {/* Public route — research paper */}
-          <Route path="/paper" element={<Paper />} />
+          {/* Public — trailer is the front door */}
+          <Route path="/" element={<Trailer />} />
           <Route path="/trailer" element={<Trailer />} />
+          <Route path="/paper" element={<Paper />} />
 
           {/* Brainstorm-level access (password: itsreal) */}
           <Route path="/brainstorm" element={
@@ -94,7 +95,7 @@ function App() {
           } />
 
           {/* Admin-level access (password: producer390) */}
-          <Route path="/" element={
+          <Route path="/admin" element={
             <PasswordGate requiredLevel="admin"><Dashboard /></PasswordGate>
           } />
           <Route path="/interview/:id/notes" element={
