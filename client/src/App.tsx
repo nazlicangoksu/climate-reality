@@ -8,6 +8,7 @@ import EndInterview from './pages/EndInterview';
 import Summary from './pages/Summary';
 import Synthesis from './pages/Synthesis';
 import Brainstorm from './pages/Brainstorm';
+import Paper from './pages/Paper';
 
 type AuthLevel = 'none' | 'brainstorm' | 'admin';
 
@@ -79,6 +80,9 @@ function App() {
     <BrowserRouter>
       <div className="min-h-screen bg-[#0a0a0a]">
         <Routes>
+          {/* Public route — research paper */}
+          <Route path="/paper" element={<Paper />} />
+
           {/* Brainstorm-level access (password: itsreal) */}
           <Route path="/brainstorm" element={
             <PasswordGate requiredLevel="brainstorm"><Brainstorm /></PasswordGate>
