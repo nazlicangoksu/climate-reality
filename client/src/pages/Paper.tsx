@@ -59,6 +59,7 @@ type ConceptDetailProps = {
   title: string;
   tag: string;
   short: React.ReactNode;
+  interactive?: React.ReactNode;
   detail: {
     world: string;
     cast: { label: string; body: string }[];
@@ -68,7 +69,7 @@ type ConceptDetailProps = {
   };
 };
 
-const ConceptCard: React.FC<ConceptDetailProps> = ({ accent, label, title, tag, short, detail }) => {
+const ConceptCard: React.FC<ConceptDetailProps> = ({ accent, label, title, tag, short, interactive, detail }) => {
   const [open, setOpen] = useState(false);
   return (
     <div style={{ border: `1px solid ${INK}`, borderLeft: `8px solid ${accent}`, padding: '32px 28px', margin: '32px 0', background: CREAM }}>
@@ -137,6 +138,8 @@ const ConceptCard: React.FC<ConceptDetailProps> = ({ accent, label, title, tag, 
             </>
           )}
 
+          {interactive}
+
           <p style={{ marginTop: 32, fontFamily: "'Fraunces', Georgia, serif", fontStyle: 'italic', fontSize: 18, color: INK, paddingTop: 24, borderTop: `1px solid ${RULE}` }}>
             “{detail.closing}”
           </p>
@@ -192,9 +195,439 @@ const TabBar: React.FC<{ tab: Tab; setTab: (t: Tab) => void }> = ({ tab, setTab 
   </div>
 );
 
+// ─── Cinematic cold open ──────────────────────
+function ColdOpen({ onComplete }: { onComplete: () => void }) {
+  const [phase, setPhase] = useState(0);
+  const [hide, setHide] = useState(false);
+
+  useEffect(() => {
+    const t1 = setTimeout(() => setPhase(1), 600);
+    const t2 = setTimeout(() => setPhase(2), 3200);
+    const t3 = setTimeout(() => setPhase(3), 6200);
+    const t4 = setTimeout(() => { setHide(true); onComplete(); }, 7400);
+    return () => { clearTimeout(t1); clearTimeout(t2); clearTimeout(t3); clearTimeout(t4); };
+  }, [onComplete]);
+
+  function skip() { setHide(true); onComplete(); }
+  if (hide) return null;
+
+  return (
+    <div style={{
+      position: 'fixed', inset: 0, background: '#0d0d0d', zIndex: 9999,
+      display: 'flex', alignItems: 'center', justifyContent: 'center',
+      padding: '0 32px',
+      opacity: phase === 3 ? 0 : 1, transition: 'opacity 1.2s',
+      pointerEvents: phase === 3 ? 'none' : 'auto',
+    }}>
+      <div style={{ maxWidth: 920 }}>
+        <p style={{
+          fontFamily: "'Archivo', system-ui, sans-serif",
+          fontWeight: 900,
+          fontSize: 'clamp(36px, 6vw, 64px)',
+          lineHeight: 1.05,
+          letterSpacing: '-0.02em',
+          color: CREAM,
+          margin: 0,
+          opacity: phase >= 1 ? 1 : 0,
+          transform: phase >= 1 ? 'translateY(0)' : 'translateY(8px)',
+          transition: 'opacity 1.4s, transform 1.4s',
+        }}>
+          The climate movement has a storytelling problem.
+        </p>
+        <p style={{
+          fontFamily: "'Fraunces', Georgia, serif",
+          fontStyle: 'italic',
+          fontWeight: 600,
+          fontSize: 'clamp(32px, 5.4vw, 60px)',
+          lineHeight: 1.05,
+          color: PINK,
+          marginTop: 28,
+          marginBottom: 0,
+          opacity: phase >= 2 ? 1 : 0,
+          transform: phase >= 2 ? 'translateY(0)' : 'translateY(8px)',
+          transition: 'opacity 1.4s, transform 1.4s',
+        }}>
+          Reality TV could fix it.
+        </p>
+      </div>
+      <button
+        onClick={skip}
+        style={{
+          position: 'absolute', bottom: 28, right: 28,
+          background: 'transparent', border: '1px solid rgba(244,239,230,0.25)',
+          color: 'rgba(244,239,230,0.7)', padding: '8px 14px', borderRadius: 999,
+          fontFamily: "'Archivo', system-ui, sans-serif", fontSize: 11,
+          letterSpacing: '0.18em', textTransform: 'uppercase', cursor: 'pointer',
+        }}
+      >Skip →</button>
+    </div>
+  );
+}
+
+// ─── CROSSFIRE quiz ──────────────────────
+type Household = 'lansing' | 'permian' | 'cheyenne' | 'tulsa' | 'houma' | 'morgantown' | 'phoenix';
+
+const HOUSEHOLDS: Record<Household, { name: string; location: string; description: string }> = {
+  lansing: {
+    name: 'The Argument',
+    location: 'Lansing, MI',
+    description: "A father who's called climate change a hoax since 2010 and the daughter who came home from her first year of college a climate organizer. They love each other. They haven't gotten through a Thanksgiving without one of them leaving the table since 2024.",
+  },
+  permian: {
+    name: 'Rig & Vote',
+    location: 'Permian Basin, TX',
+    description: "A husband who works the rigs married to a wife who organizes for the Sierra Club on Tuesdays. He pays the mortgage with oil. They've been married twenty-one years.",
+  },
+  cheyenne: {
+    name: 'The Land',
+    location: 'Cheyenne, WY',
+    description: "A fourth-generation cattle rancher and the son who came home from grad school to convert the operation to regenerative grazing. The father loves the boy. The boy loves the land. They argue about both.",
+  },
+  tulsa: {
+    name: 'Sermon & Data',
+    location: 'Tulsa, OK',
+    description: "A Pentecostal pastor whose only daughter is a NOAA climate scientist. Sunday morning he preaches dominion. Sunday afternoon she shows him the model. Both believe they're doing right by the same God.",
+  },
+  houma: {
+    name: 'Water Line',
+    location: 'Houma, LA',
+    description: "A Cajun shrimper who's lost two boats to storms, the wife who manages the parish flood-insurance office, and a grandmother who won't move inland.",
+  },
+  morgantown: {
+    name: 'Coal & Code',
+    location: 'Morgantown, WV',
+    description: "A laid-off coal foreman, his nurse wife, and the grandson who got a remote job at a clean-energy startup.",
+  },
+  phoenix: {
+    name: 'The Heat',
+    location: 'Phoenix, AZ',
+    description: "A cop, an HVAC contractor, and the abuela who survived three 115° summers without AC. The family does not agree on the word for what's happening.",
+  },
+};
+
+const QUIZ: { q: string; options: { label: string; score: Partial<Record<Household, number>> }[] }[] = [
+  {
+    q: "How does climate show up in your family conversation?",
+    options: [
+      { label: "We fight about it. Loudly. Usually at Thanksgiving.", score: { lansing: 2, permian: 1 } },
+      { label: "We don't talk about it. Anymore.", score: { permian: 2, houma: 1 } },
+      { label: "The land and the work made us talk about it.", score: { cheyenne: 2, morgantown: 1 } },
+      { label: "Faith and science don't line up at our table.", score: { tulsa: 2 } },
+      { label: "The water came up. The heat won't quit. We had to talk.", score: { houma: 2, phoenix: 2 } },
+    ],
+  },
+  {
+    q: "Who's the loudest at your family dinner?",
+    options: [
+      { label: "Dad. Always Dad.", score: { lansing: 2, permian: 1, cheyenne: 1 } },
+      { label: "The grandkid trying to explain something.", score: { morgantown: 2, tulsa: 1 } },
+      { label: "Abuela / grandma. Quiet but loudest.", score: { phoenix: 2, houma: 1 } },
+      { label: "The pastor at the head of the table.", score: { tulsa: 2 } },
+      { label: "Nobody. We've stopped talking about it.", score: { permian: 1, houma: 1 } },
+    ],
+  },
+  {
+    q: "What's your family's money tied to?",
+    options: [
+      { label: "Oil, gas, the rig.", score: { permian: 2 } },
+      { label: "The land. The herd. The seasons.", score: { cheyenne: 2 } },
+      { label: "Coal, manufacturing, the old plant.", score: { morgantown: 2 } },
+      { label: "The boat. The catch. The water.", score: { houma: 2 } },
+      { label: "Service work — cop, HVAC, contractor.", score: { phoenix: 2 } },
+      { label: "The church. Public service. Teaching.", score: { tulsa: 2 } },
+      { label: "Honestly, we're not sure anymore.", score: { lansing: 2, morgantown: 1 } },
+    ],
+  },
+  {
+    q: "What's the weather doing to your hometown?",
+    options: [
+      { label: "Wells running low. Drought won't end.", score: { permian: 2, cheyenne: 1 } },
+      { label: "Calving season later every year.", score: { cheyenne: 2 } },
+      { label: "Hurricanes that keep getting worse.", score: { houma: 2 } },
+      { label: "Summers so hot we bury neighbors.", score: { phoenix: 2 } },
+      { label: "The mine closed. The town emptied.", score: { morgantown: 2 } },
+      { label: "Mostly fine. It's just my dad on Facebook.", score: { lansing: 2 } },
+      { label: "The pastor mentioned the drought map last Sunday.", score: { tulsa: 2 } },
+    ],
+  },
+  {
+    q: "What's the table tension actually about?",
+    options: [
+      { label: "Generations. The kid came home different.", score: { lansing: 2, tulsa: 1, cheyenne: 1 } },
+      { label: "Marriage. He votes one way, she votes the other.", score: { permian: 2 } },
+      { label: "Whether to stay or whether to move.", score: { houma: 2 } },
+      { label: "Old job vs. new job.", score: { morgantown: 2 } },
+      { label: "Three generations, two languages, one room.", score: { phoenix: 2 } },
+      { label: "Faith on one side, data on the other.", score: { tulsa: 2 } },
+    ],
+  },
+  {
+    q: "What's the one thing your family won't give up?",
+    options: [
+      { label: "The truck.", score: { permian: 2 } },
+      { label: "The land.", score: { cheyenne: 2 } },
+      { label: "The faith.", score: { tulsa: 2 } },
+      { label: "The home — even if it floods again.", score: { houma: 2 } },
+      { label: "The trade. The craft. The know-how.", score: { morgantown: 2 } },
+      { label: "The neighborhood, the abuela, the recipes.", score: { phoenix: 2 } },
+      { label: "The dinner table. Even when nobody's talking.", score: { lansing: 2 } },
+    ],
+  },
+];
+
+function CrossfireQuiz() {
+  const [step, setStep] = useState(0);
+  const [scores, setScores] = useState<Record<Household, number>>({
+    lansing: 0, permian: 0, cheyenne: 0, tulsa: 0, houma: 0, morgantown: 0, phoenix: 0,
+  });
+  const [done, setDone] = useState(false);
+
+  function pick(option: { label: string; score: Partial<Record<Household, number>> }) {
+    const next = { ...scores };
+    for (const k of Object.keys(option.score) as Household[]) {
+      next[k] += option.score[k] || 0;
+    }
+    setScores(next);
+    if (step + 1 >= QUIZ.length) {
+      setDone(true);
+    } else {
+      setStep(step + 1);
+    }
+  }
+
+  function reset() {
+    setScores({ lansing: 0, permian: 0, cheyenne: 0, tulsa: 0, houma: 0, morgantown: 0, phoenix: 0 });
+    setStep(0);
+    setDone(false);
+  }
+
+  const top = (Object.entries(scores) as [Household, number][])
+    .sort((a, b) => b[1] - a[1])[0]?.[0] ?? 'lansing';
+  const result = HOUSEHOLDS[top];
+
+  return (
+    <div style={{
+      marginTop: 40, padding: '28px 24px', border: `2px solid ${RED}`,
+      background: 'rgba(212,32,44,0.04)', borderRadius: 4,
+    }}>
+      <h4 style={{
+        fontFamily: "'Archivo', system-ui, sans-serif", fontSize: 12,
+        letterSpacing: '0.18em', textTransform: 'uppercase', color: RED,
+        marginTop: 0, marginBottom: 8,
+      }}>Which CROSSFIRE household are you in?</h4>
+      <p style={{ marginTop: 0, fontSize: 14, color: MUTED }}>
+        Six questions. We'll tell you which family you'd be filmed inside.
+      </p>
+
+      {!done ? (
+        <div style={{ marginTop: 20 }}>
+          <p style={{
+            fontFamily: "'Fraunces', Georgia, serif", fontStyle: 'italic',
+            fontSize: 18, marginBottom: 16,
+          }}>
+            <span style={{
+              fontFamily: "'JetBrains Mono', ui-monospace, monospace", fontSize: 11,
+              letterSpacing: '0.2em', color: MUTED, marginRight: 8,
+            }}>
+              {String(step + 1).padStart(2, '0')} / {String(QUIZ.length).padStart(2, '0')}
+            </span>
+            {QUIZ[step].q}
+          </p>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+            {QUIZ[step].options.map((opt, i) => (
+              <button
+                key={i}
+                onClick={() => pick(opt)}
+                style={{
+                  textAlign: 'left', padding: '12px 16px',
+                  background: 'transparent', border: `1px solid ${RULE}`,
+                  borderRadius: 4, cursor: 'pointer',
+                  fontFamily: "'Fraunces', Georgia, serif", fontSize: 15,
+                  color: INK, transition: 'all 0.2s',
+                }}
+                onMouseEnter={(e) => { (e.currentTarget as HTMLButtonElement).style.background = 'rgba(212,32,44,0.06)'; (e.currentTarget as HTMLButtonElement).style.borderColor = RED; }}
+                onMouseLeave={(e) => { (e.currentTarget as HTMLButtonElement).style.background = 'transparent'; (e.currentTarget as HTMLButtonElement).style.borderColor = RULE; }}
+              >
+                {opt.label}
+              </button>
+            ))}
+          </div>
+        </div>
+      ) : (
+        <div style={{ marginTop: 20 }}>
+          <p style={{
+            fontFamily: "'Archivo', system-ui, sans-serif", fontWeight: 800,
+            fontSize: 12, letterSpacing: '0.2em', textTransform: 'uppercase',
+            color: RED, marginBottom: 8,
+          }}>You'd be in</p>
+          <p style={{
+            fontFamily: "'Archivo', system-ui, sans-serif", fontWeight: 900,
+            fontSize: 32, lineHeight: 1.1, margin: '0 0 6px',
+          }}>
+            {result.location} — {result.name}.
+          </p>
+          <p style={{ fontSize: 16, color: MUTED, marginBottom: 24 }}>
+            {result.description}
+          </p>
+          <button
+            onClick={reset}
+            style={{
+              background: 'transparent', border: `1px solid ${INK}`,
+              padding: '8px 16px', borderRadius: 999, cursor: 'pointer',
+              fontFamily: "'Archivo', system-ui, sans-serif", fontWeight: 800,
+              fontSize: 11, letterSpacing: '0.18em', textTransform: 'uppercase',
+              color: INK,
+            }}
+          >Take it again</button>
+        </div>
+      )}
+    </div>
+  );
+}
+
+// ─── ONE LAST THING wall ──────────────────────
+const OLT_PROMPTS = [
+  "What's the climate truth you don't lead with?",
+  "What's the climate thing you can't say to your family?",
+  "What's the climate hypocrisy you live with?",
+  "What's the climate moment that changed you?",
+  "What's the climate belief you keep at the door?",
+];
+
+type Submission = { text: string; ts: number };
+
+function OneLastThingWall() {
+  const [prompt] = useState(() => OLT_PROMPTS[Math.floor(Math.random() * OLT_PROMPTS.length)]);
+  const [text, setText] = useState('');
+  const [submissions, setSubmissions] = useState<Submission[]>([]);
+  const [submitted, setSubmitted] = useState(false);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    fetch('/api/one-last-thing').then(r => r.json()).then(d => {
+      if (Array.isArray(d?.submissions)) setSubmissions(d.submissions);
+      setLoading(false);
+    }).catch(() => setLoading(false));
+  }, []);
+
+  async function submit() {
+    const v = text.trim();
+    if (!v || v.length > 280) return;
+    try {
+      await fetch('/api/one-last-thing', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ text: v }),
+      });
+      setSubmissions(prev => [{ text: v, ts: Date.now() }, ...prev]);
+      setText('');
+      setSubmitted(true);
+    } catch {
+      // fail silently
+    }
+  }
+
+  return (
+    <div style={{
+      marginTop: 40, padding: '28px 24px', border: `2px solid ${PINK}`,
+      background: 'rgba(255,44,180,0.04)', borderRadius: 4,
+    }}>
+      <h4 style={{
+        fontFamily: "'Archivo', system-ui, sans-serif", fontSize: 12,
+        letterSpacing: '0.18em', textTransform: 'uppercase', color: PINK,
+        marginTop: 0, marginBottom: 8,
+      }}>Your one last thing.</h4>
+      <p style={{ marginTop: 0, fontSize: 14, color: MUTED }}>
+        Imagine the villa. No politics. No professions. Anonymous, all of it.
+      </p>
+
+      <p style={{
+        fontFamily: "'Fraunces', Georgia, serif", fontStyle: 'italic',
+        fontSize: 22, lineHeight: 1.3, margin: '24px 0 16px',
+      }}>
+        {prompt}
+      </p>
+
+      {!submitted ? (
+        <>
+          <textarea
+            value={text}
+            onChange={(e) => setText(e.target.value)}
+            maxLength={280}
+            placeholder="Type it here. Nobody will know it was you."
+            style={{
+              width: '100%', minHeight: 100, padding: 14,
+              fontFamily: "'Fraunces', Georgia, serif", fontSize: 16,
+              border: `1px solid ${RULE}`, borderRadius: 4, resize: 'vertical',
+              background: CREAM, color: INK, outline: 'none', lineHeight: 1.5,
+            }}
+          />
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: 10 }}>
+            <span style={{ fontSize: 11, color: MUTED, fontFamily: "'Archivo', system-ui, sans-serif", letterSpacing: '0.1em' }}>
+              {text.length} / 280
+            </span>
+            <button
+              onClick={submit}
+              disabled={!text.trim()}
+              style={{
+                background: text.trim() ? INK : 'transparent', color: text.trim() ? CREAM : MUTED,
+                border: `1px solid ${INK}`, padding: '10px 18px', borderRadius: 999,
+                cursor: text.trim() ? 'pointer' : 'not-allowed',
+                fontFamily: "'Archivo', system-ui, sans-serif", fontWeight: 800,
+                fontSize: 11, letterSpacing: '0.18em', textTransform: 'uppercase',
+              }}
+            >Reveal anonymously →</button>
+          </div>
+        </>
+      ) : (
+        <div style={{
+          padding: '14px 18px', background: PINK, color: INK, borderRadius: 4,
+          fontFamily: "'Archivo', system-ui, sans-serif", fontSize: 13, fontWeight: 600,
+        }}>
+          Yours is on the wall. Read the others below.
+        </div>
+      )}
+
+      {(loading || submissions.length > 0) && (
+        <div style={{ marginTop: 32, paddingTop: 24, borderTop: `1px solid ${RULE}` }}>
+          <p style={{
+            fontFamily: "'Archivo', system-ui, sans-serif", fontSize: 11,
+            letterSpacing: '0.18em', textTransform: 'uppercase', color: MUTED, margin: '0 0 12px',
+          }}>
+            {loading ? 'Loading the wall …' : `${submissions.length} truth${submissions.length === 1 ? '' : 's'} on the wall`}
+          </p>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 10, maxHeight: 360, overflowY: 'auto' }}>
+            {submissions.map((s, i) => (
+              <div
+                key={i}
+                style={{
+                  padding: '12px 14px', background: CREAM,
+                  border: `1px solid ${RULE}`, borderRadius: 4,
+                  fontFamily: "'Fraunces', Georgia, serif", fontSize: 15, lineHeight: 1.4,
+                }}
+              >
+                "{s.text}"
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
 // ─── Page ──────────────────────
 export default function Paper() {
   const [tab, setTab] = useState<Tab>('paper');
+  const [coldOpenDone, setColdOpenDone] = useState(() => {
+    if (typeof window === 'undefined') return true;
+    return !!sessionStorage.getItem('cold-open-seen');
+  });
+
+  function completeColdOpen() {
+    try { sessionStorage.setItem('cold-open-seen', '1'); } catch {}
+    setColdOpenDone(true);
+  }
 
   useEffect(() => {
     document.title = 'The climate movement has a storytelling problem — GEN 390';
@@ -238,11 +671,16 @@ export default function Paper() {
         .download:hover { opacity: 0.85; }
       `}</style>
 
+      {!coldOpenDone && <ColdOpen onComplete={completeColdOpen} />}
+
       <div className="paper-root">
         <div className="paper-page">
           <div className="topbar">
             <span className="meta">GSB GEN 390 · Independent Research · 2026</span>
-            <a className="download" href="/paper/Climate-Above-the-Line.pdf" download>↓ Download PDF</a>
+            <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap' }}>
+              <a className="download" href="/trailer" style={{ background: 'transparent', color: INK, border: `1px solid ${INK}` }}>▶ Watch the trailer</a>
+              <a className="download" href="/paper/Climate-Above-the-Line.pdf" download>↓ Download PDF</a>
+            </div>
           </div>
 
           <h1 style={{ fontFamily: "'Archivo', system-ui, sans-serif", fontWeight: 900, fontSize: 'clamp(40px, 6.2vw, 68px)', lineHeight: 1.05, letterSpacing: '-0.02em', margin: '0 0 24px' }}>
@@ -374,6 +812,7 @@ function PaperTab() {
         label="CONCEPT 01 · DOCUMENTARY · 6×60′"
         title="CROSSFIRE."
         tag="Six households where climate is the fault line, and love is the only reason anyone stays at the table."
+        interactive={<CrossfireQuiz />}
         short={
           <p>
             CROSSFIRE is the show in which climate is named. Each episode embeds in one American household for three to four months. The families argue about it the way American families actually argue about it: in the calving shed, at the kitchen table, in the truck on the way home from church. No narrator. No confessionals. No producer-driven conflict. Every episode is shot around the same place — the kitchen — and ends with that family's dinner. The season finale puts six dinners on six tables, intercut. Same hour. Same questions on the table. <strong>Six families eating apart, finally talking about the same thing.</strong>
@@ -414,6 +853,7 @@ function PaperTab() {
         label="CONCEPT 02 · UNSCRIPTED DATING · 10 EPISODES"
         title="ONE LAST THING."
         tag="Sixteen strangers fall in love in post-fire LA, with two rules: no politics, no professions."
+        interactive={<OneLastThingWall />}
         short={
           <p>
             ONE LAST THING is the show in which climate is never named. Sixteen Angelenos move into a glass house on a hillside above Altadena, sixteen months after the Palisades and Eaton fires, with a 14,000-acre burn scar visible from every window. They cannot share who they voted for or what they do for a living. They connect through prompts adapted from the <em>36 Questions</em>. They couple up. They propose. Then, on camera, in front of the person they just got engaged to, each contestant reveals the one last thing. <strong>Climate is in every shot, in every window, on every horizon — and in none of the dialogue.</strong>

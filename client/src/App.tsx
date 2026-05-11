@@ -9,6 +9,7 @@ import Summary from './pages/Summary';
 import Synthesis from './pages/Synthesis';
 import Brainstorm from './pages/Brainstorm';
 import Paper from './pages/Paper';
+import Trailer from './pages/Trailer';
 
 type AuthLevel = 'none' | 'brainstorm' | 'admin';
 
@@ -82,6 +83,7 @@ function App() {
         <Routes>
           {/* Public route — research paper */}
           <Route path="/paper" element={<Paper />} />
+          <Route path="/trailer" element={<Trailer />} />
 
           {/* Brainstorm-level access (password: itsreal) */}
           <Route path="/brainstorm" element={
