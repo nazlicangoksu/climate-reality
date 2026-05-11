@@ -26,10 +26,10 @@ const FRAMES: Frame[] = [
   // ─── THE QUESTION ───
   {
     kind: 'question',
-    badge: 'THE QUESTION WE COULDN\'T LET GO OF',
+    badge: 'ONE QUESTION WE COULDN\'T LET GO OF',
     question: 'What would it take to reach the audience the climate movement has lost — without ever saying the word climate?',
     highlight: 'the audience the climate movement has lost',
-    bg: INK, color: CREAM, duration: 5800,
+    bg: INK, color: CREAM, duration: 6200,
   },
   { kind: 'beat', bg: INK, duration: 500 },
 
@@ -201,55 +201,51 @@ export default function Trailer() {
         )}
 
         {f.kind === 'question' && (
-          <div key={i} style={{ maxWidth: 1180, width: '100%', animation: 'tr-in 700ms ease' }}>
-            {/* Badge */}
-            <div style={{ display: 'flex', alignItems: 'center', gap: 14, marginBottom: 40, opacity: 0.75 }}>
+          <div key={i} style={{ maxWidth: 1100, width: '100%', textAlign: 'center', animation: 'tr-in 700ms ease' }}>
+            {/* Centered badge with rules on both sides */}
+            <div style={{ display: 'flex', alignItems: 'center', gap: 16, marginBottom: 48, opacity: 0.7 }}>
+              <span style={{ flex: 1, height: 1, background: 'currentColor', opacity: 0.25 }}/>
               <span style={{
-                width: 10, height: 10, borderRadius: 999, background: PINK, display: 'inline-block',
+                width: 8, height: 8, borderRadius: 999, background: PINK, display: 'inline-block',
                 animation: 'tr-pulse 1.6s ease-in-out infinite',
               }}/>
               <span style={{
                 fontFamily: "'JetBrains Mono', ui-monospace, monospace",
                 fontSize: 11, letterSpacing: '0.3em',
+                whiteSpace: 'nowrap',
               }}>{f.badge}</span>
-              <span style={{ flex: 1, height: 1, background: 'currentColor', opacity: 0.25 }}/>
-            </div>
-
-            {/* Quote frame */}
-            <div style={{ position: 'relative', paddingLeft: 28 }}>
               <span style={{
-                position: 'absolute', top: -36, left: -8,
-                fontFamily: "'Fraunces', Georgia, serif",
-                fontSize: 'clamp(120px, 16vw, 220px)',
-                lineHeight: 0.6,
-                color: PINK,
-                opacity: 0.9,
-                fontStyle: 'italic',
-                userSelect: 'none',
-              }}>“</span>
-
-              <p style={{
-                fontFamily: "'Fraunces', Georgia, serif",
-                fontStyle: 'italic',
-                fontWeight: 600,
-                fontSize: 'clamp(34px, 5.4vw, 72px)',
-                lineHeight: 1.18,
-                letterSpacing: '-0.015em',
-                margin: 0,
-              }}>
-                <HighlightSweep text={f.question} highlight={f.highlight}/>
-              </p>
+                width: 8, height: 8, borderRadius: 999, background: PINK, display: 'inline-block',
+                animation: 'tr-pulse 1.6s ease-in-out infinite',
+              }}/>
+              <span style={{ flex: 1, height: 1, background: 'currentColor', opacity: 0.25 }}/>
             </div>
 
-            {/* Bottom signature */}
-            <div style={{
-              marginTop: 56, display: 'flex', alignItems: 'center', gap: 14, opacity: 0.55,
+            {/* The question — centered, no decorative giant quote */}
+            <p style={{
+              fontFamily: "'Fraunces', Georgia, serif",
+              fontStyle: 'italic',
+              fontWeight: 500,
+              fontSize: 'clamp(28px, 4.6vw, 60px)',
+              lineHeight: 1.22,
+              letterSpacing: '-0.012em',
+              margin: '0 auto',
+              maxWidth: 980,
             }}>
-              <span style={{ flex: 1, height: 1, background: 'currentColor', opacity: 0.25 }}/>
+              <HighlightSweep text={f.question} highlight={f.highlight}/>
+            </p>
+
+            {/* Bottom centered signature */}
+            <div style={{
+              marginTop: 60, display: 'flex', alignItems: 'center', justifyContent: 'center',
+              gap: 16, opacity: 0.5,
+            }}>
+              <span style={{ width: 36, height: 1, background: 'currentColor' }}/>
               <span style={{
                 fontFamily: "'JetBrains Mono', ui-monospace, monospace",
-                fontSize: 11, letterSpacing: '0.3em',
+                fontSize: 10, letterSpacing: '0.3em',
               }}>STANFORD GSB · GEN 390 · 2026</span>
+              <span style={{ width: 36, height: 1, background: 'currentColor' }}/>
             </div>
           </div>
         )}
