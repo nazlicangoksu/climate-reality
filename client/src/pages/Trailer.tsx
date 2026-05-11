@@ -7,8 +7,10 @@ const RED = '#d4202c';
 const PINK = '#ff2cb4';
 
 type Frame =
-  | { kind: 'text'; lines: string[]; bg: string; color: string; duration: number; size?: 'xl' | 'lg' | 'md' | 'sm'; cite?: string; serif?: boolean }
+  | { kind: 'text'; lines: string[]; bg: string; color: string; duration: number; size?: 'xl' | 'lg' | 'md' | 'sm'; serif?: boolean }
   | { kind: 'beat'; bg: string; duration: number }
+  | { kind: 'question'; badge: string; question: string; highlight: string; bg: string; color: string; duration: number }
+  | { kind: 'finding'; index: number; total: number; finding: string; detail?: string; citation: string; journal: string; bg: string; color: string; duration: number }
   | { kind: 'cta'; bg: string; color: string };
 
 const FRAMES: Frame[] = [
@@ -19,21 +21,56 @@ const FRAMES: Frame[] = [
   { kind: 'beat', bg: INK, duration: 400 },
   { kind: 'text', lines: ["What's failing isn't the science."], bg: INK, color: CREAM, duration: 2000, size: 'md' },
   { kind: 'text', lines: ['It’s the lecture.'], bg: INK, color: PINK, duration: 2200, size: 'xl', serif: true },
-  { kind: 'beat', bg: INK, duration: 500 },
+  { kind: 'beat', bg: INK, duration: 600 },
 
   // ─── THE QUESTION ───
-  { kind: 'text', lines: ['So we asked one question:'], bg: INK, color: CREAM, duration: 2000, size: 'md' },
-  { kind: 'text', lines: ['What would it take', 'to reach the audience', 'the climate movement has lost?'], bg: INK, color: CREAM, duration: 3000, size: 'md', serif: true },
+  {
+    kind: 'question',
+    badge: 'THE QUESTION WE COULDN\'T LET GO OF',
+    question: 'What would it take to reach the audience the climate movement has lost — without ever saying the word climate?',
+    highlight: 'the audience the climate movement has lost',
+    bg: INK, color: CREAM, duration: 5800,
+  },
   { kind: 'beat', bg: INK, duration: 500 },
-  { kind: 'text', lines: ['A literature review.', 'Stanford-faculty conversations.', 'One-on-one interviews.', 'Two group brainstorms.', 'Hollywood expert sessions.'], bg: INK, color: CREAM, duration: 3400, size: 'sm' },
+
+  // ─── PROCESS ───
+  { kind: 'text', lines: ['Sixteen academic papers.', 'Twenty-plus interviews.', 'Two group brainstorms.', 'Hollywood expert sessions.'], bg: INK, color: CREAM, duration: 3000, size: 'sm' },
   { kind: 'text', lines: ['One pattern.'], bg: INK, color: CREAM, duration: 1800, size: 'lg' },
   { kind: 'beat', bg: INK, duration: 400 },
 
-  // ─── THE FINDINGS ───
-  { kind: 'text', lines: ['More facts', 'deepen the fracture.'], bg: INK, color: CREAM, duration: 2200, size: 'md', cite: 'KAHAN · YALE' },
-  { kind: 'text', lines: ['Stories', 'slip past the argument.'], bg: INK, color: CREAM, duration: 2200, size: 'md', cite: 'GREEN & BROCK' },
-  { kind: 'text', lines: ['The cast', 'is the message.'], bg: INK, color: CREAM, duration: 2200, size: 'md', cite: 'GOLDBERG ET AL.' },
-  { kind: 'text', lines: ['Common knowledge', 'requires watching together.'], bg: INK, color: CREAM, duration: 2400, size: 'md', cite: 'PALUCK & GREEN' },
+  // ─── THE FOUR FINDINGS ───
+  {
+    kind: 'finding', index: 1, total: 4,
+    finding: 'The more scientifically literate a Republican becomes, the more skeptical of climate science they tend to be — and the same effect runs in reverse for Democrats.',
+    detail: "Climate isn't a literacy problem. It's an identity one. More facts deepen the fracture; they don't close it.",
+    citation: 'KAHAN, D.M. (2015)',
+    journal: 'YALE · CULTURAL COGNITION PROJECT · POLITICAL PSYCHOLOGY 36',
+    bg: INK, color: CREAM, duration: 6200,
+  },
+  {
+    kind: 'finding', index: 2, total: 4,
+    finding: 'Audiences absorbed in a narrative drop the counterarguing reflex and adopt story-consistent beliefs.',
+    detail: "The argument can't get through the defenses. The story can.",
+    citation: 'GREEN, M.C. & BROCK, T.C. (2000)',
+    journal: 'PENN · JOURNAL OF PERSONALITY AND SOCIAL PSYCHOLOGY',
+    bg: INK, color: CREAM, duration: 5800,
+  },
+  {
+    kind: 'finding', index: 3, total: 4,
+    finding: 'Climate ads featuring surprising messengers moved Republican voters seven points on belief and ten on human cause.',
+    detail: 'A former Republican congressman. An Air Force general. An evangelical climate scientist. Sunstein calls these figures surprising validators — and the audience cannot dismiss them as the other team.',
+    citation: 'GOLDBERG, GUSTAFSON, MAIBACH & LEISEROWITZ (2021)',
+    journal: 'NATURE CLIMATE CHANGE · VOL. 11',
+    bg: INK, color: CREAM, duration: 7000,
+  },
+  {
+    kind: 'finding', index: 4, total: 4,
+    finding: 'In Rwanda, a soap opera about reconciliation barely moved personal attitudes — but shifted group norms when people listened together.',
+    detail: "In Uganda, the same effect, sharper: short videos cut reported domestic violence by roughly a quarter when watched communally — and produced nothing measurable when watched alone on tablets.",
+    citation: 'PALUCK & GREEN (2009) · GREEN, WILKE & COOPER (2020)',
+    journal: 'AMERICAN POLITICAL SCIENCE REVIEW · COMPARATIVE POLITICAL STUDIES',
+    bg: INK, color: CREAM, duration: 7000,
+  },
   { kind: 'beat', bg: INK, duration: 500 },
 
   // ─── THE BET ───
@@ -70,6 +107,21 @@ const FRAMES: Frame[] = [
 
 const AUTO_REDIRECT_MS = 5000;
 
+function HighlightSweep({ text, highlight }: { text: string; highlight: string }) {
+  const idx = text.toLowerCase().indexOf(highlight.toLowerCase());
+  if (idx === -1) return <>{text}</>;
+  const before = text.slice(0, idx);
+  const match = text.slice(idx, idx + highlight.length);
+  const after = text.slice(idx + highlight.length);
+  return (
+    <>
+      {before}
+      <span className="hl-sweep">{match}</span>
+      {after}
+    </>
+  );
+}
+
 export default function Trailer() {
   const navigate = useNavigate();
   const [i, setI] = useState(0);
@@ -86,7 +138,6 @@ export default function Trailer() {
     return () => clearTimeout(t);
   }, [i]);
 
-  // Auto-redirect on CTA frame
   useEffect(() => {
     if (FRAMES[i].kind !== 'cta') return;
     const start = Date.now();
@@ -105,7 +156,7 @@ export default function Trailer() {
   function restart() { setI(0); setCountdown(Math.ceil(AUTO_REDIRECT_MS / 1000)); }
 
   const f = FRAMES[i];
-  const isSerif = f.kind === 'text' && f.serif === true;
+  const isSerifText = f.kind === 'text' && f.serif === true;
 
   return (
     <>
@@ -130,9 +181,9 @@ export default function Trailer() {
               <p
                 key={j}
                 style={{
-                  fontFamily: isSerif ? "'Fraunces', Georgia, serif" : "'Archivo', system-ui, sans-serif",
-                  fontStyle: isSerif ? 'italic' : 'normal',
-                  fontWeight: isSerif ? 600 : f.size === 'xl' ? 900 : 800,
+                  fontFamily: isSerifText ? "'Fraunces', Georgia, serif" : "'Archivo', system-ui, sans-serif",
+                  fontStyle: isSerifText ? 'italic' : 'normal',
+                  fontWeight: isSerifText ? 600 : f.size === 'xl' ? 900 : 800,
                   fontSize:
                     f.size === 'xl' ? 'clamp(56px, 10vw, 120px)' :
                     f.size === 'lg' ? 'clamp(36px, 6.5vw, 80px)' :
@@ -146,13 +197,115 @@ export default function Trailer() {
                 {line}
               </p>
             ))}
-            {f.cite && (
-              <p style={{
-                marginTop: 28,
+          </div>
+        )}
+
+        {f.kind === 'question' && (
+          <div key={i} style={{ maxWidth: 1180, width: '100%', animation: 'tr-in 700ms ease' }}>
+            {/* Badge */}
+            <div style={{ display: 'flex', alignItems: 'center', gap: 14, marginBottom: 40, opacity: 0.75 }}>
+              <span style={{
+                width: 10, height: 10, borderRadius: 999, background: PINK, display: 'inline-block',
+                animation: 'tr-pulse 1.6s ease-in-out infinite',
+              }}/>
+              <span style={{
                 fontFamily: "'JetBrains Mono', ui-monospace, monospace",
-                fontSize: 11, letterSpacing: '0.28em', opacity: 0.55,
-              }}>{f.cite}</p>
+                fontSize: 11, letterSpacing: '0.3em',
+              }}>{f.badge}</span>
+              <span style={{ flex: 1, height: 1, background: 'currentColor', opacity: 0.25 }}/>
+            </div>
+
+            {/* Quote frame */}
+            <div style={{ position: 'relative', paddingLeft: 28 }}>
+              <span style={{
+                position: 'absolute', top: -36, left: -8,
+                fontFamily: "'Fraunces', Georgia, serif",
+                fontSize: 'clamp(120px, 16vw, 220px)',
+                lineHeight: 0.6,
+                color: PINK,
+                opacity: 0.9,
+                fontStyle: 'italic',
+                userSelect: 'none',
+              }}>“</span>
+
+              <p style={{
+                fontFamily: "'Fraunces', Georgia, serif",
+                fontStyle: 'italic',
+                fontWeight: 600,
+                fontSize: 'clamp(34px, 5.4vw, 72px)',
+                lineHeight: 1.18,
+                letterSpacing: '-0.015em',
+                margin: 0,
+              }}>
+                <HighlightSweep text={f.question} highlight={f.highlight}/>
+              </p>
+            </div>
+
+            {/* Bottom signature */}
+            <div style={{
+              marginTop: 56, display: 'flex', alignItems: 'center', gap: 14, opacity: 0.55,
+            }}>
+              <span style={{ flex: 1, height: 1, background: 'currentColor', opacity: 0.25 }}/>
+              <span style={{
+                fontFamily: "'JetBrains Mono', ui-monospace, monospace",
+                fontSize: 11, letterSpacing: '0.3em',
+              }}>STANFORD GSB · GEN 390 · 2026</span>
+            </div>
+          </div>
+        )}
+
+        {f.kind === 'finding' && (
+          <div key={i} style={{ maxWidth: 1180, width: '100%', animation: 'tr-in 700ms ease' }}>
+            {/* Top badge row */}
+            <div style={{ display: 'flex', alignItems: 'center', gap: 14, marginBottom: 36, opacity: 0.75 }}>
+              <span style={{
+                fontFamily: "'JetBrains Mono', ui-monospace, monospace",
+                fontSize: 11, letterSpacing: '0.3em',
+                background: PINK, color: INK,
+                padding: '4px 10px', borderRadius: 4,
+              }}>FINDING {String(f.index).padStart(2, '0')} / {String(f.total).padStart(2, '0')}</span>
+              <span style={{ flex: 1, height: 1, background: 'currentColor', opacity: 0.25 }}/>
+            </div>
+
+            {/* Big finding */}
+            <p style={{
+              fontFamily: "'Fraunces', Georgia, serif",
+              fontWeight: 400,
+              fontSize: 'clamp(26px, 4vw, 56px)',
+              lineHeight: 1.18,
+              letterSpacing: '-0.012em',
+              margin: 0,
+            }}>{f.finding}</p>
+
+            {f.detail && (
+              <p style={{
+                fontFamily: "'Archivo', system-ui, sans-serif",
+                fontSize: 'clamp(16px, 2.2vw, 26px)',
+                lineHeight: 1.45,
+                opacity: 0.75,
+                marginTop: 28,
+                marginBottom: 0,
+                fontWeight: 400,
+              }}>{f.detail}</p>
             )}
+
+            {/* Citation block */}
+            <div style={{
+              marginTop: 56, paddingTop: 22,
+              borderTop: `2px solid ${PINK}`,
+            }}>
+              <p style={{
+                fontFamily: "'Archivo', system-ui, sans-serif",
+                fontWeight: 800, fontSize: 'clamp(13px, 1.5vw, 16px)',
+                letterSpacing: '0.18em', textTransform: 'uppercase',
+                color: PINK, margin: 0,
+              }}>{f.citation}</p>
+              <p style={{
+                fontFamily: "'JetBrains Mono', ui-monospace, monospace",
+                fontSize: 11, letterSpacing: '0.22em',
+                opacity: 0.55, marginTop: 6, marginBottom: 0,
+              }}>{f.journal}</p>
+            </div>
           </div>
         )}
 
@@ -214,9 +367,9 @@ export default function Trailer() {
                 padding: '8px 14px', borderRadius: 999, cursor: 'pointer',
                 fontFamily: "'Archivo', system-ui, sans-serif", fontSize: 11,
                 letterSpacing: '0.18em', textTransform: 'uppercase',
+                zIndex: 10,
               }}
             >Skip to research →</button>
-            {/* Progress dots */}
             <div style={{
               position: 'absolute', bottom: 24, left: '50%', transform: 'translateX(-50%)',
               display: 'flex', gap: 4, alignItems: 'center',
@@ -236,6 +389,22 @@ export default function Trailer() {
         @keyframes tr-in {
           from { opacity: 0; transform: translateY(6px); }
           to   { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes tr-pulse {
+          0%, 100% { opacity: 1; transform: scale(1); }
+          50%      { opacity: 0.55; transform: scale(0.85); }
+        }
+        @keyframes hl-sweep-anim {
+          from { background-size: 0% 38%; }
+          to   { background-size: 100% 38%; }
+        }
+        .hl-sweep {
+          background-image: linear-gradient(${PINK}, ${PINK});
+          background-repeat: no-repeat;
+          background-position: 0 90%;
+          background-size: 0% 38%;
+          animation: hl-sweep-anim 1.4s 0.6s cubic-bezier(0.2, 0.7, 0.2, 1) forwards;
+          padding: 0 2px;
         }
       `}</style>
     </>
