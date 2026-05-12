@@ -29,13 +29,13 @@ const FRAMES: Frame[] = [
     badge: 'ONE QUESTION WE COULDN\'T LET GO OF',
     question: 'What would it take to reach the audience the climate movement has lost — without ever saying the word climate?',
     highlight: 'the audience the climate movement has lost',
-    bg: INK, color: CREAM, duration: 6200,
+    bg: INK, color: CREAM, duration: 8500,
   },
   { kind: 'beat', bg: INK, duration: 500 },
 
   // ─── PROCESS ───
   { kind: 'text', lines: ['Sixteen academic papers.', 'Twenty-plus interviews.', 'Two group brainstorms.', 'Hollywood expert sessions.'], bg: INK, color: CREAM, duration: 3000, size: 'sm' },
-  { kind: 'text', lines: ['Four findings', 'kept coming back.'], bg: INK, color: CREAM, duration: 2200, size: 'lg' },
+  { kind: 'text', lines: ['Four findings', 'kept coming back.'], bg: INK, color: CREAM, duration: 2800, size: 'lg' },
   { kind: 'beat', bg: INK, duration: 400 },
 
   // ─── THE FOUR FINDINGS ───
@@ -45,7 +45,7 @@ const FRAMES: Frame[] = [
     detail: "Climate isn't a literacy problem. It's an identity one. More facts deepen the fracture; they don't close it.",
     citation: 'KAHAN, D.M. (2015)',
     journal: 'YALE · CULTURAL COGNITION PROJECT · POLITICAL PSYCHOLOGY 36',
-    bg: INK, color: CREAM, duration: 6200,
+    bg: INK, color: CREAM, duration: 10000,
   },
   {
     kind: 'finding', index: 2, total: 4,
@@ -53,15 +53,15 @@ const FRAMES: Frame[] = [
     detail: "The argument can't get through the defenses. The story can.",
     citation: 'GREEN, M.C. & BROCK, T.C. (2000)',
     journal: 'PENN · JOURNAL OF PERSONALITY AND SOCIAL PSYCHOLOGY',
-    bg: INK, color: CREAM, duration: 5800,
+    bg: INK, color: CREAM, duration: 8000,
   },
   {
     kind: 'finding', index: 3, total: 4,
-    finding: 'Climate ads featuring surprising messengers moved Republican voters seven points on belief and ten on human cause.',
-    detail: 'A former Republican congressman. An Air Force general. An evangelical climate scientist. Sunstein calls these figures surprising validators — and the audience cannot dismiss them as the other team.',
+    finding: 'Climate ads featuring “surprising messengers” moved Republican voters seven points on belief and ten on human cause.',
+    detail: 'A former Republican congressman. An Air Force general. An evangelical climate scientist. Sunstein calls these figures “surprising validators” — and the audience cannot dismiss them as the other team.',
     citation: 'GOLDBERG, GUSTAFSON, MAIBACH & LEISEROWITZ (2021)',
     journal: 'NATURE CLIMATE CHANGE · VOL. 11',
-    bg: INK, color: CREAM, duration: 7000,
+    bg: INK, color: CREAM, duration: 11000,
   },
   {
     kind: 'finding', index: 4, total: 4,
@@ -69,7 +69,7 @@ const FRAMES: Frame[] = [
     detail: "In Uganda, the same effect, sharper: short videos cut reported domestic violence by roughly a quarter when watched communally — and produced nothing measurable when watched alone on tablets.",
     citation: 'PALUCK & GREEN (2009) · GREEN, WILKE & COOPER (2020)',
     journal: 'AMERICAN POLITICAL SCIENCE REVIEW · COMPARATIVE POLITICAL STUDIES',
-    bg: INK, color: CREAM, duration: 7000,
+    bg: INK, color: CREAM, duration: 11000,
   },
   { kind: 'beat', bg: INK, duration: 500 },
 
