@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 
 const CREAM = '#f4efe6';
@@ -94,7 +94,6 @@ const FRAMES: Frame[] = [
   { kind: 'text', lines: ['No politics.', 'No professions.'], bg: PINK, color: INK, duration: 2200, size: 'lg' },
   { kind: 'text', lines: ['Connect through', 'the 36 Questions.'], bg: PINK, color: INK, duration: 2200, size: 'md' },
   { kind: 'text', lines: ['Couple up.', 'Propose.', 'Reveal the one last thing.'], bg: PINK, color: INK, duration: 2600, size: 'md' },
-  { kind: 'text', lines: ['The fires are in every window.', 'Nobody is allowed to say so.'], bg: PINK, color: INK, duration: 2800, size: 'md', serif: true },
   { kind: 'beat', bg: INK, duration: 700 },
 
   // ─── CLOSE ───
@@ -125,24 +124,52 @@ function HighlightSweep({ text, highlight }: { text: string; highlight: string }
 export default function Trailer() {
   const navigate = useNavigate();
   const [i, setI] = useState(0);
+  const [paused, setPaused] = useState(false);
   const [countdown, setCountdown] = useState(Math.ceil(AUTO_REDIRECT_MS / 1000));
+  const remainingRef = useRef<number>(0);
 
   useEffect(() => {
     document.title = 'The climate movement has a storytelling problem.';
   }, []);
 
+  // Reset remaining time on frame change
+  useEffect(() => {
+    const frame = FRAMES[i];
+    remainingRef.current = frame.kind === 'cta' ? 0 : frame.duration;
+  }, [i]);
+
+  // Auto-advance — pausable
   useEffect(() => {
     const frame = FRAMES[i];
     if (frame.kind === 'cta') return;
-    const t = setTimeout(() => setI((x) => Math.min(x + 1, FRAMES.length - 1)), frame.duration);
-    return () => clearTimeout(t);
-  }, [i]);
+    if (paused) return;
+    if (remainingRef.current <= 0) return;
 
+    const start = Date.now();
+    const remainingAtStart = remainingRef.current;
+    const t = setTimeout(() => {
+      remainingRef.current = 0;
+      setI((x) => Math.min(x + 1, FRAMES.length - 1));
+    }, remainingAtStart);
+
+    return () => {
+      clearTimeout(t);
+      const elapsed = Date.now() - start;
+      remainingRef.current = Math.max(0, remainingAtStart - elapsed);
+    };
+  }, [i, paused]);
+
+  // CTA auto-redirect — also pausable
   useEffect(() => {
     if (FRAMES[i].kind !== 'cta') return;
+    if (paused) {
+      // freeze countdown display while paused
+      return;
+    }
     const start = Date.now();
+    const carryover = AUTO_REDIRECT_MS - (Math.ceil(AUTO_REDIRECT_MS / 1000) - countdown) * 1000;
     const tick = setInterval(() => {
-      const remaining = Math.max(0, AUTO_REDIRECT_MS - (Date.now() - start));
+      const remaining = Math.max(0, carryover - (Date.now() - start));
       setCountdown(Math.ceil(remaining / 1000));
       if (remaining <= 0) {
         clearInterval(tick);
@@ -150,10 +177,16 @@ export default function Trailer() {
       }
     }, 100);
     return () => clearInterval(tick);
-  }, [i, navigate]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [i, paused, navigate]);
 
   function skip() { navigate('/paper'); }
-  function restart() { setI(0); setCountdown(Math.ceil(AUTO_REDIRECT_MS / 1000)); }
+  function togglePause() { setPaused(p => !p); }
+  function restart() {
+    setI(0);
+    setCountdown(Math.ceil(AUTO_REDIRECT_MS / 1000));
+    setPaused(false);
+  }
 
   const f = FRAMES[i];
   const isSerifText = f.kind === 'text' && f.serif === true;
@@ -165,15 +198,16 @@ export default function Trailer() {
         rel="stylesheet"
       />
       <div
+        className={paused ? 'tr-paused' : undefined}
         style={{
           position: 'fixed', inset: 0,
           background: f.bg, color: 'color' in f ? f.color : CREAM,
           transition: 'background 0.6s ease, color 0.6s ease',
           display: 'flex', alignItems: 'center', justifyContent: 'center',
           padding: '0 32px', overflow: 'hidden',
-          cursor: f.kind === 'cta' ? 'default' : 'pointer',
+          cursor: f.kind === 'cta' || paused ? 'default' : 'pointer',
         }}
-        onClick={() => f.kind !== 'cta' && setI((x) => Math.min(x + 1, FRAMES.length - 1))}
+        onClick={() => { if (paused || f.kind === 'cta') return; setI((x) => Math.min(x + 1, FRAMES.length - 1)); }}
       >
         {f.kind === 'text' && (
           <div key={i} style={{ maxWidth: 1100, textAlign: 'center', animation: 'tr-in 700ms ease' }}>
@@ -351,9 +385,29 @@ export default function Trailer() {
           </div>
         )}
 
-        {/* Skip + progress */}
+        {/* Pause + Skip + progress */}
         {f.kind !== 'cta' && (
           <>
+            <button
+              onClick={(e) => { e.stopPropagation(); togglePause(); }}
+              aria-label={paused ? 'Resume trailer' : 'Pause trailer'}
+              style={{
+                position: 'absolute', bottom: 24, left: 24,
+                background: paused ? 'rgba(255,44,180,0.18)' : 'transparent',
+                border: `1px solid ${paused ? PINK : 'rgba(244,239,230,0.3)'}`,
+                color: paused ? PINK : 'rgba(244,239,230,0.85)',
+                padding: '8px 14px', borderRadius: 999, cursor: 'pointer',
+                fontFamily: "'Archivo', system-ui, sans-serif", fontSize: 11,
+                letterSpacing: '0.18em', textTransform: 'uppercase',
+                fontWeight: 700,
+                zIndex: 10,
+                display: 'flex', alignItems: 'center', gap: 8,
+                transition: 'all 0.2s',
+              }}
+            >
+              <span style={{ fontSize: 10 }}>{paused ? '▶' : '❚❚'}</span>
+              <span>{paused ? 'Resume' : 'Pause'}</span>
+            </button>
             <button
               onClick={(e) => { e.stopPropagation(); skip(); }}
               style={{
@@ -378,6 +432,18 @@ export default function Trailer() {
                 }} />
               ))}
             </div>
+            {paused && (
+              <div className="tr-paused-indicator" style={{
+                position: 'absolute', top: 24, left: '50%', transform: 'translateX(-50%)',
+                background: PINK, color: INK,
+                padding: '6px 14px', borderRadius: 999,
+                fontFamily: "'Archivo', system-ui, sans-serif", fontSize: 10,
+                letterSpacing: '0.28em', textTransform: 'uppercase', fontWeight: 800,
+                animation: 'tr-pulse 1.6s ease-in-out infinite',
+                pointerEvents: 'none',
+                zIndex: 11,
+              }}>● Paused</div>
+            )}
           </>
         )}
       </div>
@@ -401,6 +467,11 @@ export default function Trailer() {
           background-size: 0% 38%;
           animation: hl-sweep-anim 1.4s 0.6s cubic-bezier(0.2, 0.7, 0.2, 1) forwards;
           padding: 0 2px;
+        }
+        /* Freeze every running animation inside the trailer when paused
+           — except the small Paused-pill pulse so the user knows it's paused. */
+        .tr-paused *:not(.tr-paused-indicator) {
+          animation-play-state: paused !important;
         }
       `}</style>
     </>
