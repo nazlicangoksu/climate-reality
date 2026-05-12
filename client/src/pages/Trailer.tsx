@@ -13,6 +13,7 @@ type Frame =
   | { kind: 'finding'; index: number; total: number; finding: string; detail?: string; citation: string; journal: string; bg: string; color: string; duration: number }
   | { kind: 'showcard'; index: number; total: number; title: string; genre: string; premise: string; bg: string; color: string; accent: string; duration: number }
   | { kind: 'couple'; index: number; total: number; a: string; b: string; bg: string; color: string; duration: number }
+  | { kind: 'takeaway'; badge: string; line1: string; line2: string; sub?: string; bg: string; color: string; accent: string; duration: number }
   | { kind: 'cta'; bg: string; color: string };
 
 const FRAMES: Frame[] = [
@@ -37,12 +38,12 @@ const FRAMES: Frame[] = [
 
   // ─── PROCESS ───
   { kind: 'text', lines: ['Sixteen academic papers.', 'Twenty-plus interviews.', 'Two group brainstorms.', 'Hollywood expert sessions.'], bg: INK, color: CREAM, duration: 3000, size: 'sm' },
-  { kind: 'text', lines: ['Four findings', 'kept coming back.'], bg: INK, color: CREAM, duration: 2800, size: 'lg' },
+  { kind: 'text', lines: ['Five findings', 'kept coming back.'], bg: INK, color: CREAM, duration: 2800, size: 'lg' },
   { kind: 'beat', bg: INK, duration: 400 },
 
   // ─── THE FOUR FINDINGS ───
   {
-    kind: 'finding', index: 1, total: 4,
+    kind: 'finding', index: 1, total: 5,
     finding: 'The more scientifically literate a Republican becomes, the more skeptical of climate science they tend to be — and the same effect runs in reverse for Democrats.',
     detail: "Climate isn't a literacy problem. It's an identity one. More facts deepen the fracture; they don't close it.",
     citation: 'KAHAN, D.M. (2015)',
@@ -50,7 +51,7 @@ const FRAMES: Frame[] = [
     bg: INK, color: CREAM, duration: 10000,
   },
   {
-    kind: 'finding', index: 2, total: 4,
+    kind: 'finding', index: 2, total: 5,
     finding: 'Audiences absorbed in a narrative drop the counterarguing reflex and adopt story-consistent beliefs.',
     detail: "The argument can't get through the defenses. The story can.",
     citation: 'GREEN, M.C. & BROCK, T.C. (2000)',
@@ -58,7 +59,15 @@ const FRAMES: Frame[] = [
     bg: INK, color: CREAM, duration: 8000,
   },
   {
-    kind: 'finding', index: 3, total: 4,
+    kind: 'finding', index: 3, total: 5,
+    finding: "MTV's “16 and Pregnant” drove a 4.3% drop in teen birth rates in the eighteen months after it first aired.",
+    detail: "It accounted for nearly a quarter of the total decline in U.S. teen childbearing during that period — the first hard evidence that a single reality TV show could move real-world behavior at population scale.",
+    citation: 'KEARNEY, M.S. & LEVINE, P.B. (2015)',
+    journal: 'AMERICAN ECONOMIC REVIEW · NBER',
+    bg: INK, color: CREAM, duration: 11000,
+  },
+  {
+    kind: 'finding', index: 4, total: 5,
     finding: 'Climate ads featuring “surprising messengers” moved Republican voters seven points on belief and ten on human cause.',
     detail: 'A former Republican congressman. An Air Force general. An evangelical climate scientist. Sunstein calls these figures “surprising validators” — and the audience cannot dismiss them as the other team.',
     citation: 'GOLDBERG, GUSTAFSON, MAIBACH & LEISEROWITZ (2021)',
@@ -66,7 +75,7 @@ const FRAMES: Frame[] = [
     bg: INK, color: CREAM, duration: 11000,
   },
   {
-    kind: 'finding', index: 4, total: 4,
+    kind: 'finding', index: 5, total: 5,
     finding: 'In Rwanda, a soap opera about reconciliation barely moved personal attitudes — but shifted group norms when people listened together.',
     detail: "In Uganda, the same effect, sharper: short videos cut reported domestic violence by roughly a quarter when watched communally — and produced nothing measurable when watched alone on tablets.",
     citation: 'PALUCK & GREEN (2009) · GREEN, WILKE & COOPER (2020)',
@@ -94,6 +103,14 @@ const FRAMES: Frame[] = [
   { kind: 'text', lines: ['Cameras embed in their kitchens', 'for three to four months.'], bg: RED, color: CREAM, duration: 3200, size: 'md' },
   { kind: 'text', lines: ['No narrator.', 'No confessionals.', 'Just dinner.'], bg: RED, color: CREAM, duration: 2800, size: 'md' },
   { kind: 'text', lines: ['Finale: six dinners,', 'six time zones, one hour.'], bg: RED, color: CREAM, duration: 3200, size: 'lg' },
+  {
+    kind: 'takeaway',
+    badge: 'THE SO-WHAT',
+    line1: 'Six families having the conversation on screen',
+    line2: 'so your family can have it off.',
+    sub: 'Common knowledge — watching together is the lever.',
+    bg: RED, color: CREAM, accent: CREAM, duration: 6500,
+  },
   { kind: 'beat', bg: INK, duration: 500 },
 
   // ─── ONE LAST THING ───
@@ -375,9 +392,9 @@ export default function Trailer() {
         )}
 
         {f.kind === 'couple' && (
-          <div key={i} style={{ maxWidth: 1180, width: '100%', animation: 'tr-in 700ms ease' }}>
+          <div key={i} style={{ maxWidth: 1220, width: '100%', animation: 'tr-in 700ms ease' }}>
             {/* Top badge */}
-            <div style={{ display: 'flex', alignItems: 'center', gap: 14, marginBottom: 64, opacity: 0.7 }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 14, marginBottom: 56, opacity: 0.7 }}>
               <span style={{ flex: 1, height: 1, background: 'currentColor', opacity: 0.3 }}/>
               <span style={{
                 fontFamily: "'JetBrains Mono', ui-monospace, monospace",
@@ -387,23 +404,30 @@ export default function Trailer() {
               <span style={{ flex: 1, height: 1, background: 'currentColor', opacity: 0.3 }}/>
             </div>
 
-            {/* Two-column grid */}
+            {/* Two-column grid — distinct typography for each speaker */}
             <div style={{
               display: 'grid',
               gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))',
-              gap: 'clamp(40px, 6vw, 88px)',
+              gap: 'clamp(40px, 6vw, 100px)',
               alignItems: 'start',
             }}>
-              {/* Speaker A */}
-              <div style={{ position: 'relative' }}>
+              {/* Speaker A — italic serif, left-aligned */}
+              <div style={{ position: 'relative', textAlign: 'left' }}>
+                <div style={{ display: 'flex', alignItems: 'baseline', gap: 8, marginBottom: 6, opacity: 0.55 }}>
+                  <span style={{
+                    fontFamily: "'JetBrains Mono', ui-monospace, monospace",
+                    fontSize: 10, letterSpacing: '0.32em', textTransform: 'uppercase',
+                  }}>Speaker A</span>
+                  <span style={{ flex: 1, height: 1, background: 'currentColor', opacity: 0.3, alignSelf: 'center' }}/>
+                </div>
                 <span aria-hidden style={{
                   display: 'block',
                   fontFamily: "'Fraunces', Georgia, serif",
                   fontStyle: 'italic',
-                  fontSize: 'clamp(80px, 8vw, 120px)',
+                  fontSize: 'clamp(72px, 7vw, 104px)',
                   lineHeight: 0.55,
-                  color: 'currentColor', opacity: 0.35,
-                  marginBottom: 18,
+                  color: 'currentColor', opacity: 0.4,
+                  marginBottom: 14,
                   userSelect: 'none',
                 }}>“</span>
                 <p style={{
@@ -417,25 +441,31 @@ export default function Trailer() {
                 }}>{f.a}</p>
               </div>
 
-              {/* Speaker B */}
-              <div style={{ position: 'relative' }}>
+              {/* Speaker B — sans-serif uppercase weight, right-aligned */}
+              <div style={{ position: 'relative', textAlign: 'right' }}>
+                <div style={{ display: 'flex', alignItems: 'baseline', gap: 8, marginBottom: 6, opacity: 0.55 }}>
+                  <span style={{ flex: 1, height: 1, background: 'currentColor', opacity: 0.3, alignSelf: 'center' }}/>
+                  <span style={{
+                    fontFamily: "'JetBrains Mono', ui-monospace, monospace",
+                    fontSize: 10, letterSpacing: '0.32em', textTransform: 'uppercase',
+                  }}>Speaker B</span>
+                </div>
                 <span aria-hidden style={{
                   display: 'block',
-                  fontFamily: "'Fraunces', Georgia, serif",
-                  fontStyle: 'italic',
-                  fontSize: 'clamp(80px, 8vw, 120px)',
-                  lineHeight: 0.55,
-                  color: 'currentColor', opacity: 0.35,
-                  marginBottom: 18,
+                  fontFamily: "'Archivo', system-ui, sans-serif",
+                  fontWeight: 900,
+                  fontSize: 'clamp(64px, 6vw, 92px)',
+                  lineHeight: 0.7,
+                  color: 'currentColor', opacity: 0.4,
+                  marginBottom: 14,
                   userSelect: 'none',
                 }}>“</span>
                 <p style={{
-                  fontFamily: "'Fraunces', Georgia, serif",
-                  fontStyle: 'italic',
-                  fontWeight: 500,
-                  fontSize: 'clamp(22px, 2.8vw, 36px)',
-                  lineHeight: 1.32,
-                  letterSpacing: '-0.005em',
+                  fontFamily: "'Archivo', system-ui, sans-serif",
+                  fontWeight: 700,
+                  fontSize: 'clamp(20px, 2.6vw, 32px)',
+                  lineHeight: 1.28,
+                  letterSpacing: '-0.012em',
                   margin: 0,
                 }}>{f.b}</p>
               </div>
@@ -443,7 +473,7 @@ export default function Trailer() {
 
             {/* Bottom signature */}
             <div style={{
-              marginTop: 64, display: 'flex', alignItems: 'center', justifyContent: 'center',
+              marginTop: 60, display: 'flex', alignItems: 'center', justifyContent: 'center',
               gap: 10, opacity: 0.45,
             }}>
               <span style={{ width: 6, height: 6, borderRadius: 999, background: 'currentColor', display: 'inline-block' }}/>
@@ -453,6 +483,59 @@ export default function Trailer() {
               }}>One last thing · Episode 5 · The Reveal</span>
               <span style={{ width: 6, height: 6, borderRadius: 999, background: 'currentColor', display: 'inline-block' }}/>
             </div>
+          </div>
+        )}
+
+        {f.kind === 'takeaway' && (
+          <div key={i} style={{ maxWidth: 1180, width: '100%', textAlign: 'center', animation: 'tr-in 700ms ease' }}>
+            {/* Badge */}
+            <div style={{ display: 'flex', alignItems: 'center', gap: 16, marginBottom: 56, opacity: 0.85, justifyContent: 'center' }}>
+              <span style={{ width: 36, height: 1, background: f.accent }}/>
+              <span style={{
+                fontFamily: "'JetBrains Mono', ui-monospace, monospace",
+                fontSize: 11, letterSpacing: '0.32em', textTransform: 'uppercase',
+                background: f.accent, color: f.bg,
+                padding: '5px 12px', borderRadius: 4, fontWeight: 700,
+              }}>{f.badge}</span>
+              <span style={{ width: 36, height: 1, background: f.accent }}/>
+            </div>
+
+            {/* Big lines */}
+            <p style={{
+              fontFamily: "'Fraunces', Georgia, serif",
+              fontStyle: 'italic',
+              fontWeight: 500,
+              fontSize: 'clamp(30px, 4.6vw, 64px)',
+              lineHeight: 1.18,
+              letterSpacing: '-0.012em',
+              margin: '0 auto',
+              maxWidth: 1000,
+            }}>{f.line1}</p>
+
+            <p style={{
+              fontFamily: "'Archivo', system-ui, sans-serif",
+              fontWeight: 800,
+              fontSize: 'clamp(28px, 4.4vw, 60px)',
+              lineHeight: 1.05,
+              letterSpacing: '-0.02em',
+              margin: '14px auto 0',
+              maxWidth: 1000,
+            }}>{f.line2}</p>
+
+            {/* Optional sub */}
+            {f.sub && (
+              <div style={{
+                marginTop: 56, paddingTop: 22,
+                borderTop: `2px solid ${f.accent}`,
+                maxWidth: 720, marginLeft: 'auto', marginRight: 'auto',
+              }}>
+                <p style={{
+                  fontFamily: "'JetBrains Mono', ui-monospace, monospace",
+                  fontSize: 12, letterSpacing: '0.22em',
+                  opacity: 0.8, margin: 0,
+                }}>{f.sub}</p>
+              </div>
+            )}
           </div>
         )}
 
