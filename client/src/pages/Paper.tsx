@@ -202,7 +202,7 @@ const HOUSEHOLDS: Record<Household, { name: string; location: string; descriptio
   lansing: {
     name: 'The Argument',
     location: 'Lansing, MI',
-    description: "A father who's called climate change a hoax since 2010 and the daughter who came home from her first year of college a climate organizer. They love each other. They haven't gotten through a Thanksgiving without one of them leaving the table since 2024.",
+    description: "A mother who has volunteered with the local climate-organizing chapter since 2013 and her son who came home from college convinced the climate movement is doing more harm than good. They love each other. They haven't gotten through a Thanksgiving without one of them leaving the table since 2024.",
   },
   permian: {
     name: 'Rig & Vote',
@@ -766,13 +766,13 @@ function PaperTab() {
         interactive={<CrossfireQuiz />}
         short={
           <p>
-            CROSSFIRE is a six-episode documentary style reality TV about American families who disagree about climate change but love each other anyway. Each episode follows one household in their kitchen, their calving shed, their truck on the way home from church. The conversations are real; they happen the way they happen at every American dinner table where people who voted differently still have to pass each other the salt. There is no narrator, no confessional cam, no producer setting up the drama. The camera just stays. In the finale, all six families sit down to dinner at the same hour across six time zones, intercut. <strong>Same questions and tensions on every table.</strong>
+            A six-episode documentary-style reality TV series about American families divided by climate. Each episode follows one household for three to four months — in their kitchen, their calving shed, their truck on the way home from church. The disagreement is real. The love is real. No narrator. No confessional cam. No producer setting up the drama. The camera just stays. In the finale, all six families eat dinner at the same hour across six time zones, intercut on screen. <strong>Same questions, same tensions, on every table.</strong>
           </p>
         }
         detail={{
-          world: "Kitchens, calving sheds, congregations, hardware stores, oilfield trailers, hospital break rooms. Climate is named in this show. It is named the way it is named in real American kitchens — through the cow that wouldn't deliver, the calving season two weeks late, the brisket that took fourteen hours, the gas-stove fight the family is too tired to have again, the well that ran low, the bill that doubled in March. The household is the unit of analysis the climate movement has missed. Policy lives in Washington; the conversation lives at the table, and that is where the camera stays.",
+          world: "Kitchens, calving sheds, hardware stores, hospital break rooms. Climate is named in this show — but the way it gets named in real American kitchens. Through the cow that wouldn't deliver. The calving season two weeks late. The brisket that took fourteen hours. The gas-stove fight the family is too tired to have again. The well that ran low. The bill that doubled in March. The household is the unit the climate movement has missed. Policy lives in Washington. The conversation lives at the table — and that is where the camera stays.",
           cast: [
-            { label: "Lansing, MI — The Argument.", body: "A father who has called climate change a hoax since 2010 and the daughter who came home from her first year of college a climate organizer. They love each other. They have not gotten through a Thanksgiving without one of them leaving the table since 2024. The episode films the year they try." },
+            { label: "Lansing, MI — The Argument.", body: "A mother who has volunteered with the local climate-organizing chapter since 2013 and her son who came home from college convinced the climate movement is doing more harm than good. They love each other. They have not gotten through a Thanksgiving without one of them leaving the table since 2024. The episode films the year they try." },
             { label: "Permian Basin, TX — Rig & Vote.", body: "A husband who works the rigs married to a wife who organizes for the local Sierra Club chapter on Tuesdays. He pays the mortgage with oil. They have been married more than two decades." },
             { label: "Cheyenne, WY — The Land.", body: "A fourth-generation cattle rancher and the son who came home from grad school to convert the operation to regenerative grazing. The father loves the boy. The boy loves the land. They argue about both." },
             { label: "Tulsa, OK — Sermon & Data.", body: "A Pentecostal pastor whose only daughter is a NOAA climate scientist. Sunday morning he preaches dominion. Sunday afternoon she shows him the model. Both believe they are doing right by the same God." },
@@ -807,11 +807,11 @@ function PaperTab() {
         interactive={<OneLastThingWall />}
         short={
           <p>
-            ONE LAST THING is the show in which climate is never named. Sixteen Angelenos move into a glass house on a hillside above Altadena, sixteen months after the Palisades and Eaton fires, with a 14,000-acre burn scar visible from every window. They cannot share who they voted for or what they do for a living. They connect through prompts adapted from the <em>36 Questions</em>. They couple up. They propose. Then, on camera, in front of the person they just got engaged to, each contestant reveals the one last thing. <strong>Climate is in every shot, in every window, on every horizon — and in none of the dialogue.</strong>
+            A ten-episode unscripted dating series set sixteen months after the Palisades and Eaton fires. Sixteen Angelenos move into a glass house on a hillside above Altadena, with a 14,000-acre burn scar visible from every window. Two rules they can't break: they can't reveal their politics or their profession. They connect through prompts adapted from the <em>36 Questions</em>. They couple up. They propose. Then, on camera, in front of the person they just got engaged to, each contestant reveals the one last thing — and the couple finds out who they actually fell for. <strong>Climate is in every shot, every window, every horizon. It is never named on camera.</strong>
           </p>
         }
         detail={{
-          world: "A glass house in the hills above Altadena. Below, a 14,000-acre burn scar still smelling of creosote. Climate never enters the dialogue. It is in the burn scar visible from every window of the house, in the smell of creosote that hangs in the canyon at dusk, in the firefighter's sleep schedule, in the developer's spreadsheets, in the abuela's hand on the door. The show puts climate above the political line, in front of the camera, inside the love story — so that audiences who would scroll past a climate documentary cannot scroll past it here.",
+          world: "A glass house in the hills above Altadena. A 14,000-acre burn scar below, still smelling of creosote. Climate never enters the dialogue. It is in the burn scar visible from every window. The smell of creosote in the canyon at dusk. The firefighter's sleep schedule. The developer's spreadsheets. The abuela's hand on the door. The show puts climate above the political line — in front of the camera, inside the love story. Audiences who'd scroll past a climate documentary can't scroll past this.",
           cast: [
             { label: "Lost everything · Palisades.", body: "She came back to the city she grew up in to look at the lot her family lived on for thirty years." },
             { label: "Firefighter · LAFD.", body: "He worked the line in January. He has not slept past 5 a.m. since." },
@@ -854,7 +854,7 @@ function PaperTab() {
           <tr><td><strong>Tone</strong></td><td>Funny, patient, at times unbearable</td><td>Tender, slow, then loud</td></tr>
           <tr><td><strong>Where the producer sits</strong></td><td>Documentary &amp; unscripted-prestige slates</td><td>Streaming dating &amp; event-format slates</td></tr>
           <tr><td><strong>How climate appears</strong></td><td>Named, in the family vocabulary: calving season, gas stove, brisket, well, bill, the cow that wouldn't deliver</td><td>Unnamed, embedded twice: in the city (the burn scar from every window, the creosote, the firefighter's sleep) and in the cast itself (some believe, some don't — the reveal exposes who)</td></tr>
-          <tr><td><strong>The friction</strong></td><td>A denier dad and an activist daughter. A husband on the rig and a wife at the Sierra Club. A pastor and his climate-scientist daughter. People across one last name.</td><td>Sixteen strangers, no labels, two rules.</td></tr>
+          <tr><td><strong>The friction</strong></td><td>A progressive mom and her climate-skeptic son. A husband on the rig and a wife at the Sierra Club. A pastor and his climate-scientist daughter. People across one last name.</td><td>Sixteen strangers, two rules they can't break.</td></tr>
           <tr><td><strong>The viewer's question</strong></td><td>Can love hold the conversation open?</td><td>Does the one last thing matter, or does love win?</td></tr>
         </tbody>
       </table>
