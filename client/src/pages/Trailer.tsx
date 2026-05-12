@@ -12,6 +12,7 @@ type Frame =
   | { kind: 'question'; badge: string; question: string; highlight: string; bg: string; color: string; duration: number }
   | { kind: 'finding'; index: number; total: number; finding: string; detail?: string; citation: string; journal: string; bg: string; color: string; duration: number }
   | { kind: 'showcard'; index: number; total: number; title: string; genre: string; premise: string; bg: string; color: string; accent: string; duration: number }
+  | { kind: 'couple'; index: number; total: number; a: string; b: string; bg: string; color: string; duration: number }
   | { kind: 'cta'; bg: string; color: string };
 
 const FRAMES: Frame[] = [
@@ -108,8 +109,24 @@ const FRAMES: Frame[] = [
   { kind: 'text', lines: ['Two rules.', "They can't reveal their politics", 'or their profession.'], bg: PINK, color: INK, duration: 3600, size: 'md' },
   { kind: 'text', lines: ['They date for ten weeks', 'through the 36 Questions.'], bg: PINK, color: INK, duration: 3000, size: 'md' },
   { kind: 'text', lines: ['When a couple proposes,', 'they reveal the one last thing.'], bg: PINK, color: INK, duration: 3000, size: 'md' },
-  { kind: 'text', lines: ['"I don’t vote.', 'But climate change keeps me up at night."'], bg: PINK, color: INK, duration: 3800, size: 'md', serif: true },
-  { kind: 'text', lines: ['"I’m a Republican.', 'And nature protection is the most urgent thing we have."'], bg: PINK, color: INK, duration: 4200, size: 'md', serif: true },
+  {
+    kind: 'couple', index: 1, total: 3,
+    a: "I don’t vote. But climate change keeps me up at night.",
+    b: "I’m a Republican. And nature protection is the most urgent thing we have.",
+    bg: PINK, color: INK, duration: 6200,
+  },
+  {
+    kind: 'couple', index: 2, total: 3,
+    a: "I work on a rig. I want my kids to grow up somewhere green.",
+    b: "I’m a climate organizer. My dad just lost his job to it.",
+    bg: PINK, color: INK, duration: 6200,
+  },
+  {
+    kind: 'couple', index: 3, total: 3,
+    a: "I’m a coal miner’s daughter. I’m voting blue this November.",
+    b: "I’m a Brooklyn vegan. I drive a pickup truck.",
+    bg: PINK, color: INK, duration: 6200,
+  },
   { kind: 'text', lines: ['Two people who already chose each other,', 'finding out who they actually chose.'], bg: PINK, color: INK, duration: 3600, size: 'md' },
   { kind: 'text', lines: ['Then they walk the aisle.', 'Yes or no.'], bg: PINK, color: INK, duration: 3000, size: 'md' },
   { kind: 'beat', bg: INK, duration: 700 },
@@ -353,6 +370,88 @@ export default function Trailer() {
                 fontSize: 11, letterSpacing: '0.22em',
                 opacity: 0.55, marginTop: 6, marginBottom: 0,
               }}>{f.journal}</p>
+            </div>
+          </div>
+        )}
+
+        {f.kind === 'couple' && (
+          <div key={i} style={{ maxWidth: 1180, width: '100%', animation: 'tr-in 700ms ease' }}>
+            {/* Top badge */}
+            <div style={{ display: 'flex', alignItems: 'center', gap: 14, marginBottom: 64, opacity: 0.7 }}>
+              <span style={{ flex: 1, height: 1, background: 'currentColor', opacity: 0.3 }}/>
+              <span style={{
+                fontFamily: "'JetBrains Mono', ui-monospace, monospace",
+                fontSize: 11, letterSpacing: '0.3em',
+                whiteSpace: 'nowrap',
+              }}>COUPLE {String(f.index).padStart(2, '0')} / {String(f.total).padStart(2, '0')} · THE REVEAL</span>
+              <span style={{ flex: 1, height: 1, background: 'currentColor', opacity: 0.3 }}/>
+            </div>
+
+            {/* Two-column grid */}
+            <div style={{
+              display: 'grid',
+              gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))',
+              gap: 'clamp(40px, 6vw, 88px)',
+              alignItems: 'start',
+            }}>
+              {/* Speaker A */}
+              <div style={{ position: 'relative' }}>
+                <span aria-hidden style={{
+                  display: 'block',
+                  fontFamily: "'Fraunces', Georgia, serif",
+                  fontStyle: 'italic',
+                  fontSize: 'clamp(80px, 8vw, 120px)',
+                  lineHeight: 0.55,
+                  color: 'currentColor', opacity: 0.35,
+                  marginBottom: 18,
+                  userSelect: 'none',
+                }}>“</span>
+                <p style={{
+                  fontFamily: "'Fraunces', Georgia, serif",
+                  fontStyle: 'italic',
+                  fontWeight: 500,
+                  fontSize: 'clamp(22px, 2.8vw, 36px)',
+                  lineHeight: 1.32,
+                  letterSpacing: '-0.005em',
+                  margin: 0,
+                }}>{f.a}</p>
+              </div>
+
+              {/* Speaker B */}
+              <div style={{ position: 'relative' }}>
+                <span aria-hidden style={{
+                  display: 'block',
+                  fontFamily: "'Fraunces', Georgia, serif",
+                  fontStyle: 'italic',
+                  fontSize: 'clamp(80px, 8vw, 120px)',
+                  lineHeight: 0.55,
+                  color: 'currentColor', opacity: 0.35,
+                  marginBottom: 18,
+                  userSelect: 'none',
+                }}>“</span>
+                <p style={{
+                  fontFamily: "'Fraunces', Georgia, serif",
+                  fontStyle: 'italic',
+                  fontWeight: 500,
+                  fontSize: 'clamp(22px, 2.8vw, 36px)',
+                  lineHeight: 1.32,
+                  letterSpacing: '-0.005em',
+                  margin: 0,
+                }}>{f.b}</p>
+              </div>
+            </div>
+
+            {/* Bottom signature */}
+            <div style={{
+              marginTop: 64, display: 'flex', alignItems: 'center', justifyContent: 'center',
+              gap: 10, opacity: 0.45,
+            }}>
+              <span style={{ width: 6, height: 6, borderRadius: 999, background: 'currentColor', display: 'inline-block' }}/>
+              <span style={{
+                fontFamily: "'JetBrains Mono', ui-monospace, monospace",
+                fontSize: 10, letterSpacing: '0.3em', textTransform: 'uppercase',
+              }}>One last thing · Episode 5 · The Reveal</span>
+              <span style={{ width: 6, height: 6, borderRadius: 999, background: 'currentColor', display: 'inline-block' }}/>
             </div>
           </div>
         )}
