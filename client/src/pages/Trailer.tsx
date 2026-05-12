@@ -13,6 +13,7 @@ type Frame =
   | { kind: 'finding'; index: number; total: number; finding: string; detail?: string; citation: string; journal: string; bg: string; color: string; duration: number }
   | { kind: 'showcard'; index: number; total: number; title: string; genre: string; premise: string; bg: string; color: string; accent: string; duration: number }
   | { kind: 'couple'; index: number; total: number; a: string; b: string; bg: string; color: string; duration: number }
+  | { kind: 'pair'; a: string; b: string; bg: string; color: string; accent: string; duration: number }
   | { kind: 'takeaway'; badge: string; line1: string; line2: string; sub?: string; bg: string; color: string; accent: string; duration: number }
   | { kind: 'cta'; bg: string; color: string };
 
@@ -97,19 +98,34 @@ const FRAMES: Frame[] = [
     premise: 'Six American families who disagree about climate change but love each other anyway.',
     bg: RED, color: CREAM, accent: CREAM, duration: 6000,
   },
-  { kind: 'text', lines: ['A climate-organizing mother', 'and the son who came home', 'rejecting it all.'], bg: RED, color: CREAM, duration: 3200, size: 'md' },
-  { kind: 'text', lines: ['A pastor', 'and his climate-scientist daughter.'], bg: RED, color: CREAM, duration: 2800, size: 'md' },
-  { kind: 'text', lines: ['A rancher', 'and the son who came home', 'doing it differently.'], bg: RED, color: CREAM, duration: 3200, size: 'md' },
+  {
+    kind: 'pair',
+    a: 'A climate-organizing mother',
+    b: 'and the son who came home rejecting it all.',
+    bg: RED, color: CREAM, accent: CREAM, duration: 3600,
+  },
+  {
+    kind: 'pair',
+    a: 'A pastor',
+    b: 'and his climate-scientist daughter.',
+    bg: RED, color: CREAM, accent: CREAM, duration: 3200,
+  },
+  {
+    kind: 'pair',
+    a: 'A rancher',
+    b: 'and the son who came home doing it differently.',
+    bg: RED, color: CREAM, accent: CREAM, duration: 3600,
+  },
   { kind: 'text', lines: ['Cameras embed in their kitchens', 'for three to four months.'], bg: RED, color: CREAM, duration: 3200, size: 'md' },
   { kind: 'text', lines: ['No narrator.', 'No confessionals.', 'Just dinner.'], bg: RED, color: CREAM, duration: 2800, size: 'md' },
   { kind: 'text', lines: ['Finale: six dinners,', 'six time zones, one hour.'], bg: RED, color: CREAM, duration: 3200, size: 'lg' },
   {
     kind: 'takeaway',
-    badge: 'THE SO-WHAT',
-    line1: 'Six families having the conversation on screen',
-    line2: 'so your family can have it off.',
-    sub: 'Common knowledge — watching together is the lever.',
-    bg: RED, color: CREAM, accent: CREAM, duration: 6500,
+    badge: 'CROSSFIRE · THE SO-WHAT',
+    line1: 'Reality TV that turns climate into a family conversation again.',
+    line2: 'Six families do it on screen so the rest of America can do it off it.',
+    sub: 'Common knowledge is the lever. — Paluck & Green',
+    bg: RED, color: CREAM, accent: CREAM, duration: 7500,
   },
   { kind: 'beat', bg: INK, duration: 500 },
 
@@ -144,8 +160,16 @@ const FRAMES: Frame[] = [
     b: "I’m a Brooklyn vegan. I drive a pickup truck.",
     bg: PINK, color: INK, duration: 6200,
   },
-  { kind: 'text', lines: ['Two people who already chose each other,', 'finding out who they actually chose.'], bg: PINK, color: INK, duration: 3600, size: 'md' },
+  { kind: 'text', lines: ['They already chose each other.', 'Now they find out who.'], bg: PINK, color: INK, duration: 3400, size: 'lg', serif: true },
   { kind: 'text', lines: ['Then they walk the aisle.', 'Yes or no.'], bg: PINK, color: INK, duration: 3000, size: 'md' },
+  {
+    kind: 'takeaway',
+    badge: 'ONE LAST THING · THE SO-WHAT',
+    line1: 'Reality dating that hides politics until love is on the line.',
+    line2: 'Sixteen strangers. One last thing. America watching to see if love wins.',
+    sub: 'Identity-protective cognition, bypassed by attraction. — Kahan',
+    bg: PINK, color: INK, accent: INK, duration: 7500,
+  },
   { kind: 'beat', bg: INK, duration: 700 },
 
   // ─── CLOSE ───
@@ -392,97 +416,107 @@ export default function Trailer() {
         )}
 
         {f.kind === 'couple' && (
-          <div key={i} style={{ maxWidth: 1220, width: '100%', animation: 'tr-in 700ms ease' }}>
-            {/* Top badge */}
-            <div style={{ display: 'flex', alignItems: 'center', gap: 14, marginBottom: 56, opacity: 0.7 }}>
-              <span style={{ flex: 1, height: 1, background: 'currentColor', opacity: 0.3 }}/>
-              <span style={{
-                fontFamily: "'JetBrains Mono', ui-monospace, monospace",
-                fontSize: 11, letterSpacing: '0.3em',
-                whiteSpace: 'nowrap',
-              }}>COUPLE {String(f.index).padStart(2, '0')} / {String(f.total).padStart(2, '0')} · THE REVEAL</span>
-              <span style={{ flex: 1, height: 1, background: 'currentColor', opacity: 0.3 }}/>
-            </div>
-
-            {/* Two-column grid — distinct typography for each speaker */}
+          <div key={i} style={{
+            position: 'absolute', inset: 0,
+            display: 'grid',
+            gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))',
+            animation: 'tr-in 700ms ease',
+          }}>
+            {/* Speaker A — italic serif, left-aligned, soft */}
             <div style={{
-              display: 'grid',
-              gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))',
-              gap: 'clamp(40px, 6vw, 100px)',
-              alignItems: 'start',
+              display: 'flex', flexDirection: 'column', justifyContent: 'center',
+              padding: 'clamp(40px, 6vw, 96px)',
+              borderRight: '1px solid rgba(0,0,0,0.18)',
             }}>
-              {/* Speaker A — italic serif, left-aligned */}
-              <div style={{ position: 'relative', textAlign: 'left' }}>
-                <div style={{ display: 'flex', alignItems: 'baseline', gap: 8, marginBottom: 6, opacity: 0.55 }}>
-                  <span style={{
-                    fontFamily: "'JetBrains Mono', ui-monospace, monospace",
-                    fontSize: 10, letterSpacing: '0.32em', textTransform: 'uppercase',
-                  }}>Speaker A</span>
-                  <span style={{ flex: 1, height: 1, background: 'currentColor', opacity: 0.3, alignSelf: 'center' }}/>
-                </div>
-                <span aria-hidden style={{
-                  display: 'block',
-                  fontFamily: "'Fraunces', Georgia, serif",
-                  fontStyle: 'italic',
-                  fontSize: 'clamp(72px, 7vw, 104px)',
-                  lineHeight: 0.55,
-                  color: 'currentColor', opacity: 0.4,
-                  marginBottom: 14,
-                  userSelect: 'none',
-                }}>“</span>
-                <p style={{
-                  fontFamily: "'Fraunces', Georgia, serif",
-                  fontStyle: 'italic',
-                  fontWeight: 500,
-                  fontSize: 'clamp(22px, 2.8vw, 36px)',
-                  lineHeight: 1.32,
-                  letterSpacing: '-0.005em',
-                  margin: 0,
-                }}>{f.a}</p>
-              </div>
-
-              {/* Speaker B — sans-serif uppercase weight, right-aligned */}
-              <div style={{ position: 'relative', textAlign: 'right' }}>
-                <div style={{ display: 'flex', alignItems: 'baseline', gap: 8, marginBottom: 6, opacity: 0.55 }}>
-                  <span style={{ flex: 1, height: 1, background: 'currentColor', opacity: 0.3, alignSelf: 'center' }}/>
-                  <span style={{
-                    fontFamily: "'JetBrains Mono', ui-monospace, monospace",
-                    fontSize: 10, letterSpacing: '0.32em', textTransform: 'uppercase',
-                  }}>Speaker B</span>
-                </div>
-                <span aria-hidden style={{
-                  display: 'block',
-                  fontFamily: "'Archivo', system-ui, sans-serif",
-                  fontWeight: 900,
-                  fontSize: 'clamp(64px, 6vw, 92px)',
-                  lineHeight: 0.7,
-                  color: 'currentColor', opacity: 0.4,
-                  marginBottom: 14,
-                  userSelect: 'none',
-                }}>“</span>
-                <p style={{
-                  fontFamily: "'Archivo', system-ui, sans-serif",
-                  fontWeight: 700,
-                  fontSize: 'clamp(20px, 2.6vw, 32px)',
-                  lineHeight: 1.28,
-                  letterSpacing: '-0.012em',
-                  margin: 0,
-                }}>{f.b}</p>
-              </div>
+              <span aria-hidden style={{
+                fontFamily: "'Fraunces', Georgia, serif",
+                fontStyle: 'italic',
+                fontSize: 'clamp(96px, 9vw, 144px)',
+                lineHeight: 0.55,
+                color: 'currentColor', opacity: 0.35,
+                marginBottom: 22,
+                userSelect: 'none',
+              }}>“</span>
+              <p style={{
+                fontFamily: "'Fraunces', Georgia, serif",
+                fontStyle: 'italic',
+                fontWeight: 500,
+                fontSize: 'clamp(24px, 3.2vw, 44px)',
+                lineHeight: 1.28,
+                letterSpacing: '-0.005em',
+                margin: 0,
+                maxWidth: 520,
+              }}>{f.a}</p>
             </div>
 
-            {/* Bottom signature */}
+            {/* Speaker B — bold sans-serif, right-aligned */}
             <div style={{
-              marginTop: 60, display: 'flex', alignItems: 'center', justifyContent: 'center',
-              gap: 10, opacity: 0.45,
+              display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'flex-end',
+              padding: 'clamp(40px, 6vw, 96px)',
+              textAlign: 'right',
             }}>
-              <span style={{ width: 6, height: 6, borderRadius: 999, background: 'currentColor', display: 'inline-block' }}/>
-              <span style={{
-                fontFamily: "'JetBrains Mono', ui-monospace, monospace",
-                fontSize: 10, letterSpacing: '0.3em', textTransform: 'uppercase',
-              }}>One last thing · Episode 5 · The Reveal</span>
-              <span style={{ width: 6, height: 6, borderRadius: 999, background: 'currentColor', display: 'inline-block' }}/>
+              <span aria-hidden style={{
+                fontFamily: "'Archivo', system-ui, sans-serif",
+                fontWeight: 900,
+                fontSize: 'clamp(96px, 9vw, 144px)',
+                lineHeight: 0.7,
+                color: 'currentColor', opacity: 0.35,
+                marginBottom: 22,
+                userSelect: 'none',
+              }}>“</span>
+              <p style={{
+                fontFamily: "'Archivo', system-ui, sans-serif",
+                fontWeight: 800,
+                fontSize: 'clamp(22px, 3vw, 40px)',
+                lineHeight: 1.22,
+                letterSpacing: '-0.012em',
+                margin: 0,
+                maxWidth: 520,
+              }}>{f.b}</p>
             </div>
+          </div>
+        )}
+
+        {f.kind === 'pair' && (
+          <div key={i} style={{ maxWidth: 1100, width: '100%', textAlign: 'center', animation: 'tr-in 700ms ease' }}>
+            <p style={{
+              fontFamily: "'Fraunces', Georgia, serif",
+              fontStyle: 'italic',
+              fontWeight: 500,
+              fontSize: 'clamp(34px, 5.4vw, 76px)',
+              lineHeight: 1.05,
+              letterSpacing: '-0.012em',
+              margin: '0 auto',
+              maxWidth: 880,
+            }}>{f.a}</p>
+
+            {/* Ampersand ornament */}
+            <div style={{
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
+              gap: 14, margin: '32px auto',
+              maxWidth: 260,
+            }}>
+              <span style={{ flex: 1, height: 1, background: f.accent, opacity: 0.5 }}/>
+              <span style={{
+                fontFamily: "'Fraunces', Georgia, serif",
+                fontStyle: 'italic',
+                fontSize: 28,
+                color: f.accent,
+                fontWeight: 400,
+              }}>&amp;</span>
+              <span style={{ flex: 1, height: 1, background: f.accent, opacity: 0.5 }}/>
+            </div>
+
+            <p style={{
+              fontFamily: "'Archivo', system-ui, sans-serif",
+              fontWeight: 800,
+              fontSize: 'clamp(28px, 4.4vw, 60px)',
+              lineHeight: 1.08,
+              letterSpacing: '-0.02em',
+              margin: '0 auto',
+              maxWidth: 980,
+              textTransform: 'none',
+            }}>{f.b}</p>
           </div>
         )}
 
