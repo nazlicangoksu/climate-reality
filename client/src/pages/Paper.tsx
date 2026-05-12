@@ -760,7 +760,7 @@ function PaperTab() {
 
       <ConceptCard
         accent={RED}
-        label="CONCEPT 01 · DOCUMENTARY · 6×60′"
+        label="CONCEPT 01 · DOCUMENTARY-STYLE REALITY TV · 6×60′"
         title="CROSSFIRE."
         tag="Six households where climate is the fault line, and love is the only reason anyone stays at the table."
         interactive={<CrossfireQuiz />}
@@ -848,7 +848,7 @@ function PaperTab() {
           </tr>
         </thead>
         <tbody>
-          <tr><td><strong>Form</strong></td><td>Observational documentary</td><td>Reality dating</td></tr>
+          <tr><td><strong>Form</strong></td><td>Documentary-style reality TV</td><td>Reality dating</td></tr>
           <tr><td><strong>Length</strong></td><td>Six 60-minute episodes</td><td>Ten episodes</td></tr>
           <tr><td><strong>Mechanism</strong></td><td>The kitchen as the household stage</td><td>The reveal as the structural twist</td></tr>
           <tr><td><strong>Tone</strong></td><td>Funny, patient, at times unbearable</td><td>Tender, slow, then loud</td></tr>

@@ -11,6 +11,7 @@ type Frame =
   | { kind: 'beat'; bg: string; duration: number }
   | { kind: 'question'; badge: string; question: string; highlight: string; bg: string; color: string; duration: number }
   | { kind: 'finding'; index: number; total: number; finding: string; detail?: string; citation: string; journal: string; bg: string; color: string; duration: number }
+  | { kind: 'showcard'; index: number; total: number; title: string; genre: string; premise: string; bg: string; color: string; accent: string; duration: number }
   | { kind: 'cta'; bg: string; color: string };
 
 const FRAMES: Frame[] = [
@@ -79,25 +80,32 @@ const FRAMES: Frame[] = [
   { kind: 'beat', bg: RED, duration: 600 },
 
   // ─── CROSSFIRE ───
-  { kind: 'text', lines: ['Show one.'], bg: RED, color: CREAM, duration: 1800, size: 'sm' },
-  { kind: 'text', lines: ['CROSSFIRE.'], bg: RED, color: CREAM, duration: 2200, size: 'xl' },
-  { kind: 'text', lines: ['A six-episode', 'documentary series.'], bg: RED, color: CREAM, duration: 2800, size: 'md' },
-  { kind: 'text', lines: ['Six American families.', 'Each one split by climate.'], bg: RED, color: CREAM, duration: 3200, size: 'lg' },
+  {
+    kind: 'showcard', index: 1, total: 2,
+    title: 'CROSSFIRE.',
+    genre: 'Documentary-style reality TV · 6 × 60′',
+    premise: 'Six American families who disagree about climate change but love each other anyway.',
+    bg: RED, color: CREAM, accent: CREAM, duration: 6000,
+  },
   { kind: 'text', lines: ['A denier dad', 'and his activist daughter.'], bg: RED, color: CREAM, duration: 2800, size: 'md' },
   { kind: 'text', lines: ['A pastor', 'and his climate-scientist daughter.'], bg: RED, color: CREAM, duration: 2800, size: 'md' },
   { kind: 'text', lines: ['A rancher', 'and the son who came home', 'doing it differently.'], bg: RED, color: CREAM, duration: 3200, size: 'md' },
   { kind: 'text', lines: ['Cameras embed in their kitchens', 'for three to four months.'], bg: RED, color: CREAM, duration: 3200, size: 'md' },
   { kind: 'text', lines: ['No narrator.', 'No confessionals.', 'Just dinner.'], bg: RED, color: CREAM, duration: 2800, size: 'md' },
-  { kind: 'text', lines: ['Finale:', 'six dinners,', 'six time zones,', 'all at the same hour.'], bg: RED, color: CREAM, duration: 3600, size: 'md' },
+  { kind: 'text', lines: ['Finale: six dinners,', 'six time zones, one hour.'], bg: RED, color: CREAM, duration: 3200, size: 'lg' },
   { kind: 'beat', bg: INK, duration: 500 },
 
   // ─── ONE LAST THING ───
   { kind: 'beat', bg: PINK, duration: 500 },
-  { kind: 'text', lines: ['Show two.'], bg: PINK, color: INK, duration: 1800, size: 'sm' },
-  { kind: 'text', lines: ['ONE LAST THING.'], bg: PINK, color: INK, duration: 2200, size: 'xl' },
-  { kind: 'text', lines: ['An unscripted dating series,', 'set in post-fire LA.'], bg: PINK, color: INK, duration: 3000, size: 'md' },
-  { kind: 'text', lines: ['Sixteen strangers,', 'one hillside glass house,', 'a 14,000-acre burn scar', 'in every window.'], bg: PINK, color: INK, duration: 3800, size: 'md' },
-  { kind: 'text', lines: ['Two rules:', 'no politics, no professions.'], bg: PINK, color: INK, duration: 3000, size: 'lg' },
+  {
+    kind: 'showcard', index: 2, total: 2,
+    title: 'ONE LAST THING.',
+    genre: 'Unscripted dating series · 10 episodes',
+    premise: 'Sixteen strangers fall in love in post-fire LA, with two rules they cannot break.',
+    bg: PINK, color: INK, accent: INK, duration: 6000,
+  },
+  { kind: 'text', lines: ['One glass house above Altadena.', 'A 14,000-acre burn scar in every window.'], bg: PINK, color: INK, duration: 3400, size: 'md' },
+  { kind: 'text', lines: ['Two rules.', "They can't reveal their politics", 'or their profession.'], bg: PINK, color: INK, duration: 3600, size: 'md' },
   { kind: 'text', lines: ['They date for ten weeks', 'through the 36 Questions.'], bg: PINK, color: INK, duration: 3000, size: 'md' },
   { kind: 'text', lines: ['When a couple proposes,', 'they reveal the one last thing —'], bg: PINK, color: INK, duration: 3000, size: 'md' },
   { kind: 'text', lines: ['their job,', 'their politics,', "their family's relationship to the fires."], bg: PINK, color: INK, duration: 3400, size: 'md' },
@@ -344,6 +352,52 @@ export default function Trailer() {
                 opacity: 0.55, marginTop: 6, marginBottom: 0,
               }}>{f.journal}</p>
             </div>
+          </div>
+        )}
+
+        {f.kind === 'showcard' && (
+          <div key={i} style={{ maxWidth: 1180, width: '100%', animation: 'tr-in 700ms ease', position: 'relative' }}>
+            {/* Top: SHOW NN / NN badge with rule */}
+            <div style={{ display: 'flex', alignItems: 'center', gap: 14, marginBottom: 40 }}>
+              <span style={{
+                fontFamily: "'JetBrains Mono', ui-monospace, monospace",
+                fontSize: 11, letterSpacing: '0.3em',
+                background: f.accent, color: f.bg,
+                padding: '4px 10px', borderRadius: 4, fontWeight: 700,
+              }}>SHOW {String(f.index).padStart(2, '0')} / {String(f.total).padStart(2, '0')}</span>
+              <span style={{ flex: 1, height: 1, background: f.accent, opacity: 0.35 }}/>
+              <span style={{
+                fontFamily: "'JetBrains Mono', ui-monospace, monospace",
+                fontSize: 11, letterSpacing: '0.3em', opacity: 0.55,
+              }}>{f.genre}</span>
+            </div>
+
+            {/* Big title */}
+            <p style={{
+              fontFamily: "'Archivo', system-ui, sans-serif",
+              fontWeight: 900,
+              fontSize: 'clamp(72px, 13vw, 168px)',
+              lineHeight: 0.95,
+              letterSpacing: '-0.04em',
+              margin: '0 0 28px',
+            }}>{f.title}</p>
+
+            {/* Accent rule */}
+            <div style={{
+              width: 96, height: 4, background: f.accent, marginBottom: 28,
+            }}/>
+
+            {/* Premise */}
+            <p style={{
+              fontFamily: "'Fraunces', Georgia, serif",
+              fontStyle: 'italic',
+              fontWeight: 500,
+              fontSize: 'clamp(22px, 3.4vw, 44px)',
+              lineHeight: 1.25,
+              letterSpacing: '-0.01em',
+              margin: 0,
+              maxWidth: 880,
+            }}>{f.premise}</p>
           </div>
         )}
 
