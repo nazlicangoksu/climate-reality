@@ -766,7 +766,7 @@ function PaperTab() {
         interactive={<CrossfireQuiz />}
         short={
           <p>
-            CROSSFIRE is a six-episode documentary about American families who disagree about climate change but love each other anyway. Each episode follows one household for three to four months — the kitchen, the calving shed, the truck on the way home from church. The conversations are real; they happen the way they happen at every American dinner table where people who voted differently still have to pass each other the salt. There is no narrator, no confessional cam, no producer setting up the drama. The camera just stays. Every episode ends with that family eating dinner. In the finale, all six families sit down to dinner at the same hour across six time zones, intercut. Same questions on every table. <strong>Six families eating apart, finally talking about the same thing.</strong>
+            CROSSFIRE is a six-episode documentary style reality TV about American families who disagree about climate change but love each other anyway. Each episode follows one household in their kitchen, their calving shed, their truck on the way home from church. The conversations are real; they happen the way they happen at every American dinner table where people who voted differently still have to pass each other the salt. There is no narrator, no confessional cam, no producer setting up the drama. The camera just stays. In the finale, all six families sit down to dinner at the same hour across six time zones, intercut. <strong>Same questions and tensions on every table.</strong>
           </p>
         }
         detail={{
