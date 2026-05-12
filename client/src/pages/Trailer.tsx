@@ -35,7 +35,7 @@ const FRAMES: Frame[] = [
 
   // ─── PROCESS ───
   { kind: 'text', lines: ['Sixteen academic papers.', 'Twenty-plus interviews.', 'Two group brainstorms.', 'Hollywood expert sessions.'], bg: INK, color: CREAM, duration: 3000, size: 'sm' },
-  { kind: 'text', lines: ['One pattern.'], bg: INK, color: CREAM, duration: 1800, size: 'lg' },
+  { kind: 'text', lines: ['Four findings', 'kept coming back.'], bg: INK, color: CREAM, duration: 2200, size: 'lg' },
   { kind: 'beat', bg: INK, duration: 400 },
 
   // ─── THE FOUR FINDINGS ───
