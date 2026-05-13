@@ -77,7 +77,7 @@ const FRAMES: Frame[] = [
   },
   {
     kind: 'finding', index: 5, total: 5,
-    finding: 'A year-long field experiment in post-genocide Rwanda. Groups listened monthly to a radio soap opera about reconciliation. Group norms shifted — who it was okay to marry, when to speak up, how to settle a fight. Personal attitudes barely moved.',
+    finding: 'A year-long field experiment in post-genocide Rwanda. Groups listened monthly to a radio drama designed to challenge a culture of obedience. Listeners became more willing to dissent with peers, less likely to defer to local officials, and more likely to solve community problems together. Personal beliefs barely moved.',
     detail: "A decade later in Uganda: short anti-violence videos cut reported domestic violence by roughly a quarter when watched in groups — and produced nothing measurable when watched alone on tablets.",
     citation: 'PALUCK & GREEN (2009) · GREEN, WILKE & COOPER (2020)',
     journal: 'AMERICAN POLITICAL SCIENCE REVIEW · COMPARATIVE POLITICAL STUDIES',
