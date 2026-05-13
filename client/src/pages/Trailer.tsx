@@ -77,8 +77,8 @@ const FRAMES: Frame[] = [
   },
   {
     kind: 'finding', index: 5, total: 5,
-    finding: 'In Rwanda, a soap opera about reconciliation barely moved personal attitudes — but shifted group norms when people listened together.',
-    detail: "In Uganda, the same effect, sharper: short videos cut reported domestic violence by roughly a quarter when watched communally — and produced nothing measurable when watched alone on tablets.",
+    finding: 'A year-long field experiment in post-genocide Rwanda. Groups listened monthly to a radio soap opera about reconciliation. Group norms shifted. Personal attitudes barely moved.',
+    detail: "A decade later in Uganda: short anti-violence videos cut reported domestic violence by roughly a quarter when watched in groups — and produced nothing measurable when watched alone on tablets.",
     citation: 'PALUCK & GREEN (2009) · GREEN, WILKE & COOPER (2020)',
     journal: 'AMERICAN POLITICAL SCIENCE REVIEW · COMPARATIVE POLITICAL STUDIES',
     bg: INK, color: CREAM, duration: 11000,
