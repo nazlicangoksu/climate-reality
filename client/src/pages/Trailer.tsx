@@ -6,12 +6,73 @@ const INK = '#0d0d0d';
 const RED = '#d4202c';
 const PINK = '#ff2cb4';
 
+// ─── collage palette + ransom-note wordmark (ALREADY ON AIR) ──────
+const LIME = '#cdf23a';
+const PURPLE = '#7a1fa2';
+const ORANGE = '#ee6c1a';
+const YELLOW = '#ffd400';
+const SKY = '#3bb0ff';
+
+type LetterVariant = 'rh' | 'belowdeck' | 'loveisland' | 'lime' | 'purple' | 'orange' | 'mono' | 'pink';
+
+function tileStyle(v: LetterVariant): React.CSSProperties {
+  const archivo = "'Archivo', system-ui, sans-serif";
+  switch (v) {
+    case 'rh': return { background: `linear-gradient(135deg, ${PINK}, ${PURPLE})`, color: '#fff', fontFamily: archivo, fontWeight: 900, borderRadius: 10 };
+    case 'belowdeck': return { background: INK, color: YELLOW, fontFamily: archivo, fontWeight: 900, letterSpacing: '-0.02em' };
+    case 'loveisland': return { background: SKY, color: '#fff', fontFamily: archivo, fontWeight: 800, borderRadius: 999, textTransform: 'lowercase' };
+    case 'lime': return { background: LIME, color: INK, fontFamily: archivo, fontWeight: 900 };
+    case 'purple': return { background: PURPLE, color: CREAM, fontFamily: archivo, fontWeight: 900 };
+    case 'orange': return { background: ORANGE, color: INK, fontFamily: archivo, fontWeight: 900 };
+    case 'pink': return { background: PINK, color: CREAM, fontFamily: archivo, fontWeight: 900 };
+    case 'mono': return { background: CREAM, color: INK, fontFamily: "'JetBrains Mono', ui-monospace, monospace", fontWeight: 500, border: `2px solid ${INK}` };
+  }
+}
+
+const WORDMARK: { ch: string; v: LetterVariant; rot: number }[][] = [
+  [
+    { ch: 'A', v: 'rh', rot: -4 }, { ch: 'L', v: 'lime', rot: 3 }, { ch: 'R', v: 'purple', rot: -2 },
+    { ch: 'E', v: 'belowdeck', rot: 4 }, { ch: 'A', v: 'orange', rot: -3 }, { ch: 'D', v: 'mono', rot: 2 },
+    { ch: 'Y', v: 'pink', rot: -2 },
+  ],
+  [ { ch: 'O', v: 'loveisland', rot: 3 }, { ch: 'N', v: 'lime', rot: -3 } ],
+  [ { ch: 'A', v: 'purple', rot: -2 }, { ch: 'I', v: 'belowdeck', rot: 3 }, { ch: 'R', v: 'rh', rot: -4 } ],
+];
+
+const RansomWordmark: React.FC = () => (
+  <div style={{ display: 'flex', flexWrap: 'wrap', alignItems: 'center', justifyContent: 'center', gap: '20px 16px' }} aria-label="Already On Air">
+    {WORDMARK.map((word, wi) => (
+      <span key={wi} style={{ display: 'inline-flex', gap: 7 }}>
+        {word.map((l, li) => (
+          <span
+            key={li}
+            style={{
+              ...tileStyle(l.v),
+              display: 'inline-block',
+              fontSize: 'clamp(40px, 9vw, 104px)',
+              lineHeight: 0.95,
+              padding: '6px 16px 9px',
+              transform: `rotate(${l.rot}deg)`,
+              boxShadow: '4px 4px 0 rgba(13,13,13,0.5)',
+              borderRadius: (tileStyle(l.v) as React.CSSProperties).borderRadius ?? 4,
+            }}
+          >
+            {l.v === 'loveisland' ? l.ch.toLowerCase() : l.ch}
+          </span>
+        ))}
+      </span>
+    ))}
+  </div>
+);
+
 type Frame =
   | { kind: 'text'; lines: string[]; bg: string; color: string; duration: number; size?: 'xl' | 'lg' | 'md' | 'sm'; serif?: boolean }
   | { kind: 'beat'; bg: string; duration: number }
+  | { kind: 'chapter'; n: string; bg: string; color: string; accent: string; duration: number }
+  | { kind: 'borrowshow'; show: string; hook: string; tint: string; bg: string; color: string; duration: number }
   | { kind: 'question'; badge: string; question: string; highlight: string; bg: string; color: string; duration: number }
   | { kind: 'finding'; index: number; total: number; finding: string; detail?: string; citation: string; journal: string; bg: string; color: string; duration: number }
-  | { kind: 'showcard'; index: number; total: number; title: string; genre: string; premise: string; bg: string; color: string; accent: string; duration: number }
+  | { kind: 'showcard'; index: number; total: number; title: string; genre: string; premise: string; bg: string; color: string; accent: string; duration: number; collage?: boolean }
   | { kind: 'couple'; index: number; total: number; a: string; b: string; bg: string; color: string; duration: number }
   | { kind: 'pair'; a: string; b: string; bg: string; color: string; accent: string; duration: number }
   | { kind: 'takeaway'; badge: string; line1: string; line2: string; sub?: string; bg: string; color: string; accent: string; duration: number }
@@ -77,8 +138,8 @@ const FRAMES: Frame[] = [
   },
   {
     kind: 'finding', index: 5, total: 5,
-    finding: 'A year-long field experiment in post-genocide Rwanda. Groups listened monthly to a radio drama designed to challenge a culture of obedience. Listeners became more willing to dissent with peers, less likely to defer to local officials, and more likely to solve community problems together. Personal beliefs barely moved.',
-    detail: "A decade later in Uganda: short anti-violence videos cut reported domestic violence by roughly a quarter when watched in groups — and produced nothing measurable when watched alone on tablets.",
+    finding: 'Stories change behavior when people watch them together, not alone.',
+    detail: "In Rwanda, a radio drama heard in monthly groups changed how people acted, even when private beliefs barely moved. In Uganda, the same videos cut reported domestic violence by a quarter when watched in groups, and did nothing when watched alone. The lever isn't the message. It's watching together.",
     citation: 'PALUCK & GREEN (2009) · GREEN, WILKE & COOPER (2020)',
     journal: 'AMERICAN POLITICAL SCIENCE REVIEW · COMPARATIVE POLITICAL STUDIES',
     bg: INK, color: CREAM, duration: 11000,
@@ -86,13 +147,14 @@ const FRAMES: Frame[] = [
   { kind: 'beat', bg: INK, duration: 500 },
 
   // ─── THE BET ───
-  { kind: 'text', lines: ['So we built two shows.'], bg: INK, color: CREAM, duration: 2000, size: 'lg' },
-  { kind: 'text', lines: ['Same research.', 'Two different doors.'], bg: INK, color: CREAM, duration: 2200, size: 'md' },
-  { kind: 'beat', bg: RED, duration: 600 },
+  { kind: 'text', lines: ['So we landed on', 'three ideas.'], bg: INK, color: CREAM, duration: 2200, size: 'lg' },
+  { kind: 'text', lines: ['Same research.', 'Three different doors.'], bg: INK, color: CREAM, duration: 2200, size: 'md' },
 
   // ─── CROSSFIRE ───
+  { kind: 'chapter', n: '01', bg: INK, color: CREAM, accent: RED, duration: 1900 },
+  { kind: 'beat', bg: RED, duration: 500 },
   {
-    kind: 'showcard', index: 1, total: 2,
+    kind: 'showcard', index: 1, total: 3,
     title: 'CROSSFIRE.',
     genre: 'Documentary-style reality TV · 6 × 60′',
     premise: 'Six American families who disagree about climate change but love each other anyway.',
@@ -122,17 +184,17 @@ const FRAMES: Frame[] = [
   {
     kind: 'takeaway',
     badge: 'CROSSFIRE · THE SO-WHAT',
-    line1: 'Reality TV that turns climate into a family conversation again.',
-    line2: 'Six families do it on screen so the rest of America can do it off it.',
-    sub: 'Common knowledge is the lever. — Paluck & Green',
+    line1: 'Get families talking about climate again.',
+    line2: 'Without anyone leaving the table.',
     bg: RED, color: CREAM, accent: CREAM, duration: 7500,
   },
   { kind: 'beat', bg: INK, duration: 500 },
 
   // ─── ONE LAST THING ───
+  { kind: 'chapter', n: '02', bg: INK, color: CREAM, accent: PINK, duration: 1900 },
   { kind: 'beat', bg: PINK, duration: 500 },
   {
-    kind: 'showcard', index: 2, total: 2,
+    kind: 'showcard', index: 2, total: 3,
     title: 'ONE LAST THING.',
     genre: 'Unscripted dating series · 10 episodes',
     premise: 'Sixteen strangers fall in love in post-fire LA, with two rules they cannot break.',
@@ -140,7 +202,7 @@ const FRAMES: Frame[] = [
   },
   { kind: 'text', lines: ['One glass house above Altadena.', 'A 14,000-acre burn scar in every window.'], bg: PINK, color: INK, duration: 3400, size: 'md' },
   { kind: 'text', lines: ['Two rules.', "They can't reveal their politics", 'or their profession.'], bg: PINK, color: INK, duration: 3600, size: 'md' },
-  { kind: 'text', lines: ['They date for ten weeks', 'through the 36 Questions.'], bg: PINK, color: INK, duration: 3000, size: 'md' },
+  { kind: 'text', lines: ['For ten weeks they answer the 36 Questions:', 'the famous experiment built to make two strangers fall in love.'], bg: PINK, color: INK, duration: 3600, size: 'md' },
   { kind: 'text', lines: ['When a couple proposes,', 'they reveal the one last thing.'], bg: PINK, color: INK, duration: 3000, size: 'md' },
   {
     kind: 'couple', index: 1, total: 3,
@@ -151,7 +213,7 @@ const FRAMES: Frame[] = [
   {
     kind: 'couple', index: 2, total: 3,
     a: "I work on a rig. I want my kids to grow up somewhere green.",
-    b: "I’m a climate organizer. My dad just lost his job to it.",
+    b: "I’m a climate organizer. My own dad lost his coal job to the transition I fight for.",
     bg: PINK, color: INK, duration: 6200,
   },
   {
@@ -161,14 +223,37 @@ const FRAMES: Frame[] = [
     bg: PINK, color: INK, duration: 6200,
   },
   { kind: 'text', lines: ['They already chose each other.', 'Now they find out who.'], bg: PINK, color: INK, duration: 3400, size: 'lg', serif: true },
-  { kind: 'text', lines: ['Then they walk the aisle.', 'Yes or no.'], bg: PINK, color: INK, duration: 3000, size: 'md' },
+  { kind: 'text', lines: ['Then they walk the aisle and decide:', 'marry this person, or walk away.'], bg: PINK, color: INK, duration: 3400, size: 'md' },
   {
     kind: 'takeaway',
     badge: 'ONE LAST THING · THE SO-WHAT',
-    line1: 'Reality dating that hides politics until love is on the line.',
-    line2: 'Sixteen strangers. One last thing. America watching to see if love wins.',
-    sub: 'Identity-protective cognition, bypassed by attraction. — Kahan',
+    line1: 'Make climate bigger than politics.',
+    line2: 'By falling for the person first.',
     bg: PINK, color: INK, accent: INK, duration: 7500,
+  },
+  { kind: 'beat', bg: INK, duration: 700 },
+
+  // ─── ALREADY ON AIR (idea 3 — the collage / borrow bet) ───
+  { kind: 'text', lines: ['But the biggest climate audience', 'was already watching something else.'], bg: INK, color: CREAM, duration: 3200, size: 'md' },
+  { kind: 'chapter', n: '03', bg: INK, color: CREAM, accent: PURPLE, duration: 1900 },
+  { kind: 'beat', bg: CREAM, duration: 500 },
+  {
+    kind: 'showcard', index: 3, total: 3, collage: true,
+    title: 'ALREADY ON AIR.',
+    genre: 'Embedded climate · shows already on the air',
+    premise: "Don't build a climate show. Borrow the ones America already can't stop watching.",
+    bg: CREAM, color: INK, accent: PURPLE, duration: 6500,
+  },
+  { kind: 'text', lines: ['No new show. No pitch to sell.', 'The climate is already in the frame.'], bg: CREAM, color: INK, duration: 3000, size: 'md' },
+  { kind: 'borrowshow', show: 'The Real Housewives of the Palisades', hook: 'The rebuild is the whole season.', tint: PINK, bg: CREAM, color: INK, duration: 3400 },
+  { kind: 'borrowshow', show: 'Below Deck: Storm Season', hook: 'The captain reroutes all season.', tint: YELLOW, bg: CREAM, color: INK, duration: 3400 },
+  { kind: 'borrowshow', show: 'Love Island: Heat Dome', hook: 'Too hot to film. Too big to politicize.', tint: SKY, bg: CREAM, color: INK, duration: 3400 },
+  {
+    kind: 'takeaway',
+    badge: 'ALREADY ON AIR · THE SO-WHAT',
+    line1: "Reach the people who'd never watch a climate show.",
+    line2: 'Inside the shows they already love.',
+    bg: CREAM, color: INK, accent: PURPLE, duration: 7500,
   },
   { kind: 'beat', bg: INK, duration: 700 },
 
@@ -258,6 +343,8 @@ export default function Trailer() {
 
   function skip() { navigate('/paper'); }
   function togglePause() { setPaused(p => !p); }
+  function goBack() { remainingRef.current = 0; setI(x => Math.max(0, x - 1)); }
+  function goForward() { remainingRef.current = 0; setI(x => Math.min(FRAMES.length - 1, x + 1)); }
   function restart() {
     setI(0);
     setCountdown(Math.ceil(AUTO_REDIRECT_MS / 1000));
@@ -266,6 +353,11 @@ export default function Trailer() {
 
   const f = FRAMES[i];
   const isSerifText = f.kind === 'text' && f.serif === true;
+  // Controls must stay legible on light frames (CREAM / PINK) too.
+  const onLight = f.bg === CREAM || f.bg === PINK;
+  const ctrl = onLight ? 'rgba(13,13,13,0.85)' : 'rgba(244,239,230,0.85)';
+  const ctrlDim = onLight ? 'rgba(13,13,13,0.32)' : 'rgba(244,239,230,0.3)';
+  const ctrlFaint = onLight ? 'rgba(13,13,13,0.16)' : 'rgba(244,239,230,0.18)';
 
   return (
     <>
@@ -290,6 +382,7 @@ export default function Trailer() {
             {f.lines.map((line, j) => (
               <p
                 key={j}
+                className="tr-balance"
                 style={{
                   fontFamily: isSerifText ? "'Fraunces', Georgia, serif" : "'Archivo', system-ui, sans-serif",
                   fontStyle: isSerifText ? 'italic' : 'normal',
@@ -310,108 +403,91 @@ export default function Trailer() {
           </div>
         )}
 
-        {f.kind === 'question' && (
-          <div key={i} style={{ maxWidth: 1100, width: '100%', textAlign: 'center', animation: 'tr-in 700ms ease' }}>
-            {/* Centered badge with rules on both sides */}
-            <div style={{ display: 'flex', alignItems: 'center', gap: 16, marginBottom: 48, opacity: 0.7 }}>
-              <span style={{ flex: 1, height: 1, background: 'currentColor', opacity: 0.25 }}/>
-              <span style={{
-                width: 8, height: 8, borderRadius: 999, background: PINK, display: 'inline-block',
-                animation: 'tr-pulse 1.6s ease-in-out infinite',
-              }}/>
-              <span style={{
-                fontFamily: "'JetBrains Mono', ui-monospace, monospace",
-                fontSize: 11, letterSpacing: '0.3em',
-                whiteSpace: 'nowrap',
-              }}>{f.badge}</span>
-              <span style={{
-                width: 8, height: 8, borderRadius: 999, background: PINK, display: 'inline-block',
-                animation: 'tr-pulse 1.6s ease-in-out infinite',
-              }}/>
-              <span style={{ flex: 1, height: 1, background: 'currentColor', opacity: 0.25 }}/>
-            </div>
-
-            {/* The question — centered, no decorative giant quote */}
+        {f.kind === 'chapter' && (
+          <div key={i} style={{ textAlign: 'center', animation: 'tr-in 700ms ease' }}>
             <p style={{
+              fontFamily: "'Archivo', system-ui, sans-serif",
+              fontWeight: 900,
+              fontSize: 'clamp(52px, 9.5vw, 124px)',
+              letterSpacing: '-0.03em',
+              lineHeight: 1,
+              margin: 0,
+            }}>Idea <span style={{ color: f.accent }}>{f.n}</span></p>
+          </div>
+        )}
+
+        {f.kind === 'borrowshow' && (
+          <div key={i} style={{ maxWidth: 1100, width: '100%', textAlign: 'center', animation: 'tr-in 700ms ease' }}>
+            <p className="tr-balance" style={{ margin: '0 auto 22px', maxWidth: 1000 }}>
+              <span style={{
+                fontFamily: "'Archivo', system-ui, sans-serif",
+                fontWeight: 900,
+                fontSize: 'clamp(34px, 5.6vw, 80px)',
+                lineHeight: 1.32,
+                letterSpacing: '-0.02em',
+                color: INK,
+                background: `linear-gradient(transparent 54%, ${f.tint} 54%)`,
+                boxDecorationBreak: 'clone', WebkitBoxDecorationBreak: 'clone',
+                padding: '0 8px',
+              }}>{f.show}</span>
+            </p>
+            <p className="tr-balance" style={{
               fontFamily: "'Fraunces', Georgia, serif",
               fontStyle: 'italic',
               fontWeight: 500,
-              fontSize: 'clamp(28px, 4.6vw, 60px)',
-              lineHeight: 1.22,
+              fontSize: 'clamp(20px, 3vw, 36px)',
+              lineHeight: 1.25,
+              margin: '0 auto',
+              maxWidth: 800,
+              opacity: 0.8,
+            }}>{f.hook}</p>
+          </div>
+        )}
+
+        {f.kind === 'question' && (
+          <div key={i} style={{ maxWidth: 1000, width: '100%', textAlign: 'center', animation: 'tr-in 700ms ease' }}>
+            <p className="tr-balance" style={{
+              fontFamily: "'Fraunces', Georgia, serif",
+              fontStyle: 'italic',
+              fontWeight: 500,
+              fontSize: 'clamp(30px, 5vw, 68px)',
+              lineHeight: 1.2,
               letterSpacing: '-0.012em',
               margin: '0 auto',
-              maxWidth: 980,
             }}>
               <HighlightSweep text={f.question} highlight={f.highlight}/>
             </p>
-
-            {/* Bottom centered signature */}
-            <div style={{
-              marginTop: 60, display: 'flex', alignItems: 'center', justifyContent: 'center',
-              gap: 16, opacity: 0.5,
-            }}>
-              <span style={{ width: 36, height: 1, background: 'currentColor' }}/>
-              <span style={{
-                fontFamily: "'JetBrains Mono', ui-monospace, monospace",
-                fontSize: 10, letterSpacing: '0.3em',
-              }}>STANFORD GSB · GEN 390 · 2026</span>
-              <span style={{ width: 36, height: 1, background: 'currentColor' }}/>
-            </div>
           </div>
         )}
 
         {f.kind === 'finding' && (
-          <div key={i} style={{ maxWidth: 1180, width: '100%', animation: 'tr-in 700ms ease' }}>
-            {/* Top badge row */}
-            <div style={{ display: 'flex', alignItems: 'center', gap: 14, marginBottom: 36, opacity: 0.75 }}>
-              <span style={{
-                fontFamily: "'JetBrains Mono', ui-monospace, monospace",
-                fontSize: 11, letterSpacing: '0.3em',
-                background: PINK, color: INK,
-                padding: '4px 10px', borderRadius: 4,
-              }}>FINDING {String(f.index).padStart(2, '0')} / {String(f.total).padStart(2, '0')}</span>
-              <span style={{ flex: 1, height: 1, background: 'currentColor', opacity: 0.25 }}/>
-            </div>
-
-            {/* Big finding */}
-            <p style={{
+          <div key={i} style={{ maxWidth: 1000, width: '100%', textAlign: 'center', animation: 'tr-in 700ms ease' }}>
+            <p className="tr-balance" style={{
               fontFamily: "'Fraunces', Georgia, serif",
               fontWeight: 400,
-              fontSize: 'clamp(26px, 4vw, 56px)',
-              lineHeight: 1.18,
+              fontSize: 'clamp(30px, 5vw, 68px)',
+              lineHeight: 1.16,
               letterSpacing: '-0.012em',
-              margin: 0,
+              margin: '0 auto',
             }}>{f.finding}</p>
 
             {f.detail && (
-              <p style={{
+              <p className="tr-balance" style={{
                 fontFamily: "'Archivo', system-ui, sans-serif",
-                fontSize: 'clamp(16px, 2.2vw, 26px)',
+                fontSize: 'clamp(16px, 2.1vw, 24px)',
                 lineHeight: 1.45,
-                opacity: 0.75,
-                marginTop: 28,
-                marginBottom: 0,
+                opacity: 0.7,
+                margin: '26px auto 0',
+                maxWidth: 760,
                 fontWeight: 400,
               }}>{f.detail}</p>
             )}
 
-            {/* Citation block */}
-            <div style={{
-              marginTop: 56, paddingTop: 22,
-              borderTop: `2px solid ${PINK}`,
-            }}>
-              <p style={{
-                fontFamily: "'Archivo', system-ui, sans-serif",
-                fontWeight: 800, fontSize: 'clamp(13px, 1.5vw, 16px)',
-                letterSpacing: '0.18em', textTransform: 'uppercase',
-                color: PINK, margin: 0,
-              }}>{f.citation}</p>
-              <p style={{
-                fontFamily: "'JetBrains Mono', ui-monospace, monospace",
-                fontSize: 11, letterSpacing: '0.22em',
-                opacity: 0.55, marginTop: 6, marginBottom: 0,
-              }}>{f.journal}</p>
-            </div>
+            <p style={{
+              fontFamily: "'JetBrains Mono', ui-monospace, monospace",
+              fontSize: 11, letterSpacing: '0.22em',
+              opacity: 0.4, margin: '34px 0 0',
+            }}>{f.citation}</p>
           </div>
         )}
 
@@ -490,22 +566,14 @@ export default function Trailer() {
               maxWidth: 880,
             }}>{f.a}</p>
 
-            {/* Ampersand ornament */}
-            <div style={{
-              display: 'flex', alignItems: 'center', justifyContent: 'center',
-              gap: 14, margin: '32px auto',
-              maxWidth: 260,
-            }}>
-              <span style={{ flex: 1, height: 1, background: f.accent, opacity: 0.5 }}/>
-              <span style={{
-                fontFamily: "'Fraunces', Georgia, serif",
-                fontStyle: 'italic',
-                fontSize: 28,
-                color: f.accent,
-                fontWeight: 400,
-              }}>&amp;</span>
-              <span style={{ flex: 1, height: 1, background: f.accent, opacity: 0.5 }}/>
-            </div>
+            <p aria-hidden style={{
+              fontFamily: "'Fraunces', Georgia, serif",
+              fontStyle: 'italic',
+              fontSize: 'clamp(24px, 3vw, 36px)',
+              color: f.accent,
+              fontWeight: 400,
+              margin: '20px 0',
+            }}>&amp;</p>
 
             <p style={{
               fontFamily: "'Archivo', system-ui, sans-serif",
@@ -521,99 +589,61 @@ export default function Trailer() {
         )}
 
         {f.kind === 'takeaway' && (
-          <div key={i} style={{ maxWidth: 1180, width: '100%', textAlign: 'center', animation: 'tr-in 700ms ease' }}>
-            {/* Badge */}
-            <div style={{ display: 'flex', alignItems: 'center', gap: 16, marginBottom: 56, opacity: 0.85, justifyContent: 'center' }}>
-              <span style={{ width: 36, height: 1, background: f.accent }}/>
-              <span style={{
-                fontFamily: "'JetBrains Mono', ui-monospace, monospace",
-                fontSize: 11, letterSpacing: '0.32em', textTransform: 'uppercase',
-                background: f.accent, color: f.bg,
-                padding: '5px 12px', borderRadius: 4, fontWeight: 700,
-              }}>{f.badge}</span>
-              <span style={{ width: 36, height: 1, background: f.accent }}/>
-            </div>
-
-            {/* Big lines */}
+          <div key={i} style={{ maxWidth: 920, width: '100%', textAlign: 'center', animation: 'tr-in 700ms ease' }}>
             <p style={{
-              fontFamily: "'Fraunces', Georgia, serif",
-              fontStyle: 'italic',
-              fontWeight: 500,
-              fontSize: 'clamp(30px, 4.6vw, 64px)',
-              lineHeight: 1.18,
-              letterSpacing: '-0.012em',
-              margin: '0 auto',
-              maxWidth: 1000,
-            }}>{f.line1}</p>
+              fontFamily: "'JetBrains Mono', ui-monospace, monospace",
+              fontSize: 12, letterSpacing: '0.32em', textTransform: 'uppercase',
+              color: f.accent, margin: '0 0 24px', fontWeight: 500,
+            }}>The goal</p>
 
-            <p style={{
+            <p className="tr-balance" style={{
               fontFamily: "'Archivo', system-ui, sans-serif",
               fontWeight: 800,
-              fontSize: 'clamp(28px, 4.4vw, 60px)',
-              lineHeight: 1.05,
-              letterSpacing: '-0.02em',
-              margin: '14px auto 0',
-              maxWidth: 1000,
-            }}>{f.line2}</p>
+              fontSize: 'clamp(34px, 5.2vw, 72px)',
+              lineHeight: 1.06,
+              letterSpacing: '-0.025em',
+              margin: '0 auto',
+            }}>{f.line1}</p>
 
-            {/* Optional sub */}
-            {f.sub && (
-              <div style={{
-                marginTop: 56, paddingTop: 22,
-                borderTop: `2px solid ${f.accent}`,
-                maxWidth: 720, marginLeft: 'auto', marginRight: 'auto',
-              }}>
-                <p style={{
-                  fontFamily: "'JetBrains Mono', ui-monospace, monospace",
-                  fontSize: 12, letterSpacing: '0.22em',
-                  opacity: 0.8, margin: 0,
-                }}>{f.sub}</p>
-              </div>
+            {f.line2 && (
+              <p className="tr-balance" style={{
+                fontFamily: "'Archivo', system-ui, sans-serif",
+                fontWeight: 600,
+                fontSize: 'clamp(18px, 2.4vw, 28px)',
+                lineHeight: 1.3,
+                letterSpacing: '-0.01em',
+                opacity: 0.65,
+                margin: '18px auto 0',
+              }}>{f.line2}</p>
             )}
           </div>
         )}
 
         {f.kind === 'showcard' && (
-          <div key={i} style={{ maxWidth: 1180, width: '100%', animation: 'tr-in 700ms ease', position: 'relative' }}>
-            {/* Top: SHOW NN / NN badge with rule */}
-            <div style={{ display: 'flex', alignItems: 'center', gap: 14, marginBottom: 40 }}>
-              <span style={{
-                fontFamily: "'JetBrains Mono', ui-monospace, monospace",
-                fontSize: 11, letterSpacing: '0.3em',
-                background: f.accent, color: f.bg,
-                padding: '4px 10px', borderRadius: 4, fontWeight: 700,
-              }}>SHOW {String(f.index).padStart(2, '0')} / {String(f.total).padStart(2, '0')}</span>
-              <span style={{ flex: 1, height: 1, background: f.accent, opacity: 0.35 }}/>
-              <span style={{
-                fontFamily: "'JetBrains Mono', ui-monospace, monospace",
-                fontSize: 11, letterSpacing: '0.3em', opacity: 0.55,
-              }}>{f.genre}</span>
-            </div>
+          <div key={i} style={{ maxWidth: 1180, width: '100%', textAlign: 'center', animation: 'tr-in 700ms ease' }}>
+            {f.collage ? (
+              <div style={{ display: 'flex', justifyContent: 'center', margin: '0 0 36px' }}>
+                <RansomWordmark />
+              </div>
+            ) : (
+              <p style={{
+                fontFamily: "'Archivo', system-ui, sans-serif",
+                fontWeight: 900,
+                fontSize: 'clamp(72px, 13vw, 168px)',
+                lineHeight: 0.92,
+                letterSpacing: '-0.04em',
+                margin: '0 0 28px',
+              }}>{f.title}</p>
+            )}
 
-            {/* Big title */}
-            <p style={{
-              fontFamily: "'Archivo', system-ui, sans-serif",
-              fontWeight: 900,
-              fontSize: 'clamp(72px, 13vw, 168px)',
-              lineHeight: 0.95,
-              letterSpacing: '-0.04em',
-              margin: '0 0 28px',
-            }}>{f.title}</p>
-
-            {/* Accent rule */}
-            <div style={{
-              width: 96, height: 4, background: f.accent, marginBottom: 28,
-            }}/>
-
-            {/* Premise */}
-            <p style={{
+            <p className="tr-balance" style={{
               fontFamily: "'Fraunces', Georgia, serif",
               fontStyle: 'italic',
               fontWeight: 500,
               fontSize: 'clamp(22px, 3.4vw, 44px)',
               lineHeight: 1.25,
               letterSpacing: '-0.01em',
-              margin: 0,
+              margin: '0 auto',
               maxWidth: 880,
             }}>{f.premise}</p>
           </div>
@@ -674,8 +704,8 @@ export default function Trailer() {
               style={{
                 position: 'absolute', bottom: 24, left: 24,
                 background: paused ? 'rgba(255,44,180,0.18)' : 'transparent',
-                border: `1px solid ${paused ? PINK : 'rgba(244,239,230,0.3)'}`,
-                color: paused ? PINK : 'rgba(244,239,230,0.85)',
+                border: `1px solid ${paused ? PINK : ctrlDim}`,
+                color: paused ? PINK : ctrl,
                 padding: '8px 14px', borderRadius: 999, cursor: 'pointer',
                 fontFamily: "'Archivo', system-ui, sans-serif", fontSize: 11,
                 letterSpacing: '0.18em', textTransform: 'uppercase',
@@ -692,8 +722,8 @@ export default function Trailer() {
               onClick={(e) => { e.stopPropagation(); skip(); }}
               style={{
                 position: 'absolute', bottom: 24, right: 24,
-                background: 'transparent', border: `1px solid rgba(244,239,230,0.3)`,
-                color: 'rgba(244,239,230,0.85)',
+                background: 'transparent', border: `1px solid ${ctrlDim}`,
+                color: ctrl,
                 padding: '8px 14px', borderRadius: 999, cursor: 'pointer',
                 fontFamily: "'Archivo', system-ui, sans-serif", fontSize: 11,
                 letterSpacing: '0.18em', textTransform: 'uppercase',
@@ -701,16 +731,43 @@ export default function Trailer() {
               }}
             >Skip to research →</button>
             <div style={{
-              position: 'absolute', bottom: 24, left: '50%', transform: 'translateX(-50%)',
-              display: 'flex', gap: 4, alignItems: 'center',
+              position: 'absolute', bottom: 20, left: '50%', transform: 'translateX(-50%)',
+              display: 'flex', gap: 14, alignItems: 'center',
             }}>
-              {FRAMES.map((_, idx) => (
-                <span key={idx} style={{
-                  width: idx === i ? 18 : 5, height: 4, borderRadius: 2,
-                  background: idx <= i ? 'rgba(244,239,230,0.85)' : 'rgba(244,239,230,0.18)',
-                  transition: 'width 0.4s, background 0.4s',
-                }} />
-              ))}
+              <button
+                onClick={(e) => { e.stopPropagation(); goBack(); }}
+                disabled={i === 0}
+                aria-label="Previous frame"
+                style={{
+                  background: 'transparent', border: 'none', cursor: i === 0 ? 'default' : 'pointer',
+                  color: ctrl, opacity: i === 0 ? 0.2 : 0.65,
+                  fontFamily: "'Archivo', system-ui, sans-serif", fontSize: 34, lineHeight: 1,
+                  padding: '2px 10px', transition: 'opacity 0.2s',
+                }}
+                onMouseEnter={(e) => { if (i !== 0) (e.currentTarget as HTMLButtonElement).style.opacity = '1'; }}
+                onMouseLeave={(e) => { if (i !== 0) (e.currentTarget as HTMLButtonElement).style.opacity = '0.65'; }}
+              >‹</button>
+              <div style={{ display: 'flex', gap: 4, alignItems: 'center' }}>
+                {FRAMES.map((_, idx) => (
+                  <span key={idx} style={{
+                    width: idx === i ? 18 : 5, height: 4, borderRadius: 2,
+                    background: idx <= i ? ctrl : ctrlFaint,
+                    transition: 'width 0.4s, background 0.4s',
+                  }} />
+                ))}
+              </div>
+              <button
+                onClick={(e) => { e.stopPropagation(); goForward(); }}
+                aria-label="Next frame"
+                style={{
+                  background: 'transparent', border: 'none', cursor: 'pointer',
+                  color: ctrl, opacity: 0.65,
+                  fontFamily: "'Archivo', system-ui, sans-serif", fontSize: 34, lineHeight: 1,
+                  padding: '2px 10px', transition: 'opacity 0.2s',
+                }}
+                onMouseEnter={(e) => { (e.currentTarget as HTMLButtonElement).style.opacity = '1'; }}
+                onMouseLeave={(e) => { (e.currentTarget as HTMLButtonElement).style.opacity = '0.65'; }}
+              >›</button>
             </div>
             {paused && (
               <div className="tr-paused-indicator" style={{
@@ -732,6 +789,8 @@ export default function Trailer() {
           from { opacity: 0; transform: translateY(6px); }
           to   { opacity: 1; transform: translateY(0); }
         }
+        /* Keep long lines from leaving a single orphan word on the last row. */
+        .tr-balance { text-wrap: balance; }
         @keyframes tr-pulse {
           0%, 100% { opacity: 1; transform: scale(1); }
           50%      { opacity: 0.55; transform: scale(0.85); }

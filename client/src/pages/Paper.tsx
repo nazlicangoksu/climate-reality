@@ -3,6 +3,19 @@ import { useEffect, useState } from 'react';
 const RED = '#d4202c';
 const BLUE = '#1f2bd6';
 const PINK = '#ff2cb4';
+const YELLOW = '#ffd400';
+
+// ─── zine collage palette (ALREADY ON AIR) ──────────────
+const LIME = '#cdf23a';
+const PURPLE = '#7a1fa2';
+const ORANGE = '#ee6c1a';
+const SKY = '#3bb0ff';
+
+const SHOW_POSTERS = {
+  rh: '/paper/shows/real-housewives.jpg',
+  belowDeck: '/paper/shows/below-deck.jpg',
+  loveIsland: '/paper/shows/love-island.jpg',
+};
 const CREAM = '#f4efe6';
 const INK = '#0d0d0d';
 const MUTED = '#4a4742';
@@ -60,6 +73,9 @@ type ConceptDetailProps = {
   tag: string;
   short: React.ReactNode;
   interactive?: React.ReactNode;
+  collage?: boolean;
+  titleArt?: React.ReactNode;
+  castLabel?: string;
   detail: {
     world: string;
     cast: { label: string; body: string }[];
@@ -69,16 +85,33 @@ type ConceptDetailProps = {
   };
 };
 
-const ConceptCard: React.FC<ConceptDetailProps> = ({ accent, label, title, tag, short, interactive, detail }) => {
+const ConceptCard: React.FC<ConceptDetailProps> = ({ accent, label, title, tag, short, interactive, collage, titleArt, castLabel = 'The cast (examples)', detail }) => {
   const [open, setOpen] = useState(false);
   return (
-    <div style={{ border: `1px solid ${INK}`, borderLeft: `8px solid ${accent}`, padding: '32px 28px', margin: '32px 0', background: CREAM }}>
+    <div style={{
+      border: `1px solid ${INK}`,
+      borderLeft: `8px solid ${accent}`,
+      padding: '32px 28px',
+      margin: '40px 0',
+      background: CREAM,
+    }}>
       <span style={{ fontFamily: "'JetBrains Mono', ui-monospace, monospace", fontSize: 11, letterSpacing: '0.2em', color: MUTED }}>
         {label}
       </span>
-      <h3 style={{ margin: '8px 0 12px', fontFamily: "'Archivo', system-ui, sans-serif", fontWeight: 800, fontSize: 32, lineHeight: 1.1 }}>
-        {title}
-      </h3>
+      {titleArt ? (
+        <div style={{ margin: '14px 0 16px' }}>{titleArt}</div>
+      ) : (
+        <h3 style={{
+          margin: '8px 0 12px',
+          fontFamily: "'Archivo', system-ui, sans-serif",
+          fontWeight: 800,
+          fontSize: 32,
+          lineHeight: 1.1,
+          ...(collage ? { display: 'inline-block', background: `linear-gradient(transparent 62%, ${YELLOW} 62%)`, padding: '0 6px', transform: 'rotate(-1deg)' } : {}),
+        }}>
+          {title}
+        </h3>
+      )}
       <p style={{ fontStyle: 'italic', fontSize: 18, color: INK, marginBottom: 16, fontFamily: "'Fraunces', Georgia, serif" }}>
         {tag}
       </p>
@@ -109,13 +142,17 @@ const ConceptCard: React.FC<ConceptDetailProps> = ({ accent, label, title, tag, 
           <h4 style={{ fontFamily: "'Archivo', system-ui, sans-serif", fontSize: 12, letterSpacing: '0.18em', textTransform: 'uppercase', color: accent, marginBottom: 8 }}>The world</h4>
           <p>{detail.world}</p>
 
-          <h4 style={{ fontFamily: "'Archivo', system-ui, sans-serif", fontSize: 12, letterSpacing: '0.18em', textTransform: 'uppercase', color: accent, marginTop: 32, marginBottom: 12 }}>The cast (examples)</h4>
-          {detail.cast.map((c, i) => (
-            <div key={i} style={{ marginBottom: 18, paddingBottom: 18, borderBottom: i < detail.cast.length - 1 ? `1px solid ${RULE}` : 'none' }}>
-              <p style={{ fontFamily: "'Archivo', system-ui, sans-serif", fontSize: 14, fontWeight: 800, marginBottom: 6 }}>{c.label}</p>
-              <p style={{ fontSize: 15, color: MUTED, marginBottom: 0 }}>{c.body}</p>
-            </div>
-          ))}
+          {detail.cast.length > 0 && (
+            <>
+              <h4 style={{ fontFamily: "'Archivo', system-ui, sans-serif", fontSize: 12, letterSpacing: '0.18em', textTransform: 'uppercase', color: accent, marginTop: 32, marginBottom: 12 }}>{castLabel}</h4>
+              {detail.cast.map((c, i) => (
+                <div key={i} style={{ marginBottom: 18, paddingBottom: 18, borderBottom: i < detail.cast.length - 1 ? `1px solid ${RULE}` : 'none' }}>
+                  <p style={{ fontFamily: "'Archivo', system-ui, sans-serif", fontSize: 14, fontWeight: 800, marginBottom: 6 }}>{c.label}</p>
+                  <p style={{ fontSize: 15, color: MUTED, marginBottom: 0 }}>{c.body}</p>
+                </div>
+              ))}
+            </>
+          )}
 
           <h4 style={{ fontFamily: "'Archivo', system-ui, sans-serif", fontSize: 12, letterSpacing: '0.18em', textTransform: 'uppercase', color: accent, marginTop: 32, marginBottom: 12 }}>The mechanics</h4>
           {detail.mechanics.map((m, i) => (
@@ -578,6 +615,151 @@ function OneLastThingWall() {
   );
 }
 
+// ─── ALREADY ON AIR ransom-note wordmark + collage hero ──────────────────────
+// Each letter is "cut" from a different show: A = Real Housewives white-on-gradient,
+// E / I = Below Deck yellow-on-navy block type, O = Love Island lowercase rounded.
+type LetterVariant = 'rh' | 'belowdeck' | 'loveisland' | 'lime' | 'purple' | 'orange' | 'mono' | 'pink';
+
+function tileStyle(v: LetterVariant): React.CSSProperties {
+  const archivo = "'Archivo', system-ui, sans-serif";
+  switch (v) {
+    case 'rh': return { background: `linear-gradient(135deg, ${PINK}, ${PURPLE})`, color: '#fff', fontFamily: archivo, fontWeight: 900, borderRadius: 8 };
+    case 'belowdeck': return { background: INK, color: YELLOW, fontFamily: archivo, fontWeight: 900, letterSpacing: '-0.02em' };
+    case 'loveisland': return { background: SKY, color: '#fff', fontFamily: archivo, fontWeight: 800, borderRadius: 999, textTransform: 'lowercase' };
+    case 'lime': return { background: LIME, color: INK, fontFamily: archivo, fontWeight: 900 };
+    case 'purple': return { background: PURPLE, color: CREAM, fontFamily: archivo, fontWeight: 900 };
+    case 'orange': return { background: ORANGE, color: INK, fontFamily: archivo, fontWeight: 900 };
+    case 'pink': return { background: PINK, color: CREAM, fontFamily: archivo, fontWeight: 900 };
+    case 'mono': return { background: CREAM, color: INK, fontFamily: "'JetBrains Mono', ui-monospace, monospace", fontWeight: 500, border: `1.5px solid ${INK}` };
+  }
+}
+
+const WORDMARK: { ch: string; v: LetterVariant; rot: number }[][] = [
+  [
+    { ch: 'A', v: 'rh', rot: -4 }, { ch: 'L', v: 'lime', rot: 3 }, { ch: 'R', v: 'purple', rot: -2 },
+    { ch: 'E', v: 'belowdeck', rot: 4 }, { ch: 'A', v: 'orange', rot: -3 }, { ch: 'D', v: 'mono', rot: 2 },
+    { ch: 'Y', v: 'pink', rot: -2 },
+  ],
+  [ { ch: 'O', v: 'loveisland', rot: 3 }, { ch: 'N', v: 'lime', rot: -3 } ],
+  [ { ch: 'A', v: 'purple', rot: -2 }, { ch: 'I', v: 'belowdeck', rot: 3 }, { ch: 'R', v: 'rh', rot: -4 } ],
+];
+
+const RansomWordmark: React.FC = () => (
+  <div style={{ display: 'flex', flexWrap: 'wrap', alignItems: 'center', gap: '18px 14px' }} aria-label="Already On Air">
+    {WORDMARK.map((word, wi) => (
+      <span key={wi} style={{ display: 'inline-flex', gap: 5 }}>
+        {word.map((l, li) => (
+          <span
+            key={li}
+            style={{
+              ...tileStyle(l.v),
+              display: 'inline-block',
+              fontSize: 'clamp(30px, 7.4vw, 54px)',
+              lineHeight: 0.95,
+              padding: '4px 11px 6px',
+              transform: `rotate(${l.rot}deg)`,
+              boxShadow: '3px 3px 0 rgba(13,13,13,0.45)',
+              borderRadius: (tileStyle(l.v) as React.CSSProperties).borderRadius ?? 3,
+            }}
+          >
+            {l.v === 'loveisland' ? l.ch.toLowerCase() : l.ch}
+          </span>
+        ))}
+      </span>
+    ))}
+  </div>
+);
+
+const AlreadyOnAirHero: React.FC = () => (
+  <div style={{ padding: '4px 0 2px' }}>
+    <p style={{ fontFamily: "'JetBrains Mono', ui-monospace, monospace", fontSize: 10, letterSpacing: '0.24em', textTransform: 'uppercase', color: MUTED, margin: '0 0 14px' }}>
+      ✂ assembled from shows already on the air
+    </p>
+    <RansomWordmark />
+  </div>
+);
+
+// ─── visual titles for the other two concepts (parity with the ransom wordmark) ──────
+const CrossfireTitle: React.FC = () => (
+  <div style={{ display: 'inline-block', transform: 'rotate(-1deg)' }} aria-label="Crossfire">
+    <span style={{ fontFamily: "'Archivo', system-ui, sans-serif", fontWeight: 900, fontSize: 'clamp(34px, 7vw, 52px)', letterSpacing: '-0.02em', color: INK }}>CROSS</span>
+    <span aria-hidden style={{ display: 'inline-block', width: 5, height: '0.78em', background: RED, margin: '0 6px', transform: 'skewX(-12deg)', verticalAlign: '-0.04em' }} />
+    <span style={{ fontFamily: "'Archivo', system-ui, sans-serif", fontWeight: 900, fontSize: 'clamp(34px, 7vw, 52px)', letterSpacing: '-0.02em', color: RED }}>FIRE.</span>
+  </div>
+);
+
+const OneLastThingTitle: React.FC = () => (
+  <div style={{ display: 'inline-block', transform: 'rotate(-1deg)', fontFamily: "'Fraunces', Georgia, serif", fontStyle: 'italic', fontWeight: 600, fontSize: 'clamp(32px, 6.6vw, 50px)', lineHeight: 1.02, color: INK }} aria-label="One Last Thing">
+    One Last{' '}
+    <span style={{ fontStyle: 'normal', background: PINK, color: CREAM, padding: '0 10px 2px', borderRadius: 2, boxDecorationBreak: 'clone', WebkitBoxDecorationBreak: 'clone' }}>Thing.</span>
+  </div>
+);
+
+// ─── ALREADY ON AIR retrofit strip (poster + one-line hook, tap for the full cut) ──────
+const RETROFIT_SHOWS: { show: string; network: string; img: string; tint: string; hook: string; climate: string }[] = [
+  {
+    show: 'The Real Housewives of the Palisades', network: 'Bravo', img: SHOW_POSTERS.rh, tint: PINK,
+    hook: "The rebuild is the whole season.",
+    climate: "Whose contractor walked, whose insurer dropped them, whose lot still won't sell, whose new place came out bigger than the one that burned. The audience watches a wildfire recovery up close, learns how fire season keeps raising the cost of living there, and sees the hardest lesson of all: you can't build or buy your way out of climate change, no matter how wealthy you are.",
+  },
+  {
+    show: 'Below Deck: Storm Season', network: 'Bravo', img: SHOW_POSTERS.belowDeck, tint: YELLOW,
+    hook: "The captain reroutes around storms all season.",
+    climate: "The guests just want their itinerary. Episode by episode, the audience is learning what a warming ocean does to the weather, and to everyone trying to make a living on it.",
+  },
+  {
+    show: 'Love Island: Heat Dome', network: 'Peacock', img: SHOW_POSTERS.loveIsland, tint: SKY,
+    hook: "Too hot to film, too big to politicize.",
+    climate: "A heat dome parks over the villa and won't leave. It gets too hot to film in the afternoon. It's too hot for the cast to avoid talking about the heat, and too hot for the audience to avoid the words climate change. The heat makes the point on its own: climate change is too big to be politicized. It sits above all of that.",
+  },
+];
+
+function ShowRetrofitStrip() {
+  const [open, setOpen] = useState<number | null>(null);
+  return (
+    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: 14, margin: '4px 0 8px' }}>
+      {RETROFIT_SHOWS.map((s, i) => {
+        const isOpen = open === i;
+        return (
+          <div key={i} style={{ border: `1px solid ${INK}`, background: CREAM, display: 'flex', flexDirection: 'column' }}>
+            <img src={s.img} alt={s.show} loading="lazy" style={{ display: 'block', width: '100%', height: 110, objectFit: 'cover', borderBottom: `1px solid ${INK}` }} />
+            <div style={{ padding: '12px 14px', display: 'flex', flexDirection: 'column', flex: 1 }}>
+              <p style={{ margin: '0 0 8px' }}>
+                <span style={{
+                  fontFamily: "'JetBrains Mono', ui-monospace, monospace",
+                  fontWeight: 700, fontSize: 13, lineHeight: 1.5, color: INK,
+                  background: `linear-gradient(transparent 52%, ${s.tint} 52%)`,
+                  boxDecorationBreak: 'clone', WebkitBoxDecorationBreak: 'clone',
+                  padding: '0 3px',
+                }}>{s.show}</span>
+              </p>
+              <p style={{ fontFamily: "'Fraunces', Georgia, serif", fontStyle: 'italic', fontSize: 14, lineHeight: 1.35, margin: 0, color: INK }}>
+                {s.hook}
+              </p>
+              {isOpen && (
+                <p style={{ fontFamily: "'Fraunces', Georgia, serif", fontSize: 13.5, lineHeight: 1.45, margin: '10px 0 0', color: MUTED }}>
+                  {s.climate}
+                </p>
+              )}
+              <button
+                onClick={() => setOpen(isOpen ? null : i)}
+                style={{
+                  alignSelf: 'flex-start', marginTop: 12, background: 'transparent',
+                  border: 'none', padding: 0, cursor: 'pointer',
+                  fontFamily: "'Archivo', system-ui, sans-serif", fontWeight: 800,
+                  fontSize: 10, letterSpacing: '0.16em', textTransform: 'uppercase', color: BLUE,
+                }}
+              >
+                {isOpen ? '— less' : '+ how climate rides in'}
+              </button>
+            </div>
+          </div>
+        );
+      })}
+    </div>
+  );
+}
+
 // ─── Page ──────────────────────
 export default function Paper() {
   const [tab, setTab] = useState<Tab>('paper');
@@ -672,7 +854,7 @@ function PaperTab() {
         Climate is no longer a Top-3 priority on either side of the American political spectrum. Half the country will not say the word out loud. The movement keeps speaking through scientists, journalists, and politicians — the three messengers half the country no longer hears.
       </p>
       <p>
-        During our independent research at Stanford GSB, we kept circling one question: what would it take to reach the audience the climate movement has lost, without saying the word climate? This is our attempt to answer that. It documents the research that produced two unscripted television concepts — <strong>CROSSFIRE</strong> and <strong>ONE LAST THING</strong> — and the five principles and underlying climate goals that hold them together. The deeper research process lives in the <em>Process</em> tab for readers who want to see how the work was made.
+        During our independent research at Stanford GSB, we kept circling one question: what would it take to reach the audience the climate movement has lost, without saying the word climate? This is our attempt to answer that. It documents the research that produced three television concepts — two original formats, <strong>CROSSFIRE</strong> and <strong>ONE LAST THING</strong>, and a distribution play, <strong>ALREADY ON AIR</strong> — and the five principles and underlying climate goals that hold them together. The deeper research process lives in the <em>Process</em> tab for readers who want to see how the work was made.
       </p>
 
       <hr/>
@@ -755,13 +937,14 @@ function PaperTab() {
         <li><strong>Build for shared viewing.</strong> Common knowledge is the lever, and common knowledge requires watching together (<Cite href="https://doi.org/10.1017/S0003055409990128">Paluck &amp; Green 2009</Cite>; <Cite href="https://doi.org/10.1177/0010414020912275">Green, Wilke &amp; Cooper 2020</Cite>).</li>
       </ol>
 
-      <H2 num="05 · THE CONCEPTS">Two shows.</H2>
-      <p>Two concepts came through every round of feedback. Click through each card for the world, the cast, and the mechanics.</p>
+      <H2 num="05 · THE CONCEPTS">Three concepts.</H2>
+      <p>Three concepts came through every round of feedback: two shows we would build, and one that builds nothing and borrows the shows already on the air. Click through each card for the world, the cast, and the mechanics.</p>
 
       <ConceptCard
         accent={RED}
         label="CONCEPT 01 · DOCUMENTARY-STYLE REALITY TV · 6×60′"
         title="CROSSFIRE."
+        titleArt={<CrossfireTitle />}
         tag="Six households where climate is the fault line, and love is the only reason anyone stays at the table."
         interactive={<CrossfireQuiz />}
         short={
@@ -803,6 +986,7 @@ function PaperTab() {
         accent={PINK}
         label="CONCEPT 02 · UNSCRIPTED DATING · 10 EPISODES"
         title="ONE LAST THING."
+        titleArt={<OneLastThingTitle />}
         tag="Sixteen strangers fall in love in post-fire LA, with two rules: no politics, no professions."
         interactive={<OneLastThingWall />}
         short={
@@ -832,12 +1016,51 @@ function PaperTab() {
         }}
       />
 
-      <H3>5.3 · Why two concepts, not one.</H3>
+      <ConceptCard
+        collage
+        accent={BLUE}
+        label="CONCEPT 03 · EMBEDDED CLIMATE / PRODUCT PLACEMENT · existing franchises"
+        title="ALREADY ON AIR."
+        titleArt={<AlreadyOnAirHero />}
+        tag="Don't build a climate show. Borrow the ones America already can't stop watching."
+        short={
+          <div>
+            <p>
+              Climate doesn't enter as a message. It rides in as the <strong>set, the weather, the budget line, the insurance call</strong>, inside franchises with audiences a climate documentary will never reach. Three are already doing it. The edit just cuts around it:
+            </p>
+            <ShowRetrofitStrip />
+          </div>
+        }
+        detail={{
+          world: "Existing reality franchises, the ones with audiences a climate documentary will never get near. Bravo, Peacock, Netflix unscripted. Climate is never argued here, but it isn't hidden either. It changes the conditions of the show — the rebuild budget, the charter the captain keeps rerouting, the heat that pushes the shoot to dawn — and the cast names it the way real people do, when it comes up. The household and the villa we had to invent for the other two formats already exist here, fully cast and fully watched. The only design move is to stop editing the climate out.",
+          cast: [],
+          mechanics: [
+            { title: "Set, not script.", body: "The climate lives in the location, the weather, the budget line, the insurance call — never in a monologue. It is production design, not dialogue." },
+            { title: "The retrofit.", body: "Work with the showrunners to let the real conditions stay on screen instead of editing them out. The storyline is already happening on set. The only note is: don't cut it." },
+            { title: "Borrowed reach.", body: "You inherit the audience instead of building one. Real Housewives clears millions an episode. CROSSFIRE and ONE LAST THING have to earn that attention from zero; this format walks into a room where it's already pointed at the screen." },
+          ],
+          closing: "The biggest climate audience in America is already on the couch. It just thinks it's watching something else.",
+          edge: {
+            intro: "This is the highest-reach, lowest-dose bet in the whole project, and the literature is blunt about its ceiling. Paluck et al. (2015) embedded eight pro-social messages into prime-time telenovelas and found product placement is good at re-framing how a topic feels and weak at producing action on a single exposure. So we design the borrowed slot for exactly that job — framing, never asks — and we hold four guardrails.",
+            rules: [
+              { title: "Framing, not asks.", body: "No donate link, no chyron, no 'learn more.' The slot does one job: make the climate feel like an ordinary condition of an ordinary, glamorous American life. Anything heavier gets edited out and resented." },
+              { title: "The show stays the show.", body: "The moment the audience smells a message, the placement has failed. Real Housewives has to stay Real Housewives. The climate rides in the contractor fight, not the voiceover." },
+              { title: "Volume over depth.", body: "One embedded storyline does almost nothing — that is the Paluck result. Twenty shows carrying the same ambient condition across two seasons is the actual intervention. The bet is saturation, not any single placement." },
+              { title: "Borrow only shows already living it.", body: "Don't bolt climate onto a show that has nothing to do with it. The Palisades cast is already rebuilding; the deckhands are already in the storms. We borrow the shows where the condition is real and simply stop hiding it." },
+            ],
+          },
+        }}
+      />
+
+      <H3>5.3 · Why three, and why one is different.</H3>
       <p>
-        CROSSFIRE plays the existing political fracture by filming the people who refuse to let it become a wall. Climate is named, and the families work it out across the table. ONE LAST THING bypasses the fracture by deleting the filter and watching what is left. Climate is everywhere on screen and never on the page. They are different bets on the same problem.
+        Three bets, on a spectrum from build to borrow. CROSSFIRE plays the political fracture head-on by filming the people who refuse to let it become a wall — climate is named, and the families work it out across the table. ONE LAST THING bypasses the fracture by deleting the filter and watching what is left — climate is everywhere on screen and never on the page. Both are shows we would build from scratch.
       </p>
       <p>
-        The two formats also speak to different rooms in the industry. CROSSFIRE belongs with documentary slates and unscripted-prestige producers — the lineage of <em>Hale County</em>, <em>Faces Places</em>, <em>The Wolfpack</em>. ONE LAST THING belongs with streaming unscripted dating and event-format producers — the lineage of <em>Love Is Blind</em>, <em>The Ultimatum</em>, <em>Couples Therapy</em>. Built deliberately so that the same body of research walks into two different doors.
+        ALREADY ON AIR is the different one. It builds nothing. It borrows shows that already exist and already command the audience the other two have to win, and it lets the climate that's already in those shows stay in frame. As you move from CROSSFIRE to ONE LAST THING to ALREADY ON AIR, reach goes up and control goes down: CROSSFIRE makes climate the subject, ONE LAST THING never says the word, and ALREADY ON AIR borrows shows where climate is just part of the conditions, named whenever the cast would naturally name it.
+      </p>
+      <p>
+        The three also walk into three different rooms. CROSSFIRE belongs with documentary slates and unscripted-prestige producers — the lineage of <em>Hale County</em>, <em>Faces Places</em>, <em>The Wolfpack</em>. ONE LAST THING belongs with streaming unscripted dating and event-format producers — the lineage of <em>Love Is Blind</em>, <em>The Ultimatum</em>, <em>Couples Therapy</em>. ALREADY ON AIR doesn't sell a format at all; it's a conversation with the showrunners and networks already making the hits — Bravo, Peacock, Netflix unscripted — about what they choose to leave in. The same body of research walks into three different doors.
       </p>
       <table>
         <thead>
@@ -845,17 +1068,19 @@ function PaperTab() {
             <th></th>
             <th><span className="swatch" style={{ background: RED }}/>CROSSFIRE</th>
             <th><span className="swatch" style={{ background: PINK }}/>ONE LAST THING</th>
+            <th><span className="swatch" style={{ background: BLUE }}/>ALREADY ON AIR</th>
           </tr>
         </thead>
         <tbody>
-          <tr><td><strong>Form</strong></td><td>Documentary-style reality TV</td><td>Reality dating</td></tr>
-          <tr><td><strong>Length</strong></td><td>Six 60-minute episodes</td><td>Ten episodes</td></tr>
-          <tr><td><strong>Mechanism</strong></td><td>The kitchen as the household stage</td><td>The reveal as the structural twist</td></tr>
-          <tr><td><strong>Tone</strong></td><td>Funny, patient, at times unbearable</td><td>Tender, slow, then loud</td></tr>
-          <tr><td><strong>Where the producer sits</strong></td><td>Documentary &amp; unscripted-prestige slates</td><td>Streaming dating &amp; event-format slates</td></tr>
-          <tr><td><strong>How climate appears</strong></td><td>Named, in the family vocabulary: calving season, gas stove, brisket, well, bill, the cow that wouldn't deliver</td><td>Unnamed, embedded twice: in the city (the burn scar from every window, the creosote, the firefighter's sleep) and in the cast itself (some believe, some don't — the reveal exposes who)</td></tr>
-          <tr><td><strong>The friction</strong></td><td>A progressive mom and her climate-skeptic son. A husband on the rig and a wife at the Sierra Club. A pastor and his climate-scientist daughter. People across one last name.</td><td>Sixteen strangers, two rules they can't break.</td></tr>
-          <tr><td><strong>The viewer's question</strong></td><td>Can love hold the conversation open?</td><td>Does the one last thing matter, or does love win?</td></tr>
+          <tr><td><strong>The bet</strong></td><td>Build it, name climate</td><td>Build it, hide climate</td><td>Borrow it, ride climate that's already there</td></tr>
+          <tr><td><strong>Form</strong></td><td>Documentary-style reality TV</td><td>Reality dating</td><td>Embedded in existing shows</td></tr>
+          <tr><td><strong>Length</strong></td><td>Six 60-minute episodes</td><td>Ten episodes</td><td>Recurring placement, across seasons</td></tr>
+          <tr><td><strong>Mechanism</strong></td><td>The kitchen as the household stage</td><td>The reveal as the structural twist</td><td>The borrowed slot — climate as set, weather, budget</td></tr>
+          <tr><td><strong>Tone</strong></td><td>Funny, patient, at times unbearable</td><td>Tender, slow, then loud</td><td>Whatever the host show already is</td></tr>
+          <tr><td><strong>Where the producer sits</strong></td><td>Documentary &amp; unscripted-prestige slates</td><td>Streaming dating &amp; event-format slates</td><td>Existing franchise showrunners &amp; networks</td></tr>
+          <tr><td><strong>How climate appears</strong></td><td>Named, in the family vocabulary: calving season, gas stove, brisket, well, bill, the cow that wouldn't deliver</td><td>Unnamed, embedded twice: in the city (the burn scar from every window, the creosote, the firefighter's sleep) and in the cast itself (some believe, some don't — the reveal exposes who)</td><td>Part of the conditions: the rebuild budget, the rerouted charter, the heat that pushes the shoot to dawn. Named when the cast names it, ambient when they don't, inside shows people already watch</td></tr>
+          <tr><td><strong>The friction</strong></td><td>A progressive mom and her climate-skeptic son. A husband on the rig and a wife at the Sierra Club. A pastor and his climate-scientist daughter. People across one last name.</td><td>Sixteen strangers, two rules they can't break.</td><td>None invented — the climate is the condition the cast already lives in</td></tr>
+          <tr><td><strong>The viewer's question</strong></td><td>Can love hold the conversation open?</td><td>Does the one last thing matter, or does love win?</td><td>None — they came for the drama and got the climate in the frame</td></tr>
         </tbody>
       </table>
 
@@ -871,7 +1096,7 @@ function PaperTab() {
       <ol>
         <li><strong>A diagnostic.</strong> When a topic loses cultural reach, the failure is rarely the topic. It is the medium and the messenger. The fix is to look at the audience's media diet and build a vehicle inside it.</li>
         <li><strong>A framework.</strong> Five principles and a set of underlying climate goals, portable to any other politically fractured topic: immigration, guns, AI, fertility.</li>
-        <li><strong>Two formats worth building.</strong> CROSSFIRE and ONE LAST THING are different bets on the same problem, built for different rooms in the industry.</li>
+        <li><strong>Three formats worth making.</strong> CROSSFIRE, ONE LAST THING, and ALREADY ON AIR are three bets on the same problem — two you build, one you borrow — for three different rooms in the industry.</li>
       </ol>
       <Pull>
         The most important conclusion is also the simplest. <Highlight bg={PINK} fg={INK}>The climate movement's last unfilmed room</Highlight> is the one with people who love each other in it.
