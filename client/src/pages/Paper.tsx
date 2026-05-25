@@ -844,9 +844,24 @@ export default function Paper() {
         .download:hover { opacity: 0.85; }
 
         /* ─── PRINT / PDF EXPORT ────────────────────────────────────────── */
-        @media print {
-          @page { size: A4; margin: 0.6in 0.55in 0.7in; }
+        /* Editorial layout: a real cover, refined typography, section pages.
+           Tested in Chrome's "Save as PDF". For best results the reader should
+           uncheck "Headers and footers" in the browser print dialog so we get
+           a clean, designed PDF without the URL/date bar. */
 
+        /* Default-page typography (margins generous like a research-paper). */
+        @page {
+          size: A4;
+          margin: 0.85in 0.8in 0.95in;
+        }
+        /* The cover page is borderless and tall — no top margin so the cover
+           composition can claim the whole page. */
+        @page :first {
+          margin: 0;
+        }
+        .part-divider { display: none; }
+
+        @media print {
           /* Preserve backgrounds + brand colors in the PDF. */
           *, *::before, *::after {
             -webkit-print-color-adjust: exact !important;
@@ -856,54 +871,275 @@ export default function Paper() {
           html, body {
             background: ${CREAM} !important;
             margin: 0 !important;
+            padding: 0 !important;
           }
 
-          /* Kill viewport-height containers and sticky positioning — both are
-             classic sources of stray blank pages in printed PDFs. */
+          /* Strip layout hacks that produce stray blank pages. */
           .paper-root { min-height: 0 !important; }
           .tabbar, .print-hide { display: none !important; }
-
           .paper-page {
             max-width: none !important;
             padding: 0 !important;
             margin: 0 !important;
           }
+          .topbar { display: none !important; }
 
-          .topbar { margin-bottom: 18px !important; }
+          /* ─── COVER PAGE ──────────────────────────────────────────────── */
+          .paper-cover {
+            box-sizing: border-box;
+            width: 100%;
+            min-height: 100vh;
+            padding: 1.1in 0.95in 1in;
+            margin: 0 !important;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            background: ${CREAM};
+            position: relative;
+            break-after: page;
+            page-break-after: always;
+          }
+          .paper-cover::before {
+            content: "";
+            position: absolute;
+            top: 1.1in;
+            left: 0.95in;
+            width: 64px;
+            height: 6px;
+            background: ${RED};
+          }
+          .paper-cover::after {
+            content: "STANFORD GRADUATE SCHOOL OF BUSINESS · GEN 390 · INDEPENDENT RESEARCH · 2026";
+            position: absolute;
+            top: 1.1in;
+            left: calc(0.95in + 84px);
+            font-family: 'JetBrains Mono', ui-monospace, monospace;
+            font-size: 9pt;
+            letter-spacing: 0.22em;
+            color: ${MUTED};
+            line-height: 1;
+            padding-top: 1px;
+          }
+          .paper-cover .paper-h1 {
+            font-size: 52pt !important;
+            line-height: 1.02 !important;
+            letter-spacing: -0.025em !important;
+            margin: 1.6in 0 0.45in !important;
+            max-width: 6.2in;
+          }
+          .paper-cover .paper-subtitle {
+            font-size: 16pt !important;
+            line-height: 1.4 !important;
+            color: ${MUTED} !important;
+            max-width: 5.4in;
+            margin: 0 0 0.6in !important;
+          }
+          .paper-cover .paper-byline {
+            border-top: 1px solid ${INK} !important;
+            padding-top: 14px !important;
+            margin-bottom: 0 !important;
+            font-size: 10pt !important;
+            letter-spacing: 0.18em !important;
+          }
+          .paper-cover .paper-byline span {
+            font-size: 9pt !important;
+          }
 
-          /* Slightly tighter type so the PDF doesn't sprawl. */
-          .paper-root { font-size: 11pt; line-height: 1.5; }
-          .paper-root h1 { font-size: 28pt !important; margin: 0 0 14px !important; }
-          .paper-root h2 { font-size: 18pt !important; margin: 36px 0 14px !important; break-after: avoid-page; page-break-after: avoid; }
-          .paper-root h3 { font-size: 13pt !important; margin: 24px 0 10px !important; break-after: avoid-page; page-break-after: avoid; }
-          .paper-root h4 { break-after: avoid-page; page-break-after: avoid; }
-          .paper-root p { margin: 0 0 12px !important; orphans: 3; widows: 3; }
-          .paper-root hr { margin: 32px 0 !important; }
+          /* ─── BODY TYPOGRAPHY ─────────────────────────────────────────── */
+          .paper-root {
+            font-size: 10.5pt;
+            line-height: 1.55;
+            color: ${INK};
+          }
+          .paper-root p {
+            margin: 0 0 11px !important;
+            orphans: 3;
+            widows: 3;
+            hyphens: auto;
+            -webkit-hyphens: auto;
+          }
+          .paper-root h2 {
+            font-size: 22pt !important;
+            line-height: 1.05 !important;
+            margin: 32px 0 18px !important;
+            letter-spacing: -0.012em !important;
+            break-after: avoid-page;
+            page-break-after: avoid;
+            /* Don't orphan an H2 at the bottom of a page. */
+            break-inside: avoid;
+            page-break-inside: avoid;
+          }
+          .paper-root h3 {
+            font-size: 12.5pt !important;
+            line-height: 1.2 !important;
+            margin: 26px 0 9px !important;
+            break-after: avoid-page;
+            page-break-after: avoid;
+          }
+          .paper-root h4 {
+            break-after: avoid-page;
+            page-break-after: avoid;
+          }
+          .paper-root hr { display: none !important; }
+          .paper-root ol, .paper-root ul { margin: 0 0 14px !important; }
+          .paper-root li { margin-bottom: 6px !important; orphans: 2; widows: 2; }
 
-          /* Keep small, self-contained units intact across page breaks. */
-          figure, table, .concept-card > div:last-child > div:last-child {
+          /* Pull quotes: bigger air, never split across pages. */
+          .paper-root p[style*="border-top"][style*="border-bottom"] {
+            margin: 32px 0 !important;
+            padding: 22px 0 !important;
+            font-size: 17pt !important;
+            line-height: 1.32 !important;
             break-inside: avoid;
             page-break-inside: avoid;
           }
 
-          /* Big concept cards must be allowed to break — but never start one
-             on the last sliver of a page. */
-          .concept-card {
-            break-inside: auto;
-            page-break-inside: auto;
-            break-before: auto;
+          /* Tables read as proper research-paper tables. */
+          .paper-root table {
+            font-size: 9.5pt !important;
+            margin: 22px 0 !important;
+            break-inside: avoid;
+            page-break-inside: avoid;
+          }
+          .paper-root th, .paper-root td {
+            padding: 8px 10px !important;
           }
 
-          /* Links: keep underline so citations read as links, but drop color
-             to save ink and match the body text. */
-          .paper-root a { color: ${INK} !important; }
+          /* Figures: lock to a print-comfortable size, keep caption with image. */
+          figure {
+            break-inside: avoid;
+            page-break-inside: avoid;
+            margin: 18px 0 22px !important;
+          }
+          figure img {
+            max-height: 4in;
+            object-fit: contain;
+            margin: 0 auto;
+          }
+          .figrow { grid-template-columns: 1fr 1fr !important; gap: 14px !important; }
 
-          /* Lazy-loaded images sometimes ghost as blank boxes; force them in. */
-          img { break-inside: avoid; page-break-inside: avoid; max-width: 100% !important; }
+          /* ─── CONCEPT CARDS ───────────────────────────────────────────── */
+          .concept-card {
+            break-before: page;
+            page-break-before: always;
+            break-inside: auto;
+            page-break-inside: auto;
+            margin: 0 !important;
+            padding: 0.25in 0 0 0.18in !important;
+            border: none !important;
+            border-left: 4px solid currentColor !important;
+            background: transparent !important;
+          }
+          .concept-card > span:first-child {
+            font-size: 8.5pt !important;
+            letter-spacing: 0.28em !important;
+          }
+          .concept-card h3 {
+            font-size: 28pt !important;
+            line-height: 1.02 !important;
+            margin: 10px 0 14px !important;
+            break-before: avoid;
+            page-break-before: avoid;
+          }
+          /* The "Want the full pitch?" CTA reads as a CTA on screen but in
+             print it should look like a small footer-style contact block. */
+          .concept-card div[style*="background: rgb(13, 13, 13)"],
+          .concept-card div[style*="background:rgb(13,13,13)"],
+          .concept-card div[style*="background: #0d0d0d"] {
+            background: transparent !important;
+            color: ${MUTED} !important;
+            border-top: 1px solid ${RULE} !important;
+            border-radius: 0 !important;
+            padding: 12px 0 0 !important;
+            margin-top: 24px !important;
+          }
+          .concept-card div[style*="background: rgb(13, 13, 13)"] p,
+          .concept-card div[style*="background:rgb(13,13,13)"] p,
+          .concept-card div[style*="background: #0d0d0d"] p {
+            color: ${MUTED} !important;
+            font-size: 9pt !important;
+          }
+          .concept-card div[style*="background: rgb(13, 13, 13)"] strong,
+          .concept-card div[style*="background:rgb(13,13,13)"] strong,
+          .concept-card div[style*="background: #0d0d0d"] strong {
+            color: ${INK} !important;
+          }
+          .concept-card a { color: ${INK} !important; }
 
-          /* Hide the closing "Created by..." footer on its own line so the
-             last page isn't half-empty. */
-          .paper-page > div:last-child { margin-top: 32px !important; }
+          /* ─── PART II DIVIDER ─────────────────────────────────────────── */
+          .part-divider {
+            display: flex !important;
+            flex-direction: column;
+            justify-content: center;
+            min-height: 100vh;
+            padding: 0 0.4in;
+            margin: 0 !important;
+            text-align: left;
+            break-before: page;
+            page-break-before: always;
+            break-after: page;
+            page-break-after: always;
+          }
+          .part-divider .part-divider-eyebrow {
+            font-family: 'JetBrains Mono', ui-monospace, monospace;
+            font-size: 10pt;
+            letter-spacing: 0.3em;
+            color: ${BLUE};
+            display: block;
+            margin-bottom: 16px;
+          }
+          .part-divider .part-divider-title {
+            font-family: 'Archivo', system-ui, sans-serif;
+            font-weight: 900;
+            font-size: 56pt;
+            line-height: 1;
+            letter-spacing: -0.025em;
+            color: ${INK};
+            margin: 0 0 18px;
+          }
+          .part-divider .part-divider-tag {
+            font-family: 'Fraunces', Georgia, serif;
+            font-style: italic;
+            font-size: 16pt;
+            line-height: 1.35;
+            color: ${MUTED};
+            max-width: 5in;
+            margin: 0;
+          }
+
+          /* ─── REFERENCES ─────────────────────────────────────────────── */
+          .refs-section {
+            break-before: page;
+            page-break-before: always;
+          }
+          .refs-section h2 { break-before: avoid !important; page-break-before: avoid !important; }
+          .refs-section > div {
+            font-size: 9.5pt !important;
+            column-count: 1;
+          }
+          .refs-section p {
+            break-inside: avoid;
+            page-break-inside: avoid;
+            margin-bottom: 9px !important;
+          }
+
+          /* ─── LINKS, IMAGES, FOOTER ──────────────────────────────────── */
+          .paper-root a {
+            color: ${INK} !important;
+            text-decoration: none !important;
+            border-bottom: 0.5pt dotted ${MUTED};
+          }
+          img {
+            break-inside: avoid;
+            page-break-inside: avoid;
+            max-width: 100% !important;
+          }
+          /* The closing "Created by..." line — small, centered, no big gap. */
+          .paper-page > div:last-child {
+            margin-top: 36px !important;
+            font-size: 8.5pt !important;
+            letter-spacing: 0.22em !important;
+          }
         }
       `}</style>
 
@@ -917,21 +1153,23 @@ export default function Paper() {
             </div>
           </div>
 
-          <h1 style={{ fontFamily: "'Archivo', system-ui, sans-serif", fontWeight: 900, fontSize: 'clamp(40px, 6.2vw, 68px)', lineHeight: 1.05, letterSpacing: '-0.02em', margin: '0 0 24px' }}>
-            The climate movement has a storytelling problem.<br/>
-            <em style={{ fontFamily: "'Fraunces', Georgia, serif", fontStyle: 'italic', fontWeight: 600 }}>Reality TV</em> could fix it.
-          </h1>
-          <p style={{ fontFamily: "'Fraunces', Georgia, serif", fontStyle: 'italic', fontSize: 22, lineHeight: 1.45, color: MUTED, maxWidth: 640, margin: '0 0 40px' }}>
-            A Stanford Graduate School of Business research on how to use Reality TV as a climate behavior change vehicle.
-          </p>
-          <div style={{ fontFamily: "'Archivo', system-ui, sans-serif", fontWeight: 600, fontSize: 12, letterSpacing: '0.15em', textTransform: 'uppercase', borderTop: `1px solid ${INK}`, paddingTop: 16, marginBottom: 48 }}>
-            Daniel Etzioni &amp; Nazlican Goksu Seira
-            <span style={{ color: MUTED, fontWeight: 400, display: 'block', marginTop: 4 }}>
-              GEN 390 · Independent Research Study · 2026
-            </span>
-            <span style={{ color: MUTED, fontWeight: 400, display: 'block', marginTop: 2 }}>
-              Stanford Graduate School of Business
-            </span>
+          <div className="paper-cover">
+            <h1 className="paper-h1" style={{ fontFamily: "'Archivo', system-ui, sans-serif", fontWeight: 900, fontSize: 'clamp(40px, 6.2vw, 68px)', lineHeight: 1.05, letterSpacing: '-0.02em', margin: '0 0 24px' }}>
+              The climate movement has a storytelling problem.<br/>
+              <em style={{ fontFamily: "'Fraunces', Georgia, serif", fontStyle: 'italic', fontWeight: 600 }}>Reality TV</em> could fix it.
+            </h1>
+            <p className="paper-subtitle" style={{ fontFamily: "'Fraunces', Georgia, serif", fontStyle: 'italic', fontSize: 22, lineHeight: 1.45, color: MUTED, maxWidth: 640, margin: '0 0 40px' }}>
+              A Stanford Graduate School of Business research on how to use Reality TV as a climate behavior change vehicle.
+            </p>
+            <div className="paper-byline" style={{ fontFamily: "'Archivo', system-ui, sans-serif", fontWeight: 600, fontSize: 12, letterSpacing: '0.15em', textTransform: 'uppercase', borderTop: `1px solid ${INK}`, paddingTop: 16, marginBottom: 48 }}>
+              Daniel Etzioni &amp; Nazlican Goksu Seira
+              <span style={{ color: MUTED, fontWeight: 400, display: 'block', marginTop: 4 }}>
+                GEN 390 · Independent Research Study · 2026
+              </span>
+              <span style={{ color: MUTED, fontWeight: 400, display: 'block', marginTop: 2 }}>
+                Stanford Graduate School of Business
+              </span>
+            </div>
           </div>
 
           <TabBar tab={tab} setTab={setTab} />
@@ -940,7 +1178,11 @@ export default function Paper() {
             {printMode ? (
               <>
                 <PaperTab />
-                <hr style={{ border: 0, borderTop: `2px solid ${INK}`, margin: '72px 0 48px' }} />
+                <div className="part-divider">
+                  <span className="part-divider-eyebrow">PART II</span>
+                  <h2 className="part-divider-title">The Process.</h2>
+                  <p className="part-divider-tag">The literature, the interviews, the rooms that re-shaped the work.</p>
+                </div>
                 <ProcessTab />
               </>
             ) : (
@@ -1215,6 +1457,7 @@ function PaperTab() {
 
       <hr/>
 
+      <div className="refs-section">
       <H2 num="REF · REFERENCES">Where the work stands on.</H2>
       <div style={{ fontSize: 14, lineHeight: 1.6, color: MUTED }}>
         <Ref>Bandura, A. <em>Social Cognitive Theory of Mass Communication.</em> In Bryant &amp; Oliver (Eds.), Media Effects.</Ref>
@@ -1232,6 +1475,7 @@ function PaperTab() {
         <Ref>Small, D.A., Loewenstein, G., &amp; Slovic, P. (2007). Sympathy and callousness. <em>Organizational Behavior and Human Decision Processes</em>, 102, 143–153. <Cite href="https://doi.org/10.1016/j.obhdp.2006.01.005">link</Cite></Ref>
         <Ref>Sunstein, C.R. (2014). On Surprising Validators. (Various essays; <em>Conformity</em>, 2019.) <Cite href="https://papers.ssrn.com/sol3/papers.cfm?abstract_id=2444649">link</Cite></Ref>
         <Ref>Tversky, A., &amp; Kahneman, D. (1973). Availability: A heuristic for judging frequency and probability. <em>Cognitive Psychology</em>, 5, 207–232. <Cite href="https://doi.org/10.1016/0010-0285(73)90033-9">link</Cite></Ref>
+      </div>
       </div>
     </>
   );
