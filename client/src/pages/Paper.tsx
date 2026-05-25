@@ -1,4 +1,10 @@
-import { useEffect, useState } from 'react';
+import { createContext, useContext, useEffect, useState } from 'react';
+
+// Print-mode context. When true, all collapsible sections render expanded
+// (concept-card detail, retrofit-strip detail, both tabs) and interactive
+// widgets are hidden via CSS so the PDF is a clean static read.
+const PrintModeContext = createContext(false);
+const usePrintMode = () => useContext(PrintModeContext);
 
 const RED = '#d4202c';
 const BLUE = '#1f2bd6';
@@ -86,9 +92,11 @@ type ConceptDetailProps = {
 };
 
 const ConceptCard: React.FC<ConceptDetailProps> = ({ accent, label, title, tag, short, interactive, collage, titleArt, castLabel = 'The cast (examples)', detail }) => {
-  const [open, setOpen] = useState(false);
+  const printMode = usePrintMode();
+  const [openState, setOpenState] = useState(false);
+  const open = printMode || openState;
   return (
-    <div style={{
+    <div className="concept-card" style={{
       border: `1px solid ${INK}`,
       borderLeft: `8px solid ${accent}`,
       padding: '32px 28px',
@@ -117,10 +125,11 @@ const ConceptCard: React.FC<ConceptDetailProps> = ({ accent, label, title, tag, 
       </p>
       {short}
       <button
-        onClick={() => setOpen(!open)}
+        className="print-hide"
+        onClick={() => setOpenState(!openState)}
         style={{
-          background: open ? INK : 'transparent',
-          color: open ? CREAM : INK,
+          background: openState ? INK : 'transparent',
+          color: openState ? CREAM : INK,
           border: `1px solid ${INK}`,
           padding: '10px 18px',
           fontFamily: "'Archivo', system-ui, sans-serif",
@@ -134,7 +143,7 @@ const ConceptCard: React.FC<ConceptDetailProps> = ({ accent, label, title, tag, 
           transition: 'all 0.2s',
         }}
       >
-        {open ? '— Collapse' : '+ See more detail'}
+        {openState ? '— Collapse' : '+ See more detail'}
       </button>
 
       {open && (
@@ -175,7 +184,7 @@ const ConceptCard: React.FC<ConceptDetailProps> = ({ accent, label, title, tag, 
             </>
           )}
 
-          {interactive}
+          {interactive && <div className="print-hide">{interactive}</div>}
 
           <p style={{ marginTop: 32, fontFamily: "'Fraunces', Georgia, serif", fontStyle: 'italic', fontSize: 18, color: INK, paddingTop: 24, borderTop: `1px solid ${RULE}` }}>
             “{detail.closing}”
@@ -196,7 +205,7 @@ const ConceptCard: React.FC<ConceptDetailProps> = ({ accent, label, title, tag, 
 
 // ─── Tab nav ──────────────────────
 const TabBar: React.FC<{ tab: Tab; setTab: (t: Tab) => void }> = ({ tab, setTab }) => (
-  <div style={{
+  <div className="tabbar print-hide" style={{
     position: 'sticky',
     top: 0,
     background: CREAM,
@@ -715,11 +724,12 @@ const RETROFIT_SHOWS: { show: string; network: string; img: string; tint: string
 ];
 
 function ShowRetrofitStrip() {
+  const printMode = usePrintMode();
   const [open, setOpen] = useState<number | null>(null);
   return (
     <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: 14, margin: '4px 0 8px' }}>
       {RETROFIT_SHOWS.map((s, i) => {
-        const isOpen = open === i;
+        const isOpen = printMode || open === i;
         return (
           <div key={i} style={{ border: `1px solid ${INK}`, background: CREAM, display: 'flex', flexDirection: 'column' }}>
             <img src={s.img} alt={s.show} loading="lazy" style={{ display: 'block', width: '100%', height: 110, objectFit: 'cover', borderBottom: `1px solid ${INK}` }} />
@@ -742,7 +752,8 @@ function ShowRetrofitStrip() {
                 </p>
               )}
               <button
-                onClick={() => setOpen(isOpen ? null : i)}
+                className="print-hide"
+                onClick={() => setOpen(open === i ? null : i)}
                 style={{
                   alignSelf: 'flex-start', marginTop: 12, background: 'transparent',
                   border: 'none', padding: 0, cursor: 'pointer',
@@ -750,7 +761,7 @@ function ShowRetrofitStrip() {
                   fontSize: 10, letterSpacing: '0.16em', textTransform: 'uppercase', color: BLUE,
                 }}
               >
-                {isOpen ? '— less' : '+ how climate rides in'}
+                {open === i ? '— less' : '+ how climate rides in'}
               </button>
             </div>
           </div>
@@ -763,10 +774,36 @@ function ShowRetrofitStrip() {
 // ─── Page ──────────────────────
 export default function Paper() {
   const [tab, setTab] = useState<Tab>('paper');
+  const [printMode, setPrintMode] = useState(false);
 
   useEffect(() => {
     document.title = 'The climate movement has a storytelling problem — GEN 390';
   }, []);
+
+  // Reset print mode when the OS print dialog closes.
+  useEffect(() => {
+    const after = () => setPrintMode(false);
+    window.addEventListener('afterprint', after);
+    return () => window.removeEventListener('afterprint', after);
+  }, []);
+
+  // Once printMode flips on, give React one paint to expand collapsibles, then
+  // open the print dialog. Restoring the title runs on cleanup, when printMode
+  // flips back to false.
+  useEffect(() => {
+    if (!printMode) return;
+    const originalTitle = document.title;
+    document.title = 'Climate Above the Line · Reality TV as a Climate Behavior Change Vehicle';
+    // Give the re-render (expanded concept cards, retrofit strip, both tabs)
+    // one tick to commit, then ask the browser to print.
+    const t = setTimeout(() => window.print(), 400);
+    return () => {
+      clearTimeout(t);
+      document.title = originalTitle;
+    };
+  }, [printMode]);
+
+  const handleDownloadPdf = () => setPrintMode(true);
 
   return (
     <>
@@ -802,17 +839,81 @@ export default function Paper() {
           font-weight: 600; font-size: 11px; letter-spacing: 0.18em; text-transform: uppercase;
           color: ${CREAM}; background: ${INK}; padding: 10px 16px; border-radius: 999px;
           text-decoration: none !important; transition: opacity 0.2s;
+          border: none; cursor: pointer; line-height: 1;
         }
         .download:hover { opacity: 0.85; }
+
+        /* ─── PRINT / PDF EXPORT ────────────────────────────────────────── */
+        @media print {
+          @page { size: A4; margin: 0.6in 0.55in 0.7in; }
+
+          /* Preserve backgrounds + brand colors in the PDF. */
+          *, *::before, *::after {
+            -webkit-print-color-adjust: exact !important;
+            print-color-adjust: exact !important;
+          }
+
+          html, body {
+            background: ${CREAM} !important;
+            margin: 0 !important;
+          }
+
+          /* Kill viewport-height containers and sticky positioning — both are
+             classic sources of stray blank pages in printed PDFs. */
+          .paper-root { min-height: 0 !important; }
+          .tabbar, .print-hide { display: none !important; }
+
+          .paper-page {
+            max-width: none !important;
+            padding: 0 !important;
+            margin: 0 !important;
+          }
+
+          .topbar { margin-bottom: 18px !important; }
+
+          /* Slightly tighter type so the PDF doesn't sprawl. */
+          .paper-root { font-size: 11pt; line-height: 1.5; }
+          .paper-root h1 { font-size: 28pt !important; margin: 0 0 14px !important; }
+          .paper-root h2 { font-size: 18pt !important; margin: 36px 0 14px !important; break-after: avoid-page; page-break-after: avoid; }
+          .paper-root h3 { font-size: 13pt !important; margin: 24px 0 10px !important; break-after: avoid-page; page-break-after: avoid; }
+          .paper-root h4 { break-after: avoid-page; page-break-after: avoid; }
+          .paper-root p { margin: 0 0 12px !important; orphans: 3; widows: 3; }
+          .paper-root hr { margin: 32px 0 !important; }
+
+          /* Keep small, self-contained units intact across page breaks. */
+          figure, table, .concept-card > div:last-child > div:last-child {
+            break-inside: avoid;
+            page-break-inside: avoid;
+          }
+
+          /* Big concept cards must be allowed to break — but never start one
+             on the last sliver of a page. */
+          .concept-card {
+            break-inside: auto;
+            page-break-inside: auto;
+            break-before: auto;
+          }
+
+          /* Links: keep underline so citations read as links, but drop color
+             to save ink and match the body text. */
+          .paper-root a { color: ${INK} !important; }
+
+          /* Lazy-loaded images sometimes ghost as blank boxes; force them in. */
+          img { break-inside: avoid; page-break-inside: avoid; max-width: 100% !important; }
+
+          /* Hide the closing "Created by..." footer on its own line so the
+             last page isn't half-empty. */
+          .paper-page > div:last-child { margin-top: 32px !important; }
+        }
       `}</style>
 
       <div className="paper-root">
         <div className="paper-page">
           <div className="topbar">
             <span className="meta">GSB GEN 390 · Independent Research · 2026</span>
-            <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap' }}>
+            <div className="print-hide" style={{ display: 'flex', gap: 10, flexWrap: 'wrap' }}>
               <a className="download" href="/trailer" style={{ background: 'transparent', color: INK, border: `1px solid ${INK}` }}>▶ Watch the trailer</a>
-              <a className="download" href="/paper/Climate-Above-the-Line.pdf" download>↓ Download PDF</a>
+              <button type="button" className="download" onClick={handleDownloadPdf}>↓ Download PDF</button>
             </div>
           </div>
 
@@ -835,7 +936,17 @@ export default function Paper() {
 
           <TabBar tab={tab} setTab={setTab} />
 
-          {tab === 'paper' ? <PaperTab/> : <ProcessTab/>}
+          <PrintModeContext.Provider value={printMode}>
+            {printMode ? (
+              <>
+                <PaperTab />
+                <hr style={{ border: 0, borderTop: `2px solid ${INK}`, margin: '72px 0 48px' }} />
+                <ProcessTab />
+              </>
+            ) : (
+              tab === 'paper' ? <PaperTab/> : <ProcessTab/>
+            )}
+          </PrintModeContext.Provider>
 
           <div style={{ fontFamily: "'Archivo', system-ui, sans-serif", fontSize: 11, letterSpacing: '0.16em', textTransform: 'uppercase', color: MUTED, marginTop: 96, textAlign: 'center' }}>
             Created by Daniel Etzioni &amp; Nazlican Goksu Seira · GEN 390 · 2026
